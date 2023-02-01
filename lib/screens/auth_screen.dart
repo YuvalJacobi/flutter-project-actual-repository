@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_complete_guide/provider/provider.dart';
 import 'package:provider/provider.dart';
-
-import 'package:flutter_complete_guide/widgets/auth/auth_form.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -13,7 +8,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthScreen> {
-  final _auth = FirebaseAuth.instance;
+  // final _auth = FirebaseAuth.instance;
   var _isLoading = false;
   final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
