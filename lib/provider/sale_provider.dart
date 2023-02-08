@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_complete_guide/model/sale.dart';
 
 class SaleProvider with ChangeNotifier {
-  List<SaleProvider> _sale_providers;
+  List<Sale> _sales;
 
-  List<SaleProvider> get sale_provders {
-    return [..._sale_providers];
+  List<Sale> get sales {
+    return [..._sales];
   }
 
   SaleProvider();
