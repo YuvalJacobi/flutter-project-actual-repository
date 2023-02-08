@@ -42,6 +42,16 @@ class _MyListScreenState extends State<MyListScreen> {
     ])
   ];
 
+  String salesToString(List<Sale> sales) {
+    String s = '';
+
+    sales.forEach((element) {
+      s += element.description + ' !--! ' + element.expiry_date.toString();
+    });
+
+    return s;
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Store> stores =
@@ -56,6 +66,7 @@ class _MyListScreenState extends State<MyListScreen> {
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(stores[index].name),
+              subtitle: Text(stores[index].sales.toString()),
               //: Text(stores[index].description),
             );
           },
