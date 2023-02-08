@@ -22,8 +22,12 @@ class _AuthFormState extends State<AuthScreen> {
 
     if (isValid) {
       _formKey.currentState.save();
-      Provider.of<Auth>(context).submitAuthForm(_userEmail.trim(),
-          _userPassword.trim(), _userName.trim(), _isLoading, context);
+      Provider.of<Auth>(context, listen: false).submitAuthForm(
+          _userEmail.trim(),
+          _userPassword.trim(),
+          _userName.trim(),
+          _isLoading,
+          context);
     }
   }
 
