@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../model/sale.dart';
 import '../model/store.dart';
+import '../provider/store_provider.dart';
 // import 'package:flutter/src/widgets/container.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 
@@ -42,10 +44,21 @@ class _MyListScreenState extends State<MyListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Store> stores =
+        Provider.of<StoreProvider>(context, listen: false).stores;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("My List Screen"),
-      ),
-    );
+        appBar: AppBar(
+          title: Text("My List Screen"),
+        ),
+        body: ListView.builder(
+          itemCount: stores.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(stores[index].name),
+              //: Text(stores[index].description),
+            );
+          },
+        ));
   }
 }
