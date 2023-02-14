@@ -28,6 +28,11 @@ class StoreProvider extends ChangeNotifier {
               description:
                   '3 shekels for a Coca-cola bottle for orders including at least 2 BigMacs',
               expiry_date: DateTime(2023, 4, 1),
+              store_id: 'McDonalds Id'),
+          Sale(
+              description:
+                  '33 percent off on all chicken nuggets bundles when ordering on friday',
+              expiry_date: DateTime(2023, 4, 26),
               store_id: 'McDonalds Id')
         ],
         store_id: 'McDonalds Id'),

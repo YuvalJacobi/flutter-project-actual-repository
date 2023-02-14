@@ -46,12 +46,19 @@ class _MyListScreenState extends State<MyListScreen> {
     List<Widget> lst = [];
 
     sales.forEach((element) {
-      lst.add(Expanded(
-        child: Text(
-          element.description + ' !--! ' + element.expiry_date.toString(),
-          style: TextStyle(fontSize: 26),
-          overflow: TextOverflow.ellipsis,
+      lst.add(ElevatedButton(
+        child: Expanded(
+          child: Text(
+            element.description +
+                '\n\n' +
+                element.expiry_date.toString().substring(0, 10),
+            style: TextStyle(fontSize: 13),
+            maxLines: 8,
+          ),
         ),
+        onPressed: () {
+          // Show screen that fully presents offer and gives the ability to use.
+        },
       ));
     });
 
@@ -64,19 +71,23 @@ class _MyListScreenState extends State<MyListScreen> {
         Provider.of<StoreProvider>(context, listen: false).stores;
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("My Stores"),
-        ),
-        body: ListView.builder(
-          itemCount: stores.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(stores[index].name),
-              subtitle: Row(
-                children: salesToWidgets(stores[index].sales),
-              ),
-            );
-          },
-        ));
+      appBar: AppBar(
+        title: Text("My Stores"),
+      ),
+      body: ListView.separated(
+        separatorBuilder: ((context, index) => SizedBox(height: 3)),
+        scrollDirection: Axis.vertical,
+        itemCount: stores.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(stores[index].name),
+            subtitle: Row(
+              children: salesToWidgets(stores[index].sales),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            ),
+          );
+        },
+      ),
+    );
   }
 }

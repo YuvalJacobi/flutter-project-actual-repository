@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Proximity Shopping',
         theme: ThemeData(
-          primarySwatch: Colors.pink,
-          backgroundColor: Colors.pink,
+          primarySwatch: Colors.indigo,
+          backgroundColor: Colors.blueGrey,
           accentColor: Colors.deepPurple,
           accentColorBrightness: Brightness.dark,
           buttonTheme: ButtonTheme.of(context).copyWith(
