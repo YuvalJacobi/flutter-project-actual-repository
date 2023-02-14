@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -104,6 +106,18 @@ class _AuthFormState extends State<AuthScreen> {
                           _isLogin = !_isLogin;
                         });
                       },
+                    ),
+                  if (!_isLoading && _isLogin)
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        child: Text('Logout'),
+                        onPressed: () => {
+                          FirebaseAuth.instance
+                              .signOut()
+                              .then((value) => _isLogin = !_isLogin)
+                        },
+                      ),
                     )
                 ],
               ),

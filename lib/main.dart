@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_complete_guide/provider/store_provider.dart';
+import 'package:flutter_complete_guide/screens/MyListScreen.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
 import 'provider/auth_provider.dart';
@@ -14,9 +17,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => Auth())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => Auth()),
+        ChangeNotifierProvider(create: (_) => StoreProvider())
+      ],
       child: MaterialApp(
-        title: 'FlutterShopping',
+        title: 'Flutter Proximity Shopping',
         theme: ThemeData(
           primarySwatch: Colors.pink,
           backgroundColor: Colors.pink,
@@ -30,8 +36,21 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: AuthScreen(),
+        home: formToOpen(),
       ),
+    );
+  }
+
+  Widget formToOpen() {
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, usersnapshot) {
+        if (usersnapshot.hasData) {
+          return MyListScreen();
+        } else {
+          return AuthScreen();
+        }
+      },
     );
   }
 }

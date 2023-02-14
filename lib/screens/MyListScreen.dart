@@ -16,40 +16,46 @@ class MyListScreen extends StatefulWidget {
 }
 
 class _MyListScreenState extends State<MyListScreen> {
-  List<Store> _stores = [
-    Store(name: 'Walmart', location: GeoPoint(69, 69), sales: [
-      Sale(
-          description: 'Peanuts at half price',
-          expiry_date: DateTime(2023, 3, 1))
-    ]),
-    Store(name: 'McDonalds', location: GeoPoint(7, 28), sales: [
-      Sale(
-          description: '5 Chicken nuggets for orders above 50 shekels',
-          expiry_date: DateTime(2023, 6, 6)),
-      Sale(
-          description:
-              '3 shekels for a Coca-cola bottle for orders including at least 2 BigMacs',
-          expiry_date: DateTime(2023, 4, 1))
-    ]),
-    Store(name: 'Nike', location: GeoPoint(2, 18), sales: [
-      Sale(
-          description: 'Second pair of same shoes are 25% off',
-          expiry_date: DateTime(2023, 5, 7)),
-      Sale(
-          description:
-              'Cheapest of 3 pairs bought at the same time is worth 100 shekels',
-          expiry_date: DateTime(2023, 3, 27))
-    ])
-  ];
+  // List<Store> _stores = [
+  //   Store(name: 'Walmart', location: GeoPoint(69, 69), sales: [
+  //     Sale(
+  //         description: 'Peanuts at half price',
+  //         expiry_date: DateTime(2023, 3, 1))
+  //   ]),
+  //   Store(name: 'McDonalds', location: GeoPoint(7, 28), sales: [
+  //     Sale(
+  //         description: '5 Chicken nuggets for orders above 50 shekels',
+  //         expiry_date: DateTime(2023, 6, 6)),
+  //     Sale(
+  //         description:
+  //             '3 shekels for a Coca-cola bottle for orders including at least 2 BigMacs',
+  //         expiry_date: DateTime(2023, 4, 1))
+  //   ]),
+  //   Store(name: 'Nike', location: GeoPoint(2, 18), sales: [
+  //     Sale(
+  //         description: 'Second pair of same shoes are 25% off',
+  //         expiry_date: DateTime(2023, 5, 7)),
+  //     Sale(
+  //         description:
+  //             'Cheapest of 3 pairs bought at the same time is worth 100 shekels',
+  //         expiry_date: DateTime(2023, 3, 27))
+  //   ])
+  // ];
 
-  String salesToString(List<Sale> sales) {
-    String s = '';
+  List<Widget> salesToWidgets(List<Sale> sales) {
+    List<Widget> lst = [];
 
     sales.forEach((element) {
-      s += element.description + ' !--! ' + element.expiry_date.toString();
+      lst.add(Expanded(
+        child: Text(
+          element.description + ' !--! ' + element.expiry_date.toString(),
+          style: TextStyle(fontSize: 26),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ));
     });
 
-    return s;
+    return lst;
   }
 
   @override
@@ -59,15 +65,16 @@ class _MyListScreenState extends State<MyListScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("My List Screen"),
+          title: Text("My Stores"),
         ),
         body: ListView.builder(
           itemCount: stores.length,
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(stores[index].name),
-              subtitle: Text(stores[index].sales.toString()),
-              //: Text(stores[index].description),
+              subtitle: Row(
+                children: salesToWidgets(stores[index].sales),
+              ),
             );
           },
         ));

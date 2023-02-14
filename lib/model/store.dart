@@ -8,5 +8,7 @@ class Store {
 
   List<Sale> sales;
 
-  Store({this.name, this.location, this.sales});
+  String store_id;
+
+  Store({this.name, this.location, this.sales, this.store_id});
 }
