@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_complete_guide/provider/store_provider.dart';
+import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
 import 'package:flutter_complete_guide/screens/MyListScreen.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => Auth()),
-        ChangeNotifierProvider(create: (_) => StoreProvider())
       ],
       child: MaterialApp(
         title: 'Flutter Proximity Shopping',

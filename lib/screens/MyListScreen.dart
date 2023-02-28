@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../model/sale.dart';
-import '../model/store.dart';
-import '../provider/store_provider.dart';
+import '../model/dish.dart';
+import '../model/ingredient.dart';
+import '../provider/ingredient_provider.dart';
 // import 'package:flutter/src/widgets/container.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 
@@ -42,33 +42,33 @@ class _MyListScreenState extends State<MyListScreen> {
   //   ])
   // ];
 
-  List<Widget> salesToWidgets(List<Sale> sales) {
-    List<Widget> lst = [];
+//   List<Widget> salesToWidgets(List<Sale> sales) {
+//     List<Widget> lst = [];
 
-    sales.forEach((element) {
-      lst.add(ElevatedButton(
-        child: Expanded(
-          child: Text(
-            element.description +
-                '\n\n' +
-                element.expiry_date.toString().substring(0, 10),
-            style: TextStyle(fontSize: 13),
-            maxLines: 8,
-          ),
-        ),
-        onPressed: () {
-          // Show screen that fully presents offer and gives the ability to use.
-        },
-      ));
-    });
+//     sales.forEach((element) {
+//       lst.add(ElevatedButton(
+//         child: Expanded(
+//           child: Text(
+//             element.description +
+//                 '\n\n' +
+//                 element.expiry_date.toString().substring(0, 10),
+//             style: TextStyle(fontSize: 13),
+//             maxLines: 8,
+//           ),
+//         ),
+//         onPressed: () {
+//           // Show screen that fully presents offer and gives the ability to use.
+//         },
+//       ));
+//     });
 
-    return lst;
-  }
+//     return lst;
+//   }
 
   @override
   Widget build(BuildContext context) {
-    List<Store> stores =
-        Provider.of<StoreProvider>(context, listen: false).stores;
+    //List<Meals> stores =
+    //Provider.of<StoreProvider>(context, listen: false).stores;
 
     return Scaffold(
       appBar: AppBar(
@@ -77,12 +77,12 @@ class _MyListScreenState extends State<MyListScreen> {
       body: ListView.separated(
         separatorBuilder: ((context, index) => SizedBox(height: 3)),
         scrollDirection: Axis.vertical,
-        itemCount: stores.length,
+        //itemCount: stores.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(stores[index].name),
+            //title: Text(stores[index].name),
             subtitle: Row(
-              children: salesToWidgets(stores[index].sales),
+              //children: salesToWidgets(stores[index].sales),
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             ),
           );
