@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_complete_guide/provider/daily_plan_provider.dart';
+import 'package:flutter_complete_guide/provider/dish_provider.dart';
 import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
+import 'package:flutter_complete_guide/provider/user_provider.dart';
+import 'package:flutter_complete_guide/provider/weekly_plan_provider.dart';
 import 'package:flutter_complete_guide/screens/MyListScreen.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +23,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => Auth()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => WeeklyPlanProvider()),
+        ChangeNotifierProvider(create: (_) => DailyPlanProvider()),
+        ChangeNotifierProvider(create: (_) => DishProvider()),
+        ChangeNotifierProvider(create: (_) => IngredientProvider())
       ],
       child: MaterialApp(
         title: 'Flutter Proximity Shopping',

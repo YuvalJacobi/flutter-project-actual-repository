@@ -22,4 +22,20 @@ class WeeklyPlanProvider extends ChangeNotifier {
   }
 
   WeeklyPlanProvider();
+
+  Future<void> fetchData() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        _weekly_plans.add(WeeklyPlan({
+          doc['name'],
+          doc['author_id'],
+          doc['daily_plans'],
+          doc.id,
+        }));
+      });
+    });
+  }
 }

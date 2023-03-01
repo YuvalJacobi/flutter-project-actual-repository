@@ -23,4 +23,36 @@ class DailyPlanProvider extends ChangeNotifier {
   }
 
   DailyPlanProvider();
+
+  Future<void> fetchData() {
+    FirebaseFirestore.instance
+        .collection('daily_plans')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        _daily_plans.add(DailyPlan({
+          doc['name'],
+          doc['day'],
+          doc['author_id'],
+          doc['dishes'],
+          doc['daily_plan_id'],
+          doc.id,
+        }));
+      });
+    });
+  }
+
+  String stringify(DailyPlan dailyPlan) {
+    String t = '';
+
+    t += 'Name: ${dailyPlan.name}\n';
+
+    t += 'Name: ${dailyPlan.day}\n';
+
+    t += 'Name: ${dailyPlan.author_id}\n';
+
+    t += 'Name: ${dailyPlan.dishes}';
+
+    return t;
+  }
 }

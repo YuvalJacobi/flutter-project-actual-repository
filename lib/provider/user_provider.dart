@@ -16,4 +16,27 @@ class UserProvider extends ChangeNotifier {
   }
 
   UserProvider();
+
+  Future<void> fetchData() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        _users.add(User({
+          doc['first_name'],
+          doc['last_name'],
+          doc['email'],
+          doc['age'],
+          doc['height'],
+          doc['weight'],
+          doc['following'],
+          doc['followers'],
+          doc['weekly_plans'],
+          doc['daily_plans'],
+          doc.id
+        }));
+      });
+    });
+  }
 }

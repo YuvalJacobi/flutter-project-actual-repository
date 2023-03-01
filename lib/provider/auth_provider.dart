@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class Auth extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
+  String uid;
 
   void submitAuthForm(
     String email,
@@ -33,6 +34,7 @@ class Auth extends ChangeNotifier {
       });
     }
 
+    uid = authResult.user.uid;
     notifyListeners();
   }
 }
