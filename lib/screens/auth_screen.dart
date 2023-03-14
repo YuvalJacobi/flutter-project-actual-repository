@@ -1,7 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/model/ingredient.dart';
 import 'package:flutter_complete_guide/provider/auth_provider.dart';
+import 'package:flutter_complete_guide/provider/daily_plan_provider.dart';
+import 'package:flutter_complete_guide/provider/dish_provider.dart';
+import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
+import 'package:flutter_complete_guide/provider/weekly_plan_provider.dart';
 import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -17,6 +22,41 @@ class _AuthFormState extends State<AuthScreen> {
   var _userEmail = "";
   var _userName = "";
   var _userPassword = "";
+  var _isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        Provider.of<IngredientProvider>(context, listen: false)
+            .fetchData()
+            .then((_) {
+          Provider.of<DishProvider>(context, listen: false)
+              .fetchData()
+              .then((_) {
+            Provider.of<DailyPlanProvider>(context, listen: false)
+                .fetchData()
+                .then((_) {
+              Provider.of<WeeklyPlanProvider>(context, listen: false)
+                  .fetchData()
+                  .then((_) {
+                _isLoading = false;
+                setState(() {
+                  _isInit = false;
+                });
+              });
+            });
+          });
+        });
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
 
   void trySubmit() {
     final isValid = _formKey.currentState.validate();

@@ -23,9 +23,30 @@ class WeeklyPlanProvider extends ChangeNotifier {
 
   WeeklyPlanProvider();
 
+  Future<void> setData(WeeklyPlan weekly_plan) {
+    FirebaseFirestore.instance
+        .collection('weekly_plans')
+        .doc(weekly_plan.weekly_plan_id)
+        .set({
+      'name': weekly_plan.name,
+      'author_id': weekly_plan.author_id,
+      'daily_plans': weekly_plan.daily_plans,
+    });
+  }
+
+  Future<void> addData(WeeklyPlan weekly_plan) {
+    FirebaseFirestore.instance.collection('weekly_plans').add({
+      'name': weekly_plan.name,
+      'author_id': weekly_plan.author_id,
+      'daily_plans': weekly_plan.daily_plans,
+    }).then((DocumentReference docref) {
+      weekly_plan.weekly_plan_id = docref.id;
+    });
+  }
+
   Future<void> fetchData() {
     FirebaseFirestore.instance
-        .collection('users')
+        .collection('weekly_plans')
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {

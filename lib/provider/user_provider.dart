@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_complete_guide/model/dish.dart';
 
 import '../model/user.dart';
 
@@ -16,6 +15,18 @@ class UserProvider extends ChangeNotifier {
   }
 
   UserProvider();
+
+  Future<void> setData(WeeklyPlan weekly_plan) {
+    FirebaseFirestore.instance
+        .collection('weekly_plans')
+        .doc(weekly_plan.weekly_plan_id)
+        .set({
+      'name': weekly_plan.name,
+      'author_id': weekly_plan.author_id,
+      'daily_plans': weekly_plan.daily_plans,
+      'id': weekly_plan.weekly_plan_id,
+    });
+  }
 
   Future<void> fetchData() {
     FirebaseFirestore.instance
