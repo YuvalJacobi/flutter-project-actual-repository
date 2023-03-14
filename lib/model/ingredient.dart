@@ -22,7 +22,7 @@ class Ingredient {
 
   String ingredient_id;
 
-  Ingredient(
+  Ingredient(Set set,
       {this.name,
       this.price,
       this.base_serving,

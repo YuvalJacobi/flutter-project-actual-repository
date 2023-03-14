@@ -16,15 +16,35 @@ class UserProvider extends ChangeNotifier {
 
   UserProvider();
 
-  Future<void> setData(WeeklyPlan weekly_plan) {
-    FirebaseFirestore.instance
-        .collection('weekly_plans')
-        .doc(weekly_plan.weekly_plan_id)
-        .set({
-      'name': weekly_plan.name,
-      'author_id': weekly_plan.author_id,
-      'daily_plans': weekly_plan.daily_plans,
-      'id': weekly_plan.weekly_plan_id,
+  Future<void> setData(User user) {
+    FirebaseFirestore.instance.collection('users').doc(user.user_id).set({
+      'first_name': user.first_name,
+      'last_name': user.last_name,
+      'email': user.daily_plans,
+      'age': user.age,
+      'height': user.height,
+      'weight': user.weight,
+      'following': user.following,
+      'followers': user.followers,
+      'weekly_plans': user.weekly_plans,
+      'daily_plans': user.daily_plans
+    });
+  }
+
+  Future<void> addData(User user) {
+    FirebaseFirestore.instance.collection('users').add({
+      'first_name': user.first_name,
+      'last_name': user.last_name,
+      'email': user.daily_plans,
+      'age': user.age,
+      'height': user.height,
+      'weight': user.weight,
+      'following': user.following,
+      'followers': user.followers,
+      'weekly_plans': user.weekly_plans,
+      'daily_plans': user.daily_plans
+    }).then((DocumentReference docref) {
+      user.user_id = docref.id;
     });
   }
 
@@ -49,5 +69,49 @@ class UserProvider extends ChangeNotifier {
         }));
       });
     });
+  }
+
+  bool isValidEmail(String email_address) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email_address);
+  }
+
+  bool isValidUser(User user) {
+    if (user.first_name.isEmpty || user.first_name == '') return false;
+
+    if (user.last_name.isEmpty || user.last_name == '') return false;
+
+    if (user.age <= 0) return false;
+
+    if (user.height <= 0) return false;
+
+    if (user.weight <= 0) return false;
+
+    if (isValidEmail(user.email) == false) return false;
+
+    return true;
+  }
+
+  String stringify(User user) {
+    if (isValidUser(user) == false) return '';
+
+    String t = '';
+
+    t += 'First name: ${user.first_name}\n';
+
+    t += 'Last name: ${user.last_name}\n';
+
+    t += 'Age: ${user.age}\n';
+
+    t += 'Height: ${user.height}\n';
+
+    t += 'Weight: ${user.weight}\n';
+
+    t += 'Following count: ${user.following.length}\n';
+
+    t += 'Followers count: ${user.followers.length}\n';
+
+    return t;
   }
 }

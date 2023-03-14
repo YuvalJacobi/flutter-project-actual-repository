@@ -4,11 +4,12 @@ import 'package:flutter_complete_guide/model/daily_plan.dart';
 class WeeklyPlan {
   String name;
 
-  User author;
+  String author_id;
 
-  List<DailyPlan> daily_plans;
+  Map<String, DailyPlan> daily_plans;
 
   String weekly_plan_id;
 
-  WeeklyPlan({this.name, this.author, this.daily_plans, this.weekly_plan_id});
+  WeeklyPlan(Set set,
+      {this.name, this.author_id, this.daily_plans, this.weekly_plan_id});
 }

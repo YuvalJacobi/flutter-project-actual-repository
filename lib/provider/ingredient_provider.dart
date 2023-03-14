@@ -17,6 +17,39 @@ class IngredientProvider extends ChangeNotifier {
 
   IngredientProvider();
 
+  Future<void> setData(Ingredient ingredient) {
+    FirebaseFirestore.instance
+        .collection('ingredients')
+        .doc(ingredient.ingredient_id)
+        .set({
+      'name': ingredient.name,
+      'price': ingredient.price,
+      'base_serving': ingredient.base_serving,
+      'calories': ingredient.calories,
+      'carbohydrates': ingredient.carbohydrates,
+      'sugar': ingredient.sugar,
+      'protein': ingredient.protein,
+      'sodium': ingredient.sodium,
+      'fat': ingredient.fat,
+    });
+  }
+
+  Future<void> addData(Ingredient ingredient) {
+    FirebaseFirestore.instance.collection('ingredients').add({
+      'name': ingredient.name,
+      'price': ingredient.price,
+      'base_serving': ingredient.base_serving,
+      'calories': ingredient.calories,
+      'carbohydrates': ingredient.carbohydrates,
+      'sugar': ingredient.sugar,
+      'protein': ingredient.protein,
+      'sodium': ingredient.sodium,
+      'fat': ingredient.fat,
+    }).then((DocumentReference docref) {
+      ingredient.ingredient_id = docref.id;
+    });
+  }
+
   Future<void> fetchData() {
     FirebaseFirestore.instance
         .collection('ingredients')
@@ -61,7 +94,32 @@ class IngredientProvider extends ChangeNotifier {
     });
   }
 
+  bool isValidIngredient(Ingredient ingredient) {
+    if (ingredient.name.isEmpty || ingredient.name == '') return false;
+
+    if (ingredient.price <= 0) return false;
+
+    if (ingredient.base_serving <= 0) return false;
+
+    if (ingredient.carbohydrates < 0) return false;
+
+    if (ingredient.sugar < 0) return false;
+
+    if (ingredient.protein < 0) return false;
+
+    if (ingredient.sodium < 0) return false;
+
+    if (ingredient.fat < 0) return false;
+
+    if (ingredient.ingredient_id.isEmpty || ingredient.ingredient_id == '')
+      return false;
+
+    return true;
+  }
+
   String stringify(Ingredient ingredient) {
+    if (isValidIngredient(ingredient) == false) return '';
+
     String t = '';
 
     t += 'Name: ${ingredient.name}\n';
@@ -79,8 +137,6 @@ class IngredientProvider extends ChangeNotifier {
     t += 'Fat: ${ingredient.fat}\n';
 
     t += 'Sodium: ${ingredient.sodium}\n';
-
-    t += 'Base serving: ${ingredient.base_serving}\n';
 
     return t;
   }

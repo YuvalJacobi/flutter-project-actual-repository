@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_complete_guide/model/daily_plan.dart';
-import 'package:flutter_complete_guide/model/dish.dart';
-
-import '../model/user.dart';
-import '../model/weekly_plan.dart';
 
 class DailyPlanProvider extends ChangeNotifier {
   List<DailyPlan> _daily_plans;
@@ -24,6 +20,29 @@ class DailyPlanProvider extends ChangeNotifier {
 
   DailyPlanProvider();
 
+  Future<void> setData(DailyPlan daily_plan) {
+    FirebaseFirestore.instance
+        .collection('daily_plans')
+        .doc(daily_plan.daily_plan_id)
+        .set({
+      'author_id': daily_plan.author_id,
+      'day': daily_plan.day,
+      'dishes': daily_plan.dishes,
+      'name': daily_plan.name,
+    });
+  }
+
+  Future<void> addData(DailyPlan daily_plan) {
+    FirebaseFirestore.instance.collection('daily_plans').add({
+      'author_id': daily_plan.author_id,
+      'day': daily_plan.day,
+      'dishes': daily_plan.dishes,
+      'name': daily_plan.name,
+    }).then((DocumentReference docref) {
+      daily_plan.daily_plan_id = docref.id;
+    });
+  }
+
   Future<void> fetchData() {
     FirebaseFirestore.instance
         .collection('daily_plans')
@@ -35,7 +54,6 @@ class DailyPlanProvider extends ChangeNotifier {
           doc['day'],
           doc['author_id'],
           doc['dishes'],
-          doc['daily_plan_id'],
           doc.id,
         }));
       });

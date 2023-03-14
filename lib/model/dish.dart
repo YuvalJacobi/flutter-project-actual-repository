@@ -3,7 +3,7 @@ import 'package:flutter_complete_guide/model/ingredient.dart';
 class Dish {
   String name;
 
-  List<Ingredient> ingredients;
+  Map<String, Ingredient> ingredients;
 
   List<String> instructions;
 
@@ -13,7 +13,7 @@ class Dish {
 
   String dish_id;
 
-  Dish(
+  Dish(Set set,
       {this.name,
       this.ingredients,
       this.cooking_time_in_minutes,

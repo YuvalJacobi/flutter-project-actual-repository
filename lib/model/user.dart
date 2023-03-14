@@ -18,13 +18,13 @@ class User {
 
   List<User> followers;
 
-  List<WeeklyPlan> weekly_plans;
+  Map<String, WeeklyPlan> weekly_plans;
 
-  List<DailyPlan> daily_plans;
+  Map<String, DailyPlan> daily_plans;
 
   String user_id;
 
-  User(
+  User(Set set,
       {this.first_name,
       this.last_name,
       this.email,

@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_complete_guide/model/dish.dart';
 
-import '../model/user.dart';
 import '../model/weekly_plan.dart';
 
 class WeeklyPlanProvider extends ChangeNotifier {
