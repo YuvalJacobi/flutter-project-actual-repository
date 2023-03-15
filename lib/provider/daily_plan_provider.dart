@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_complete_guide/model/daily_plan.dart';
 
+import '../model/dish.dart';
+
 class DailyPlanProvider extends ChangeNotifier {
   List<DailyPlan> _daily_plans;
 
@@ -58,6 +60,37 @@ class DailyPlanProvider extends ChangeNotifier {
         }));
       });
     });
+  }
+
+  bool isValidDailyPlan(DailyPlan dailyPlan) {
+    if (dailyPlan.name == null || dailyPlan.name.isEmpty) return false;
+
+    if (dailyPlan.day == null || dailyPlan.day.isEmpty) return false;
+
+    if (dailyPlan.author_id == null || dailyPlan.author_id.isEmpty)
+      return false;
+
+    if (dailyPlan.dishes == null ||
+        dailyPlan.dishes.values.any((element) => isValidDish(element) == false))
+      return false;
+
+    return true;
+  }
+
+  bool isValidDish(Dish dish) {
+    if (dish.cooking_time_in_minutes <= 0) return false;
+
+    if (dish.daily_plan_id.isEmpty || dish.daily_plan_id == '') return false;
+
+    if (dish.dish_id == 0) return false;
+
+    if (dish.ingredients.isEmpty || dish.ingredients == null) return false;
+
+    if (dish.instructions.isEmpty || dish.instructions == null) return false;
+
+    if (dish.name.isEmpty || dish.name == '') return false;
+
+    return true;
   }
 
   String stringify(DailyPlan dailyPlan) {

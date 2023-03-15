@@ -27,7 +27,8 @@ class UserProvider extends ChangeNotifier {
       'following': user.following,
       'followers': user.followers,
       'weekly_plans': user.weekly_plans,
-      'daily_plans': user.daily_plans
+      'daily_plans': user.daily_plans,
+      'username': user.username,
     });
   }
 
@@ -42,7 +43,8 @@ class UserProvider extends ChangeNotifier {
       'following': user.following,
       'followers': user.followers,
       'weekly_plans': user.weekly_plans,
-      'daily_plans': user.daily_plans
+      'daily_plans': user.daily_plans,
+      'username': user.username,
     }).then((DocumentReference docref) {
       user.user_id = docref.id;
     });
@@ -65,6 +67,7 @@ class UserProvider extends ChangeNotifier {
           doc['followers'],
           doc['weekly_plans'],
           doc['daily_plans'],
+          doc['username'],
           doc.id
         }));
       });
@@ -78,9 +81,11 @@ class UserProvider extends ChangeNotifier {
   }
 
   bool isValidUser(User user) {
-    if (user.first_name.isEmpty || user.first_name == '') return false;
+    if (user.first_name.isEmpty || user.first_name == null) return false;
 
-    if (user.last_name.isEmpty || user.last_name == '') return false;
+    if (user.last_name.isEmpty || user.last_name == null) return false;
+
+    if (user.username.isEmpty || user.username == null) return false;
 
     if (user.age <= 0) return false;
 
@@ -101,6 +106,8 @@ class UserProvider extends ChangeNotifier {
     t += 'First name: ${user.first_name}\n';
 
     t += 'Last name: ${user.last_name}\n';
+
+    t += 'Username: ${user.username}';
 
     t += 'Age: ${user.age}\n';
 

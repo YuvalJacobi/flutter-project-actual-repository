@@ -1,8 +1,13 @@
 import 'dart:ffi';
+import 'dart:js';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_complete_guide/model/dish.dart';
+import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../model/ingredient.dart';
 
 class DishProvider extends ChangeNotifier {
   List<Dish> _dishes;
@@ -97,11 +102,37 @@ class DishProvider extends ChangeNotifier {
 
     t += 'Cooking time in minutes: ${dish.cooking_time_in_minutes}\n';
 
+    if (dish.ingredients.values
+        .any((element) => isValidIngredient(element) == false)) return t;
+
     dish.ingredients.forEach((key, value) {
       t += '${adjustStringRepresentation(key)}: ${value}\n';
     });
 
     return t;
+  }
+
+  bool isValidIngredient(Ingredient ingredient) {
+    if (ingredient.name.isEmpty || ingredient.name == '') return false;
+
+    if (ingredient.price <= 0) return false;
+
+    if (ingredient.base_serving <= 0) return false;
+
+    if (ingredient.carbohydrates < 0) return false;
+
+    if (ingredient.sugar < 0) return false;
+
+    if (ingredient.protein < 0) return false;
+
+    if (ingredient.sodium < 0) return false;
+
+    if (ingredient.fat < 0) return false;
+
+    if (ingredient.ingredient_id.isEmpty || ingredient.ingredient_id == '')
+      return false;
+
+    return true;
   }
 
   String adjustStringRepresentation(String string) {
