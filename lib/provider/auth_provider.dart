@@ -4,9 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter_complete_guide/model/user.dart' as UserModel;
 
+import '../model/dish.dart';
+
 class Auth extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   String uid;
+
+  UserModel.User user;
 
   void submitAuthForm(
     String email,
@@ -61,5 +65,12 @@ class Auth extends ChangeNotifier {
       'daily_plans': user.daily_plans,
       'username': user.username,
     });
+  }
+
+  Future<void> fetchData(UserModel.User user) {
+    FirebaseFirestore.instance.collection('users').doc(user.user_id).get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        user = UserModel.User(first_name: doc['first_name'], last_name: doc['last_name'], username: doc['username']);
+      });
   }
 }
