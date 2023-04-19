@@ -1,5 +1,3 @@
-import 'package:flutter_complete_guide/model/ingredient.dart';
-
 import 'dish.dart';
 
 class DailyPlan {

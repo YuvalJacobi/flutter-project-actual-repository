@@ -56,20 +56,19 @@ class UserProvider extends ChangeNotifier {
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        _users.add(User({
-          doc['first_name'],
-          doc['last_name'],
-          doc['email'],
-          doc['age'],
-          doc['height'],
-          doc['weight'],
-          doc['following'],
-          doc['followers'],
-          doc['weekly_plans'],
-          doc['daily_plans'],
-          doc['username'],
-          doc.id
-        }));
+        _users.add(User(
+            doc['first_name'],
+            doc['last_name'],
+            doc['email'],
+            doc['age'],
+            doc['height'],
+            doc['weight'],
+            doc['following'],
+            doc['followers'],
+            doc['weekly_plans'],
+            doc['daily_plans'],
+            doc['username'],
+            doc.id));
       });
     });
   }

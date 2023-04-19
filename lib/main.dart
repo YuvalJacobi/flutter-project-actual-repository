@@ -6,7 +6,7 @@ import 'package:flutter_complete_guide/provider/dish_provider.dart';
 import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/provider/weekly_plan_provider.dart';
-import 'package:flutter_complete_guide/screens/MyListScreen.dart';
+import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
 import 'provider/auth_provider.dart';
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => IngredientProvider())
       ],
       child: MaterialApp(
-        title: 'Flutter Proximity Shopping',
+        title: 'Our Fitness',
         theme: ThemeData(
           primarySwatch: Colors.indigo,
           backgroundColor: Colors.blueGrey,
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, usersnapshot) {
         if (usersnapshot.hasData) {
-          return MyListScreen();
+          return HomeScreen();
         } else {
           return AuthScreen();
         }

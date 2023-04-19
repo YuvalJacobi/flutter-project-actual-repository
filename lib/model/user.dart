@@ -6,6 +6,8 @@ class User {
 
   String last_name;
 
+  String username;
+
   String email;
 
   int age;
@@ -14,9 +16,9 @@ class User {
 
   double weight;
 
-  List<User> following;
+  List<String> following;
 
-  List<User> followers;
+  List<String> followers;
 
   Map<String, WeeklyPlan> weekly_plans;
 
@@ -24,9 +26,10 @@ class User {
 
   String user_id;
 
-  User(Set set,
-      {this.first_name,
+  User(
+      this.first_name,
       this.last_name,
+      this.username,
       this.email,
       this.age,
       this.height,
@@ -35,5 +38,5 @@ class User {
       this.followers,
       this.weekly_plans,
       this.daily_plans,
-      this.user_id});
+      this.user_id);
 }

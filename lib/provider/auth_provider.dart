@@ -4,8 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter_complete_guide/model/user.dart' as UserModel;
 
-import '../model/dish.dart';
-
 class Auth extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   String uid;
@@ -48,6 +46,7 @@ class Auth extends ChangeNotifier {
     }
 
     uid = authResult.user.uid;
+    user.user_id = uid;
     notifyListeners();
   }
 
@@ -68,9 +67,25 @@ class Auth extends ChangeNotifier {
   }
 
   Future<void> fetchData(UserModel.User user) {
-    FirebaseFirestore.instance.collection('users').doc(user.user_id).get().then((QuerySnapshot querySnapshot) {
+    FirebaseFirestore.instance
+        .collection('users/${user.user_id}')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        user = UserModel.User(first_name: doc['first_name'], last_name: doc['last_name'], username: doc['username']);
+        user = UserModel.User(
+            doc['first_name'],
+            doc['last_name'],
+            doc['username'],
+            doc['email'],
+            doc['age'],
+            doc['height'],
+            doc['weight'],
+            doc['following'],
+            doc['followers'],
+            doc['weekly_plans'],
+            doc['daily_plan'],
+            user.user_id);
       });
+    });
   }
 }

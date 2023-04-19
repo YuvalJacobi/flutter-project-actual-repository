@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_complete_guide/model/daily_plan.dart';
 
 class WeeklyPlan {

@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_complete_guide/model/dish.dart';
-
 class Ingredient {
   String name;
 

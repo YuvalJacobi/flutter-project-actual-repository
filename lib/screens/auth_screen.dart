@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/model/ingredient.dart';
 import 'package:flutter_complete_guide/provider/auth_provider.dart';
 import 'package:flutter_complete_guide/provider/daily_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/dish_provider.dart';

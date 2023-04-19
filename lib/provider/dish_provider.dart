@@ -1,11 +1,6 @@
-import 'dart:ffi';
-import 'dart:js';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_complete_guide/model/dish.dart';
-import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
-import 'package:provider/provider.dart';
 
 import '../model/ingredient.dart';
 
