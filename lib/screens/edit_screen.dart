@@ -44,10 +44,8 @@ class ExercisePlanItem extends StatelessWidget {
             Text('Sets: ${exercise.sets}'),
             Text('Reps: ${exercise.reps}'),
             Text('Weight: ${exercise.weight} kg'),
-            if (exercise.isAction)
-              Text('Rest: ${exercise.rest} seconds'),
-            if (!exercise.isAction)
-              Text('Rest Block'),
+            if (exercise.isAction) Text('Rest: ${exercise.rest} seconds'),
+            if (!exercise.isAction) Text('Rest Block'),
           ],
         ),
       ),
