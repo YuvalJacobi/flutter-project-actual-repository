@@ -1,11 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_complete_guide/provider/daily_plan_provider.dart';
-import 'package:flutter_complete_guide/provider/dish_provider.dart';
-import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
-import 'package:flutter_complete_guide/provider/weekly_plan_provider.dart';
 import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
@@ -24,18 +20,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => WeeklyPlanProvider()),
-        ChangeNotifierProvider(create: (_) => DailyPlanProvider()),
-        ChangeNotifierProvider(create: (_) => DishProvider()),
-        ChangeNotifierProvider(create: (_) => IngredientProvider())
       ],
       child: MaterialApp(
         title: 'Our Fitness',
         theme: ThemeData(
-          primarySwatch: Colors.indigo,
-          backgroundColor: Colors.blueGrey,
-          accentColor: Colors.deepPurple,
-          accentColorBrightness: Brightness.dark,
           buttonTheme: ButtonTheme.of(context).copyWith(
             buttonColor: Colors.pink,
             textTheme: ButtonTextTheme.primary,
@@ -43,6 +31,10 @@ class MyApp extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
           ),
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.indigo)
+              .copyWith(background: Colors.blueGrey)
+              .copyWith(secondary: Colors.deepPurple)
+              .copyWith(brightness: Brightness.dark),
         ),
         home: formToOpen(),
       ),

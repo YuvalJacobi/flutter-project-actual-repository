@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../model/exercise.dart';
+
 class ExercisePlanItem extends StatelessWidget {
   final Exercise exercise;
   final VoidCallback onEditPressed;

@@ -1,10 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/auth_provider.dart';
-import 'package:flutter_complete_guide/provider/daily_plan_provider.dart';
-import 'package:flutter_complete_guide/provider/dish_provider.dart';
-import 'package:flutter_complete_guide/provider/ingredient_provider.dart';
-import 'package:flutter_complete_guide/provider/weekly_plan_provider.dart';
+import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -30,24 +27,10 @@ class _AuthFormState extends State<AuthScreen> {
       });
 
       try {
-        Provider.of<IngredientProvider>(context, listen: false)
-            .fetchData()
-            .then((_) {
-          Provider.of<DishProvider>(context, listen: false)
-              .fetchData()
-              .then((_) {
-            Provider.of<DailyPlanProvider>(context, listen: false)
-                .fetchData()
-                .then((_) {
-              Provider.of<WeeklyPlanProvider>(context, listen: false)
-                  .fetchData()
-                  .then((_) {
-                _isLoading = false;
-                setState(() {
-                  _isInit = false;
-                });
-              });
-            });
+        Provider.of<UserProvider>(context, listen: false).fetchData().then((_) {
+          _isLoading = false;
+          setState(() {
+            _isInit = false;
           });
         });
       } catch (e) {
@@ -57,11 +40,11 @@ class _AuthFormState extends State<AuthScreen> {
   }
 
   void trySubmit() {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
-      _formKey.currentState.save();
+      _formKey.currentState!.save();
       Provider.of<Auth>(context, listen: false).submitAuthForm(
           _userEmail.trim(),
           _userPassword.trim(),
@@ -100,7 +83,7 @@ class _AuthFormState extends State<AuthScreen> {
                     TextFormField(
                       key: ValueKey('email'),
                       validator: (value) {
-                        if (value.isEmpty || !value.contains('@')) {
+                        if (value!.isEmpty || !value.contains('@')) {
                           return 'Please enter a valid email address.';
                         }
                         return null;
@@ -110,27 +93,27 @@ class _AuthFormState extends State<AuthScreen> {
                         labelText: 'Email address',
                       ),
                       onSaved: (value) {
-                        _userEmail = value;
+                        _userEmail = value!;
                       },
                     ),
                     if (!_isLogin)
                       TextFormField(
                         key: ValueKey('username'),
                         validator: (value) {
-                          if (value.isEmpty || value.length < 4) {
+                          if (value!.isEmpty || value.length < 4) {
                             return 'Please enter at least 4 characters';
                           }
                           return null;
                         },
                         decoration: InputDecoration(labelText: 'Username'),
                         onSaved: (value) {
-                          _userName = value;
+                          _userName = value!;
                         },
                       ),
                     TextFormField(
                       key: ValueKey('password'),
                       validator: (value) {
-                        if (value.isEmpty || value.length < 7) {
+                        if (value!.isEmpty || value.length < 7) {
                           return 'Password must be at least 7 characters long.';
                         }
                         return null;
@@ -138,7 +121,7 @@ class _AuthFormState extends State<AuthScreen> {
                       decoration: InputDecoration(labelText: 'Password'),
                       obscureText: true,
                       onSaved: (value) {
-                        _userPassword = value;
+                        _userPassword = value!;
                       },
                     ),
                     SizedBox(height: 12),

@@ -6,9 +6,9 @@ import 'package:flutter_complete_guide/model/user.dart' as UserModel;
 
 class Auth extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
-  String uid;
+  late String uid;
 
-  UserModel.User user;
+  late UserModel.User user;
 
   void submitAuthForm(
     String email,
@@ -31,7 +31,7 @@ class Auth extends ChangeNotifier {
       );
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(authResult.user.uid)
+          .doc(authResult.user!.uid)
           .set({
         'username': username,
         'email': email,
@@ -45,28 +45,24 @@ class Auth extends ChangeNotifier {
       });
     }
 
-    uid = authResult.user.uid;
+    uid = authResult.user!.uid;
     user.user_id = uid;
     notifyListeners();
   }
 
-  Future<void> setData(UserModel.User user) {
+  Future<void> setData(UserModel.User user) async {
     FirebaseFirestore.instance.collection('users').doc(user.user_id).set({
       'first_name': user.first_name,
       'last_name': user.last_name,
-      'email': user.daily_plans,
+      'email': user.email,
       'age': user.age,
       'height': user.height,
       'weight': user.weight,
-      'following': user.following,
-      'followers': user.followers,
-      'weekly_plans': user.weekly_plans,
-      'daily_plans': user.daily_plans,
       'username': user.username,
     });
   }
 
-  Future<void> fetchData(UserModel.User user) {
+  Future<void> fetchData(UserModel.User user) async {
     FirebaseFirestore.instance
         .collection('users/${user.user_id}')
         .get()
@@ -80,10 +76,6 @@ class Auth extends ChangeNotifier {
             doc['age'],
             doc['height'],
             doc['weight'],
-            doc['following'],
-            doc['followers'],
-            doc['weekly_plans'],
-            doc['daily_plan'],
             user.user_id);
       });
     });

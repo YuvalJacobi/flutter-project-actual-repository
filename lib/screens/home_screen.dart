@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
+import 'package:flutter_complete_guide/screens/profile_screen.dart';
 import 'package:flutter_complete_guide/screens/profile_screen_2.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
               new UserAccountsDrawerHeader(
                 accountName: new Text(
                     Provider.of<Auth>(context, listen: false).user.username),
+                accountEmail: new Text(
+                    Provider.of<Auth>(context, listen: false).user.email),
                 currentAccountPicture: new GestureDetector(
                   child: new CircleAvatar(
                     backgroundImage: new NetworkImage(currentProfilePic),

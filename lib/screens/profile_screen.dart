@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/auth_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -9,26 +11,15 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String firstName = Provider.of<Auth>(context, listen:false).firstName;
-  String lastName = '';
-  int age = 0;
-  int height = 0;
-  int weight = 0;
-  File? imageFile;
-
-  final picker = ImagePicker();
-
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        imageFile = File(pickedFile.path);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    String firstName =
+        Provider.of<Auth>(context, listen: false).user.first_name;
+    String lastName = Provider.of<Auth>(context, listen: false).user.last_name;
+    int age = Provider.of<Auth>(context, listen: false).user.age;
+    double height = Provider.of<Auth>(context, listen: false).user.height;
+    double weight = Provider.of<Auth>(context, listen: false).user.weight;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
@@ -39,19 +30,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             GestureDetector(
-              onTap: () => _pickImage(ImageSource.gallery),
+              onTap: () => null,
               child: Container(
                 width: 200.0,
                 height: 200.0,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey,
-                  image: imageFile != null
-                      ? DecorationImage(
-                          image: FileImage(imageFile!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
+                  image: null,
                 ),
                 child: Icon(Icons.camera_alt, size: 64.0),
               ),
@@ -83,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 16.0),
             TextField(
-              onChanged: (value) => height = int.tryParse(value) ?? 0,
+              onChanged: (value) => height = double.tryParse(value) ?? 0,
               decoration: InputDecoration(
                 labelText: 'Height (cm)',
                 border: OutlineInputBorder(),
@@ -92,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 16.0),
             TextField(
-              onChanged: (value) => weight = int.tryParse(value) ?? 0,
+              onChanged: (value) => weight = double.tryParse(value) ?? 0,
               decoration: InputDecoration(
                 labelText: 'Weight (kg)',
                 border: OutlineInputBorder(),
