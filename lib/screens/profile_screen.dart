@@ -1,59 +1,107 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/model/user.dart' as UserModel;
+import 'dart:io';
 
-import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
-  _ProfileFormState createState() => _ProfileFormState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileFormState extends State<ProfileScreen> {
-  final _formKey = GlobalKey<FormState>();
+class _ProfileScreenState extends State<ProfileScreen> {
+  String firstName = Provider.of<Auth>(context, listen:false).firstName;
+  String lastName = '';
+  int age = 0;
+  int height = 0;
+  int weight = 0;
+  File? imageFile;
 
-  final myController = TextEditingController();
+  final picker = ImagePicker();
 
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    myController.dispose();
-    super.dispose();
-  }
-
-  Widget profileForm() {
-    UserModel.User user = Provider.of<UserModel.User>(context, listen: true);
-
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Profile Screen'),
-        ),
-        body: Form(
-          key: _formKey,
-          child: Column(children: <Widget>[
-            Directionality(
-              textDirection: TextDirection.ltr,
-              child: Text('Username'),
-            ),
-            Directionality(
-              textDirection: TextDirection.ltr,
-              child: TextFormField(
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value == null || value.isEmpty || value.length > 12) {
-                    return 'Invalid username';
-                  }
-                  return null;
-                },
-                initialValue: user.username,
-              ),
-            )
-          ]),
-        ));
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return profileForm();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            GestureDetector(
+              onTap: () => _pickImage(ImageSource.gallery),
+              child: Container(
+                width: 200.0,
+                height: 200.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey,
+                  image: imageFile != null
+                      ? DecorationImage(
+                          image: FileImage(imageFile!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: Icon(Icons.camera_alt, size: 64.0),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              onChanged: (value) => firstName = value,
+              decoration: InputDecoration(
+                labelText: 'First Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              onChanged: (value) => lastName = value,
+              decoration: InputDecoration(
+                labelText: 'Last Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              onChanged: (value) => age = int.tryParse(value) ?? 0,
+              decoration: InputDecoration(
+                labelText: 'Age',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              onChanged: (value) => height = int.tryParse(value) ?? 0,
+              decoration: InputDecoration(
+                labelText: 'Height (cm)',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              onChanged: (value) => weight = int.tryParse(value) ?? 0,
+              decoration: InputDecoration(
+                labelText: 'Weight (kg)',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

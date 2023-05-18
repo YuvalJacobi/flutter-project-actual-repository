@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.of(context).pop();
                     Navigator.of(context).push(new MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            new Profile1Widget()));
+                            new ProfileScreen()));
                   }),
               new ListTile(
                   title: new Text("My Calendar"),
