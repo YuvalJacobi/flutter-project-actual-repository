@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/provider/auth_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -17,27 +16,6 @@ class _AuthFormState extends State<AuthScreen> {
   var _userEmail = "";
   var _userName = "";
   var _userPassword = "";
-  var _isInit = true;
-
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      try {
-        Provider.of<UserProvider>(context, listen: false).fetchData().then((_) {
-          _isLoading = false;
-          setState(() {
-            _isInit = false;
-          });
-        });
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
 
   void trySubmit() {
     final isValid = _formKey.currentState!.validate();
@@ -45,29 +23,24 @@ class _AuthFormState extends State<AuthScreen> {
 
     if (isValid) {
       _formKey.currentState!.save();
-      Provider.of<Auth>(context, listen: false).submitAuthForm(
+      Provider.of<UserProvider>(context, listen: false).submitAuthForm(
           _userEmail.trim(),
           _userPassword.trim(),
           _userName.trim(),
-          _isLoading,
+          _isLogin,
           context);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return authForm();
   }
 
   Widget authForm() {
     return Scaffold(
       appBar: AppBar(
         title: Text('Authentication screen'),
-        actions: <Widget>[
-          ElevatedButton(
-              onPressed: () => {
-                    if (_isLogin)
-                      {
-                        FirebaseAuth.instance.signOut(),
-                      },
-                  },
-              child: Text('Sign out'))
-        ],
       ),
       body: Center(
         child: Card(
@@ -151,10 +124,5 @@ class _AuthFormState extends State<AuthScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return authForm();
   }
 }

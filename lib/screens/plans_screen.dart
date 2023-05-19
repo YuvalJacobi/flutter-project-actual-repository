@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/model/user_profile.dart';
+import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../model/exercise.dart';
+import '../model/plan.dart';
+import '../provider/user_provider.dart';
 
 void main() {
   runApp(ExercisePlanApp());
@@ -23,31 +28,11 @@ class ExercisePlanScreen extends StatefulWidget {
 }
 
 class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
-  List<Exercise> exercisePlans = [
-    Exercise(
-        name: "Bench", sets: 3, reps: 8, weight: 80, rest: 0, isAction: true),
-    Exercise(name: "", sets: 0, reps: 0, weight: 0, rest: 90, isAction: false),
-    Exercise(
-        name: "Lateral Raise",
-        sets: 3,
-        reps: 10,
-        weight: 10,
-        rest: 0,
-        isAction: true),
-  ];
-
-  void addExercisePlan() {
-    setState(() {
-      exercisePlans.add(
-        Exercise(
-            name: "", sets: 0, reps: 0, weight: 0, rest: 0, isAction: false),
-      );
-    });
-  }
+  List<Plan> plans = [];
 
   void startExercisePlan(int index) {
     // Logic to start the exercise plan
-    print('Starting plan: ${exercisePlans[index].name}');
+    print('Starting plan: ${plans[index].name}');
   }
 
   void editExercisePlan(int index) {
@@ -62,14 +47,24 @@ class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
     print("Should navigate to edit screen");
   }
 
-  void deleteExercisePlan(int index) {
+  void addPlan() {}
+
+  void startPlan() {}
+
+  void deletePlan(int index) {
     setState(() {
-      exercisePlans.removeAt(index);
+      plans.removeAt(index);
     });
+  }
+
+  void editPlan(int index) {
+    // Open edit screen with plan.
   }
 
   @override
   Widget build(BuildContext context) {
+    plans = Provider.of<UserProfile>(context, listen: true).plans;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Exercise Plans'),
@@ -79,7 +74,7 @@ class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
           Padding(
             padding: EdgeInsets.all(10),
             child: ElevatedButton(
-              onPressed: addExercisePlan,
+              onPressed: addPlan,
               child: Text('Add Plan'),
             ),
           ),
@@ -90,15 +85,14 @@ class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: exercisePlans.length,
+              itemCount: plans.length,
               itemBuilder: (context, index) {
-                final exercise = exercisePlans[index];
-                return ExercisePlanItem(
-                  exercise: exercise,
-                  onEditPressed: () => editExercisePlan(index),
-                  onDeletePressed: () => deleteExercisePlan(index),
-                  name: '',
-                  onStartPressed: () {},
+                final _plan = plans[index];
+                return PlanItem(
+                  onEditPressed: () => editPlan(index),
+                  onDeletePressed: () => deletePlan(index),
+                  name: _plan.name,
+                  onStartPressed: () => startPlan(),
                 );
               },
             ),
@@ -109,17 +103,16 @@ class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
   }
 }
 
-class ExercisePlanItem extends StatelessWidget {
+class PlanItem extends StatelessWidget {
   final String name;
   final VoidCallback onStartPressed;
   final VoidCallback onEditPressed;
 
-  const ExercisePlanItem({
+  const PlanItem({
     required this.name,
     required this.onStartPressed,
     required this.onEditPressed,
     required void Function() onDeletePressed,
-    required Exercise exercise,
   });
 
   @override

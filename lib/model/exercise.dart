@@ -1,17 +1,21 @@
 class Exercise {
   String name;
-  int sets;
-  int reps;
-  double weight;
-  int rest;
-  bool isAction;
 
-  Exercise({
-    required this.name,
-    required this.sets,
-    required this.reps,
-    required this.weight,
-    required this.rest,
-    required this.isAction,
-  });
+  String category;
+
+  List<String> active_muscles;
+
+  String level;
+
+  String image_url;
+
+  String id;
+
+  Exercise(
+      {required this.name,
+      required this.category,
+      required this.active_muscles,
+      required this.level,
+      required this.image_url,
+      required this.id});
 }
