@@ -8,48 +8,38 @@ import '../model/plan.dart';
 import '../provider/user_provider.dart';
 
 void main() {
-  runApp(ExercisePlanApp());
+  runApp(PlanApp());
 }
 
-class ExercisePlanApp extends StatelessWidget {
+class PlanApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Exercise Plans',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: ExercisePlanScreen(),
+      home: PlanScreen(),
     );
   }
 }
 
-class ExercisePlanScreen extends StatefulWidget {
+class PlanScreen extends StatefulWidget {
   @override
-  _ExercisePlanScreenState createState() => _ExercisePlanScreenState();
+  _PlanScreenState createState() => _PlanScreenState();
 }
 
-class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
+class _PlanScreenState extends State<PlanScreen> {
   List<Plan> plans = [];
 
-  void startExercisePlan(int index) {
+  void startPlan(int index) {
     // Logic to start the exercise plan
-    print('Starting plan: ${plans[index].name}');
+    debugPrint('Starting plan: ${plans[index].name}');
   }
 
-  void editExercisePlan(int index) {
-    // Redirect to EditScreen with the corresponding Exercise
-    //Navigator.push(
-    //context,
-    //MaterialPageRoute(
-    //builder: (context) => EditScreen(exercise: exercisePlans[index]),
-    //),
-    //);
-
-    print("Should navigate to edit screen");
+  void editPlan(int index) {
+    debugPrint("Should navigate to edit screen");
   }
 
   void addPlan() {}
-
-  void startPlan() {}
 
   void deletePlan(int index) {
     setState(() {
@@ -57,17 +47,13 @@ class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
     });
   }
 
-  void editPlan(int index) {
-    // Open edit screen with plan.
-  }
-
   @override
   Widget build(BuildContext context) {
-    plans = Provider.of<UserProfile>(context, listen: true).plans;
+    plans = Provider.of<UserProvider>(context, listen: true).myUser.plans;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Exercise Plans'),
+        title: Text('Plans'),
       ),
       body: Column(
         children: [
@@ -78,21 +64,16 @@ class _ExercisePlanScreenState extends State<ExercisePlanScreen> {
               child: Text('Add Plan'),
             ),
           ),
-          ElevatedButton(
-            onPressed: () =>
-                startExercisePlan(0), // Placeholder for play button
-            child: Text('Play'),
-          ),
           Expanded(
             child: ListView.builder(
               itemCount: plans.length,
               itemBuilder: (context, index) {
                 final _plan = plans[index];
                 return PlanItem(
+                  name: _plan.name,
                   onEditPressed: () => editPlan(index),
                   onDeletePressed: () => deletePlan(index),
-                  name: _plan.name,
-                  onStartPressed: () => startPlan(),
+                  onStartPressed: () => startPlan(index),
                 );
               },
             ),

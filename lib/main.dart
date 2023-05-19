@@ -2,12 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
+import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
-
-import 'model/user_profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +22,7 @@ class MyApp extends StatelessWidget {
         // ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ExerciseProvider()),
+        ChangeNotifierProvider(create: (_) => PlanProvider()),
       ],
       child: MaterialApp(
         title: 'Our Fitness',

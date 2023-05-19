@@ -7,6 +7,7 @@ import 'package:flutter_complete_guide/model/exercise.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
+import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:flutter_complete_guide/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -67,23 +68,32 @@ class _HomeScreenState extends State<HomeScreen> {
               ));
   }
 
+  Image imageFromExercise(Exercise exercise) {
+    if (exercise.image_url.isEmpty) {
+      // return white square
+      return Image.network(
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
+    }
+    return Image.network(
+      exercise.image_url,
+      width: 100,
+      height: 100,
+      fit: BoxFit.cover,
+    );
+  }
+
   Widget myExerciseWidget(Exercise exercise) {
     return Container(
       width: 200,
       height: 200,
       decoration: BoxDecoration(
-        color: Colors.blueGrey, // Customize the color as desired
+        color: Colors.blueGrey,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.network(
-            exercise.image_url,
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-          ),
+          imageFromExercise(exercise),
           SizedBox(height: 10),
           Text(
             exercise.name,
@@ -129,11 +139,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 new UserAccountsDrawerHeader(
                   accountName: new Text(
                       Provider.of<UserProvider>(context, listen: false)
-                          .myUser!
+                          .myUser
                           .username),
                   accountEmail: new Text(
                       Provider.of<UserProvider>(context, listen: false)
-                          .myUser!
+                          .myUser
                           .email),
                   currentAccountPicture: new GestureDetector(
                     child: new CircleAvatar(
@@ -157,15 +167,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
                 new Divider(),
                 new ListTile(
+                    title: new Text("View Plans"),
+                    trailing: new Icon(Icons.calendar_view_day),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(new MaterialPageRoute(
+                          builder: (BuildContext context) => new PlanScreen()));
+                    }),
+                new Divider(),
+                new ListTile(
                   title: new Text("Cancel"),
                   trailing: new Icon(Icons.cancel),
                   onTap: () => Navigator.pop(context),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(0, 340, 0, 0),
+                  padding: EdgeInsets.fromLTRB(0, 280, 0, 0),
                   alignment: Alignment.bottomCenter,
                   child: ListTile(
                     title: Text("Sign out"),
+                    trailing: new Icon(Icons.exit_to_app),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
                       Navigator.of(context).pop();
