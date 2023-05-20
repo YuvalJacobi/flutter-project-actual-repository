@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/user_profile.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:flutter_complete_guide/screens/add_plan_screen.dart';
+import 'package:flutter_complete_guide/screens/edit_plan_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/exercise.dart';
@@ -37,9 +39,31 @@ class _PlanScreenState extends State<PlanScreen> {
 
   void editPlan(int index) {
     debugPrint("Should navigate to edit screen");
+
+    Provider.of<PlanProvider>(context, listen: true).current_edited_plan =
+        plans[index];
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlanEditorScreen(),
+      ),
+    );
   }
 
-  void addPlan() {}
+  void addPlan() {
+    if (plans.length > 10) {
+      debugPrint("Cannot have more than 10 plans!");
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlanAdderScreen(),
+      ),
+    );
+  }
 
   void deletePlan(int index) {
     setState(() {
@@ -49,6 +73,8 @@ class _PlanScreenState extends State<PlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<PlanProvider>(context, listen: true).current_edited_plan = null;
+
     plans = Provider.of<UserProvider>(context, listen: true).myUser.plans;
 
     return Scaffold(

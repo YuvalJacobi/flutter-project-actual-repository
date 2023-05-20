@@ -65,4 +65,21 @@ class ExerciseProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> addData(Exercise exercise) async {
+    if (exercises.map((e) => e.id).contains(exercise.id)) {
+      debugPrint("Exercise already exists within database!");
+      return;
+    }
+    FirebaseFirestore.instance.collection('exercises').add({
+      'name': exercise.name,
+      'active_muscles': exercise.active_muscles,
+      'category': exercise.category,
+      'image_url': exercise.image_url,
+      'level': exercise.level
+    }).then((doc) =>
+        {debugPrint("Successfully added exercise: " + exercise.toString())});
+
+    fetchExercises();
+  }
 }

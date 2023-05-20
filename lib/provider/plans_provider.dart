@@ -11,6 +11,12 @@ class PlanProvider extends ChangeNotifier {
     return [..._plans];
   }
 
+  Plan? getCurrentEditedPlan() {
+    return current_edited_plan;
+  }
+
+  Plan? current_edited_plan = null;
+
   Future<void> setData(Plan plan) async {
     FirebaseFirestore.instance.collection('users').doc(plan.id).set({
       'exercises': plan.exercises,
