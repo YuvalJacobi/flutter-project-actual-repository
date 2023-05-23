@@ -9,14 +9,6 @@ class ExerciseProvider extends ChangeNotifier {
     return [..._exercises];
   }
 
-  List<Exercise> getExercisesByCategory(String category) {
-    return _exercises.where((element) => element.category == category).toList();
-  }
-
-  List<Exercise> getExercisesByLevel(String level) {
-    return _exercises.where((element) => element.level == level).toList();
-  }
-
   bool doListContainsList(List<dynamic> lst1, List<dynamic> lst2) {
     if (lst2.isEmpty) return true;
 
@@ -28,19 +20,20 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
-  List<Exercise> getExercisesWithSorting({
-    String name = '',
-    String category = '',
-    required List<String> active_muscles,
-    String level = '',
-  }) {
+  List<Exercise> getExercisesWithSorting(
+      {String name = '',
+      String category = '',
+      required List<String> active_muscles,
+      String level = '',
+      String id = ''}) {
     return _exercises
         .where((element) =>
             (element.name.contains(name) || name == '') &&
             (element.category == category || category == '') &&
             (doListContainsList(element.active_muscles, active_muscles) ||
                 active_muscles.isEmpty) &&
-            (element.level == level || level == ''))
+            (element.level == level || level == '') &&
+            (element.id == id || id == ''))
         .toList();
   }
 

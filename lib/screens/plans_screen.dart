@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/screens/add_plan_screen.dart';
-import 'package:flutter_complete_guide/screens/edit_plan_screen.dart';
+import 'package:flutter_complete_guide/screens/add_exercise_to_plan_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/plan.dart';

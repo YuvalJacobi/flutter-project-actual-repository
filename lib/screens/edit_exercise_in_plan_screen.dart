@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
-import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
@@ -100,11 +99,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<ExerciseInPlanProvider>(context, listen: false).Empty();
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Exercise'),
+        title: Text('Edit Exercise'),
       ),
       body: isInit == false
           ? CircularProgressIndicator()
@@ -216,10 +213,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         current_edited_plan!.exercises.add(_exerciseInPlan);
 
                         Provider.of<PlanProvider>(context, listen: false)
-                            .current_edited_plan = current_edited_plan;
-
-                        Provider.of<PlanProvider>(context, listen: false)
-                            .setData(current_edited_plan!);
+                            .current_edited_plan!
+                            .exercises
+                            .add(_exerciseInPlan);
 
                         debugPrint("Exercise was successfully added!\n\n" +
                             _exerciseInPlan.toString());
