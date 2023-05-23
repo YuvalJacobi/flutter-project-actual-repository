@@ -3,6 +3,7 @@ import 'package:flutter_complete_guide/model/exercise.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
@@ -225,6 +226,11 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                             current_edited_plan!.exercises.length.toString());
 
                         clearSelections();
+
+                        Navigator.of(context).pop();
+                        Navigator.of(context).push(new MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new PlanScreen()));
                       },
                       child: Text('Add'),
                     ),
