@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/model/user_profile.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/screens/add_plan_screen.dart';
 import 'package:flutter_complete_guide/screens/edit_plan_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../model/exercise.dart';
 import '../model/plan.dart';
 import '../provider/user_provider.dart';
 

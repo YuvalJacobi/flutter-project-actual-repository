@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
@@ -22,8 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> backgrounds = [
     'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ef3a4158-e0e0-418a-9e74-d273edb3a686/dfv0lfh-9a609923-a8e9-4469-af6e-6ec20504c069.png/v1/fill/w_622,h_350,q_70,strp/ruthless_world_by_wopgnop_dfv0lfh-350t.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MjE2MCIsInBhdGgiOiJcL2ZcL2VmM2E0MTU4LWUwZTAtNDE4YS05ZTc0LWQyNzNlZGIzYTY4NlwvZGZ2MGxmaC05YTYwOTkyMy1hOGU5LTQ0NjktYWY2ZS02ZWMyMDUwNGMwNjkucG5nIiwid2lkdGgiOiI8PTM4NDAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.fy2nSuhJ83rwagG9ETuCO-fh0rJNWGTunxFkCqZ4liU',
   ];
+
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     if (_isInit) {
       // setState() {
       //   _isLoading = true;
@@ -40,29 +41,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 }));
       } catch (e) {
-        print(e);
+        debugPrint(e.toString());
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<ExerciseProvider>(context, listen: false).addData(Exercise(
-        name: "Bench Press",
-        active_muscles: ['Chest', 'Triceps'],
-        level: 'Intermediate',
-        image_url:
-            'https://s3assets.skimble.com/assets/2289486/image_iphone.jpg',
-        category: 'compound',
-        id: ""));
-    Provider.of<ExerciseProvider>(context, listen: false).addData(Exercise(
-        name: "Bicep Curl Seated",
-        active_muscles: ['Biceps'],
-        level: 'Beginner',
-        image_url:
-            'https://weighttraining.guide/wp-content/uploads/2021/09/Seated-Alternating-dumbbell-Curl.png',
-        category: 'lift',
-        id: ""));
+    // Provider.of<ExerciseProvider>(context, listen: false).addData(Exercise(
+    //     name: "Bench Press",
+    //     active_muscles: ['Chest', 'Triceps'],
+    //     level: 'Intermediate',
+    //     image_url:
+    //         'https://s3assets.skimble.com/assets/2289486/image_iphone.jpg',
+    //     category: 'compound',
+    //     id: ""));
+
+    // Provider.of<ExerciseProvider>(context, listen: false).addData(Exercise(
+    //     name: "Bicep Curl Seated",
+    //     active_muscles: ['Biceps'],
+    //     level: 'Beginner',
+    //     image_url:
+    //         'https://weighttraining.guide/wp-content/uploads/2021/09/Seated-Alternating-dumbbell-Curl.png',
+    //     category: 'lift',
+    //     id: ""));
+
     return Scaffold(
         appBar: new AppBar(
           title: new Text("Our Fitness"),
@@ -174,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 new ListTile(
                     title: new Text("View Profile"),
-                    trailing: new Icon(Icons.person),
+                    leading: new Icon(Icons.person),
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).push(new MaterialPageRoute(
@@ -184,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 new Divider(),
                 new ListTile(
                     title: new Text("View Plans"),
-                    trailing: new Icon(Icons.calendar_view_day),
+                    leading: new Icon(Icons.calendar_view_day),
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).push(new MaterialPageRoute(
@@ -193,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 new Divider(),
                 new ListTile(
                   title: new Text("Cancel"),
-                  trailing: new Icon(Icons.cancel),
+                  leading: new Icon(Icons.cancel),
                   onTap: () => Navigator.pop(context),
                 ),
                 Container(
@@ -201,7 +204,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.bottomCenter,
                   child: ListTile(
                     title: Text("Sign out"),
-                    trailing: new Icon(Icons.exit_to_app),
+                    leading: Transform.scale(
+                      child: new Icon(Icons.exit_to_app),
+                      scaleX: -1,
+                    ),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
                       Navigator.of(context).pop();

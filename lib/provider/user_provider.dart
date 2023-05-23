@@ -35,7 +35,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> fetchUserData() async {
     debugPrint(getUserId());
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
         .doc(myUser.user_id)
         .get()

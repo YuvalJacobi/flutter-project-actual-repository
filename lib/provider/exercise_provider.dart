@@ -45,22 +45,21 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   Future<void> fetchExercises() async {
-    FirebaseFirestore.instance.collection("exercises").get().then(
+    await FirebaseFirestore.instance.collection("exercises").get().then(
       (querySnapshot) {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
           _exercises.add(Exercise(
               name: doc['name'],
               category: doc['category'],
-              active_muscles:
-                  (doc['active_muscles'] as List<dynamic>).cast<String>(),
+              active_muscles: (doc['active_muscles'] as List<dynamic>).cast(),
               level: doc['level'],
               image_url: doc['image_url'],
               id: doc.id));
         }
-        print("Successfully added exercises to list!");
+        debugPrint("Successfully added exercises to list!");
       },
-      onError: (e) => print("Error completing: $e"),
+      onError: (e) => debugPrint("Error completing: $e"),
     );
 
     notifyListeners();
@@ -71,15 +70,18 @@ class ExerciseProvider extends ChangeNotifier {
       debugPrint("Exercise already exists within database!");
       return;
     }
-    FirebaseFirestore.instance.collection('exercises').add({
+    await FirebaseFirestore.instance.collection('exercises').add({
       'name': exercise.name,
       'active_muscles': exercise.active_muscles,
       'category': exercise.category,
       'image_url': exercise.image_url,
       'level': exercise.level
-    }).then((doc) =>
-        {debugPrint("Successfully added exercise: " + exercise.toString())});
+    }).then((doc) => {
+          exercise.id = doc.id,
+          debugPrint("Successfully added exercise: " + exercise.toString()),
+          _exercises.add(exercise),
+        });
 
-    fetchExercises();
+    debugPrint("Finished await");
   }
 }
