@@ -212,10 +212,12 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         }
                         current_edited_plan!.exercises.add(_exerciseInPlan);
 
-                        Provider.of<PlanProvider>(context, listen: false)
-                            .current_edited_plan!
-                            .exercises
-                            .add(_exerciseInPlan);
+                        setState(() {
+                          Provider.of<PlanProvider>(context, listen: false)
+                              .current_edited_plan!
+                              .exercises
+                              .add(_exerciseInPlan);
+                        });
 
                         debugPrint("Exercise was successfully added!\n\n" +
                             _exerciseInPlan.toString());
