@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
 import '../provider/user_provider.dart';
+import 'edit_plan.dart';
 
 void main() {
   runApp(PlanApp());
@@ -38,13 +39,13 @@ class _PlanScreenState extends State<PlanScreen> {
   void editPlan(int index) {
     debugPrint("Should navigate to edit screen");
 
-    Provider.of<PlanProvider>(context, listen: true).current_edited_plan =
+    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
         plans[index];
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlanEditorScreen(),
+        builder: (context) => EditPlanScreen(),
       ),
     );
   }

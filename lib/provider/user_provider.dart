@@ -33,6 +33,15 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updatePlanOfUser(Plan plan) {
+    if (myUser.plans.map((e) => e.id).contains(plan.id)) {
+      int ind = myUser.plans.map((e) => e.id).toList().indexOf(plan.id);
+      myUser.plans[ind] = plan;
+    } else {
+      myUser.plans.add(plan);
+    }
+  }
+
   Future<void> fetchUserData() async {
     debugPrint(getUserId());
     await FirebaseFirestore.instance

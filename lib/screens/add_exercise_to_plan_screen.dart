@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -219,7 +220,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                             .current_edited_plan = current_edited_plan;
 
                         Provider.of<PlanProvider>(context, listen: false)
-                            .setData(current_edited_plan!);
+                            .addData(current_edited_plan!);
 
                         debugPrint("Exercise was successfully added!\n\n" +
                             _exerciseInPlan.toString());
@@ -228,6 +229,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                             current_edited_plan!.name +
                             ":\n" +
                             current_edited_plan!.exercises.length.toString());
+
+                        Provider.of<UserProvider>(context, listen: false)
+                            .updatePlanOfUser(current_edited_plan!);
 
                         clearSelections();
 
