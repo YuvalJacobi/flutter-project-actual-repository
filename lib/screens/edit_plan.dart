@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
-import 'package:flutter_complete_guide/screens/add_exercise_to_plan_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/exercise.dart';
@@ -52,8 +51,14 @@ class _EditPlanScreen extends State<EditPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Plan plan =
-        Provider.of<PlanProvider>(context, listen: false).current_edited_plan!;
+    Plan? _plan =
+        Provider.of<PlanProvider>(context, listen: false).current_edited_plan;
+
+    if (_plan == null) {
+      return CircularProgressIndicator();
+    }
+
+    Plan plan = _plan;
 
     List<ExerciseInPlan> exercisesInPlan =
         Provider.of<PlanProvider>(context, listen: false)
