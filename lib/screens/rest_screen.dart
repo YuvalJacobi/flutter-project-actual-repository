@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
+
+import '../model/exercise_in_plan.dart';
+import '../provider/exercise_in_plan_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,7 +29,7 @@ class CountdownScreen extends StatefulWidget {
 }
 
 class _CountdownScreenState extends State<CountdownScreen> {
-  int _countdown = 10; // Change this to the desired countdown time
+  int _countdown = 0;
   Color _backgroundColor = Color.fromARGB(255, 144, 49, 47);
 
   void startCountdown() {
@@ -71,11 +76,34 @@ class _CountdownScreenState extends State<CountdownScreen> {
     );
   }
 
+  void skipCountdown() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(new MaterialPageRoute(
+        builder: (BuildContext context) => new PlanInProgressScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
+    ExerciseInPlan exerciseInPlan =
+        Provider.of<ExerciseInPlanProvider>(context, listen: false)
+            .current_played_exercise_in_plan!;
+
+    _countdown = exerciseInPlan.rest;
+
     return Scaffold(
       backgroundColor: _backgroundColor,
-      body: Center(child: countdown_to_text()),
+      body: Column(children: [
+        Center(child: countdown_to_text()),
+        Container(
+          width: 150,
+          height: 150,
+          alignment: Alignment.bottomCenter,
+          child: IconButton(
+            icon: Icon(Icons.skip_next),
+            onPressed: skipCountdown,
+          ),
+        )
+      ]),
     );
   }
 }

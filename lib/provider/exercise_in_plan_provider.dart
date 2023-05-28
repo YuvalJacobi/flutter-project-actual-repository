@@ -10,6 +10,8 @@ class ExerciseInPlanProvider extends ChangeNotifier {
       exercise_id: '-1',
       plan_id: '-1');
 
+  ExerciseInPlan? current_played_exercise_in_plan = null;
+
   void Empty() {
     current_edited_exercise_in_plan = ExerciseInPlan(
         sets: -1,

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../model/exercise_in_plan.dart';
 import '../model/plan.dart';
 import '../model/user_profile.dart';
 
@@ -14,10 +15,45 @@ class UserProvider extends ChangeNotifier {
     return myUser.user_id;
   }
 
+  void debugUser(UserProfile user) {
+    int ind = 1;
+    for (Plan p in user.plans) {
+      debugPrint(ind.toString() +
+          '#: ' +
+          p.name +
+          ' ' +
+          p.exercises.length.toString());
+      ind++;
+    }
+  }
+
+  Map<String, dynamic> exerciseInPlanToMap(ExerciseInPlan exerciseInPlan) {
+    return {
+      'exercise_id': exerciseInPlan.exercise_id,
+      'plan_id': exerciseInPlan.plan_id,
+      'reps': exerciseInPlan.reps,
+      'sets': exerciseInPlan.sets,
+      'rest': exerciseInPlan.rest,
+      'weight': exerciseInPlan.weight
+    };
+  }
+
+  Map<String, dynamic> planToMap(Plan plan) {
+    return {
+      'name': plan.name,
+      'user_id': plan.user_id,
+      'exercises_in_plan':
+          plan.exercises.map((e) => exerciseInPlanToMap(e)).toList()
+    };
+  }
+
   Future<void> setData() async {
     debugPrint(myUser.toString());
 
-    FirebaseFirestore.instance.collection('users').doc(myUser.user_id).set({
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(myUser.user_id)
+        .set({
       'first_name': myUser.first_name,
       'last_name': myUser.last_name,
       'email': myUser.email,
@@ -25,7 +61,7 @@ class UserProvider extends ChangeNotifier {
       'height': myUser.height,
       'weight': myUser.weight,
       'username': myUser.username,
-      'plans': myUser.plans,
+      'plans': myUser.plans.map((e) => planToMap(e)).toList(),
     });
 
     print('Successfully updated user!');
@@ -40,6 +76,35 @@ class UserProvider extends ChangeNotifier {
     } else {
       myUser.plans.add(plan);
     }
+
+    setData();
+  }
+
+  List<ExerciseInPlan> dynamicOfExercisesInPlanToExercisesInPlan(dynamic d) {
+    List<ExerciseInPlan> eip = [];
+    for (Map<String, dynamic> item in d) {
+      eip.add(ExerciseInPlan(
+          sets: item['sets'] ?? -1,
+          reps: item['reps'] ?? -1,
+          weight: item['weight'] ?? -1,
+          rest: item['rest'] ?? -1,
+          exercise_id: item['exercise_id'] ?? '',
+          plan_id: item['plan_id'] ?? ''));
+    }
+    return eip;
+  }
+
+  List<Plan> dynamicOfPlansToPlansList(dynamic d) {
+    List<Plan> plans = [];
+    for (Map<String, dynamic> item in d) {
+      plans.add(Plan(
+          exercises: dynamicOfExercisesInPlanToExercisesInPlan(
+              item['exercises_in_plan'] ?? ''),
+          name: item['name'] ?? '',
+          user_id: item['user_id'] ?? '',
+          id: item['plan_id'] ?? ''));
+    }
+    return plans;
   }
 
   Future<void> fetchUserData() async {
@@ -49,19 +114,19 @@ class UserProvider extends ChangeNotifier {
         .doc(myUser.user_id)
         .get()
         .then((doc) => {
-              myUser.first_name = doc['first_name'],
-              myUser.last_name = doc['last_name'],
-              myUser.email = doc['email'],
-              myUser.age = doc['age'],
-              myUser.height = doc['height'],
-              myUser.weight = doc['weight'],
-              myUser.username = doc['username'],
-              myUser.plans = (doc['plans'] as List<dynamic>)
-                  .map((item) => item as Plan)
-                  .toList(),
+              myUser.first_name = doc['first_name'] ?? '',
+              myUser.last_name = doc['last_name'] ?? '',
+              myUser.email = doc['email'] ?? '',
+              myUser.age = doc['age'] ?? '',
+              myUser.height = doc['height'] ?? -1,
+              myUser.weight = doc['weight'] ?? -1,
+              myUser.username = doc['username'] ?? '',
+              myUser.plans = doc['plans'] == null
+                  ? []
+                  : dynamicOfPlansToPlansList(doc['plans'] ?? '')
             });
 
-    debugPrint(myUser.toString());
+    debugUser(myUser);
     notifyListeners();
   }
 

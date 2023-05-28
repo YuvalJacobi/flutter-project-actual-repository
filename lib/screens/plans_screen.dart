@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/screens/add_plan_screen.dart';
-import 'package:flutter_complete_guide/screens/add_exercise_to_plan_screen.dart';
+import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
+import '../provider/plan_in_progress_provider.dart';
 import '../provider/user_provider.dart';
 import 'edit_plan.dart';
 
@@ -34,14 +35,28 @@ class _PlanScreenState extends State<PlanScreen> {
   void startPlan(int index) {
     // Logic to start the exercise plan
     debugPrint('Starting plan: ${plans[index].name}');
+
+    Plan p = plans[index];
+    Provider.of<PlanInProgressProvider>(context, listen: false).plan = p;
+    Provider.of<PlanInProgressProvider>(context, listen: false).index = 0;
+
+    Navigator.of(context).pop();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlanInProgressScreen(),
+      ),
+    );
   }
 
   void editPlan(int index) {
     debugPrint("Should navigate to edit screen");
+    plans = Provider.of<UserProvider>(context, listen: false).myUser.plans;
 
     Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
         plans[index];
 
+    Navigator.of(context).pop();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -89,8 +104,10 @@ class _PlanScreenState extends State<PlanScreen> {
               child: Text('Add Plan'),
             ),
           ),
-          Expanded(
+          SizedBox(
+            height: 200,
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: plans.length,
               itemBuilder: (context, index) {
                 final _plan = plans[index];

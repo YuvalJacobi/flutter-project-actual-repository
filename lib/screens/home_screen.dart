@@ -66,6 +66,8 @@ class _HomeScreenState extends State<HomeScreen> {
     //     category: 'lift',
     //     id: ""));
 
+    Provider.of<UserProvider>(context, listen: false).fetchUserData();
+
     return Scaffold(
         appBar: new AppBar(
           title: new Text("Our Fitness"),

@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/main.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 
 import '../model/plan.dart';
 
 class PlanProvider extends ChangeNotifier {
   List<Plan> _plans = [];
+
+  Plan? currently_played_plan = null;
 
   List<Plan> get getPlans {
     return [..._plans];
@@ -25,12 +26,30 @@ class PlanProvider extends ChangeNotifier {
       return;
     }
 
-    FirebaseFirestore.instance
-        .collection('plans')
-        .add({'exercises_in_plan': plan.exercises, 'name': plan.name}).then(
-            (doc) => plan.id = doc.id);
+    await FirebaseFirestore.instance.collection('plans').add({
+      'exercises_in_plan':
+          plan.exercises.map((e) => exerciseInPlanToMap(e)).toList(),
+      'name': plan.name,
+      'user_id': plan.user_id
+    }).then((doc) => {
+          plan.id = doc.id,
+          _plans.add(Plan(
+              exercises: plan.exercises,
+              name: plan.name,
+              user_id: plan.user_id,
+              id: doc.id))
+        });
+  }
 
-    _plans.add(plan);
+  Map<String, dynamic> exerciseInPlanToMap(ExerciseInPlan exerciseInPlan) {
+    return {
+      'exercise_id': exerciseInPlan.exercise_id,
+      'plan_id': exerciseInPlan.plan_id,
+      'reps': exerciseInPlan.reps,
+      'sets': exerciseInPlan.sets,
+      'rest': exerciseInPlan.rest,
+      'weight': exerciseInPlan.weight
+    };
   }
 
   Future<void> setData(Plan plan) async {
@@ -40,8 +59,9 @@ class PlanProvider extends ChangeNotifier {
         .collection('plans')
         .doc(plan.id.isEmpty ? null : plan.id)
         .set({
-      'exercises_in_plan': lst,
+      'exercises_in_plan': lst.map((e) => exerciseInPlanToMap(e)).toList(),
       'name': plan.name,
+      'user_id': plan.user_id
     });
     _plans.add(plan);
 
@@ -60,13 +80,13 @@ class PlanProvider extends ChangeNotifier {
     _plans.removeWhere((element) => element.id == plan.id);
 
     // Remove plan from user's plans.
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
         .doc(plan.user_id)
         .set({'plans': _plans});
 
     // Remove plan from plans.
-    FirebaseFirestore.instance.collection('plans').doc(plan.id).delete();
+    await FirebaseFirestore.instance.collection('plans').doc(plan.id).delete();
 
     notifyListeners();
   }

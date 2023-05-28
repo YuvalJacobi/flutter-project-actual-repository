@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
+import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/home_screen.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       providers: [
         // ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => PlanInProgressProvider()),
         ChangeNotifierProvider(create: (_) => ExerciseProvider()),
         ChangeNotifierProvider(create: (_) => PlanProvider()),
         ChangeNotifierProvider(create: (_) => ExerciseInPlanProvider()),

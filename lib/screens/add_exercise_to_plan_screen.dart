@@ -5,7 +5,6 @@ import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
-import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
@@ -194,6 +193,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                       onPressed: () {
                         if (current_edited_plan == null) {
                           debugPrint("No plan is currently being edited!");
+
                           return;
                         }
 
@@ -236,9 +236,6 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         clearSelections();
 
                         Navigator.of(context).pop();
-                        Navigator.of(context).push(new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                new PlanScreen()));
                       },
                       child: Text('Add'),
                     ),

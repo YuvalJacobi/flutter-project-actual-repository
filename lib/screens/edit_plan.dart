@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:flutter_complete_guide/screens/add_exercise_to_plan_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/exercise.dart';
@@ -34,7 +35,11 @@ class _EditPlanScreen extends State<EditPlanScreen> {
     if (exercise.image_url.isEmpty) {
       // return white square
       return Image.network(
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s',
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+      );
     }
     return Image.network(
       exercise.image_url,
@@ -44,9 +49,117 @@ class _EditPlanScreen extends State<EditPlanScreen> {
     );
   }
 
+  void savePlan(Plan plan) {
+    Provider.of<PlanProvider>(context, listen: false).addData(plan);
+  }
+
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
+  }
+
+  List<ExerciseInPlan> exercisesInPlan = [];
+
+  Widget myExercisesWidget() {
+    return Center(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: exercisesInPlan.length,
+        itemBuilder: (context, index) {
+          ExerciseInPlan exerciseInPlan = exercisesInPlan[index];
+          Exercise exercise =
+              Provider.of<ExerciseProvider>(context, listen: true)
+                  .getExercisesWithSorting(
+                      id: exerciseInPlan.exercise_id, active_muscles: [])[0];
+
+          String weight_representation;
+
+          if (exerciseInPlan.weight == 0 || exerciseInPlan == -1) {
+            weight_representation = "Weightless";
+          } else if (exerciseInPlan.weight == -69) // failure
+          {
+            weight_representation = "To failure";
+          } else {
+            weight_representation = exerciseInPlan.weight.toString() + 'kg';
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              child: Row(
+                children: [
+                  Container(
+                    child: Expanded(
+                      child: Flexible(
+                        child: imageFromExercise(exercise), // img
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          exercise.name,
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ), // name
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          exerciseInPlan.sets.toString() + ' sets',
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ), // sets
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          exerciseInPlan.reps.toString() + ' reps',
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ), // reps
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          weight_representation,
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void addExercise() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(new MaterialPageRoute(
+        builder: (BuildContext context) => new PlanEditorScreen()));
   }
 
   @override
@@ -55,140 +168,33 @@ class _EditPlanScreen extends State<EditPlanScreen> {
         Provider.of<PlanProvider>(context, listen: false).current_edited_plan;
 
     if (_plan == null) {
-      return CircularProgressIndicator();
+      return Center(child: CircularProgressIndicator());
     }
 
     Plan plan = _plan;
 
-    List<ExerciseInPlan> exercisesInPlan =
-        Provider.of<PlanProvider>(context, listen: false)
-            .current_edited_plan!
-            .exercises;
+    exercisesInPlan = Provider.of<PlanProvider>(context, listen: false)
+        .current_edited_plan!
+        .exercises;
+
+    savePlan(plan); // add plan to plans db
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Plan Editor'),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: plan.exercises.length,
-                  itemBuilder: (context, index) {
-                    final option = plan.exercises[index];
-
-                    // Each id is unique so the list will always contain 1 element assuming the id is valid.
-                    Exercise exercise =
-                        Provider.of<ExerciseProvider>(context, listen: false)
-                            .getExercisesWithSorting(
-                                id: option.exercise_id, active_muscles: [])[0];
-                    return ListTile(
-                      title: Text(exercise.name),
-                      leading: imageFromExercise(exercise),
-                    );
-                  }),
-              ReorderableListView.builder(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                shrinkWrap: true,
-                itemCount: plan.exercises.length,
-                itemBuilder: (context, index) {
-                  final option = exercisesInPlan[index];
-
-                  // Each id is unique so the list will always contain 1 element assuming the id is valid.
-                  Exercise exercise =
-                      Provider.of<ExerciseProvider>(context, listen: false)
-                          .getExercisesWithSorting(
-                              id: option.exercise_id, active_muscles: [])[0];
-
-                  return ListTile(
-                      key: Key(option.exercise_id +
-                          option.plan_id +
-                          index.toString()),
-                      leading: imageFromExercise(exercise),
-                      title: Wrap(
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children: [
-                          Chip(
-                            label: Text(
-                              exercise.name,
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                            backgroundColor: Colors.grey[300],
-                            labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(15.0),
-                                child: Text(
-                                  'Active Muscles',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount: exercise.active_muscles.length,
-                                  itemBuilder: (context, index) {
-                                    String item =
-                                        exercise.active_muscles[index];
-                                    return Chip(
-                                      label: Text(
-                                        item,
-                                        style: TextStyle(fontSize: 12.0),
-                                      ),
-                                      backgroundColor: Colors.grey[300],
-                                      labelPadding:
-                                          EdgeInsets.symmetric(horizontal: 8.0),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          Chip(
-                            label: Text(
-                              "Level: " + exercise.level,
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                            backgroundColor: Colors.grey[300],
-                            labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                          ),
-                          Chip(
-                            label: Text(
-                              "Category: " + exercise.category,
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                            backgroundColor: Colors.grey[300],
-                            labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                          ),
-                        ],
-                      ));
-                },
-                onReorder: (oldIndex, newIndex) {
-                  setState(() {
-                    if (newIndex > oldIndex) newIndex -= 1;
-
-                    ExerciseInPlan item = exercisesInPlan.removeAt(oldIndex);
-
-                    exercisesInPlan.insert(newIndex, item);
-
-                    Provider.of<PlanProvider>(context, listen: false)
-                        .current_edited_plan!
-                        .exercises = exercisesInPlan;
-                  });
-                },
-              ),
-            ],
-          ),
+        appBar: AppBar(
+          title: Text('Plan Editor'),
         ),
-      ),
-    );
+        body: ListView(
+          children: [
+            exercisesInPlan.length == 0 ? Center() : myExercisesWidget(),
+            SizedBox(height: 15),
+            Container(
+                alignment: Alignment.topLeft,
+                child: ElevatedButton(
+                    child: Text(
+                      "Add exercise",
+                    ),
+                    onPressed: addExercise))
+          ],
+        ));
   }
 }

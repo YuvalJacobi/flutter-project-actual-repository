@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/plan.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
-import 'package:flutter_complete_guide/screens/add_exercise_to_plan_screen.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:provider/provider.dart';
+
+import 'edit_plan.dart';
 
 void main() {
   runApp(MyApp());
@@ -48,20 +49,34 @@ class PlanAdderScreen extends StatelessWidget {
                     Provider.of<UserProvider>(context, listen: false)
                         .myUser
                         .plans;
+
+                if (_plans.map((e) => e.name).contains(nameController.text)) {
+                  debugPrint('A plan with the same name already exists!');
+                  return;
+                }
+
                 String _uid = Provider.of<UserProvider>(context, listen: false)
                     .myUser
                     .user_id;
-                Provider.of<PlanProvider>(context, listen: false)
+
+                Plan p = Provider.of<PlanProvider>(context, listen: false)
                         .current_edited_plan =
                     Plan(
                         exercises: [],
-                        name: "New Plan #" + _plans.length.toString(),
+                        name: nameController.text,
                         user_id: _uid,
                         id: "");
+
+                Provider.of<PlanProvider>(context, listen: false).addData(p);
+
+                Provider.of<UserProvider>(context, listen: false)
+                    .updatePlanOfUser(p);
+
+                Navigator.of(context).pop();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlanEditorScreen(),
+                    builder: (context) => EditPlanScreen(),
                   ),
                 );
               },
@@ -69,6 +84,7 @@ class PlanAdderScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
+                Navigator.of(context).pop();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
