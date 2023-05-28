@@ -6,9 +6,7 @@ import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/rest_screen.dart';
 import 'package:provider/provider.dart';
-
 import '../model/exercise.dart';
-import '../provider/exercise_in_plan_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -40,17 +38,12 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
   @override
   void initState() {
     super.initState();
-    timer = Timer(Duration(seconds: secondsToShow), () {
-      setState(() {
-        textToShow = 'GO!';
-      });
-    });
   }
 
   @override
   void dispose() {
-    timer?.cancel();
     super.dispose();
+    timer?.cancel();
   }
 
   void onFinishedButtonPressed() {
@@ -84,6 +77,12 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
             id: exerciseInPlan.exercise_id, active_muscles: [])[0];
 
     textToShow = exercise.name;
+
+    timer = Timer(Duration(seconds: secondsToShow), () {
+      setState(() {
+        textToShow = 'GO!';
+      });
+    });
 
     return Scaffold(
       appBar: AppBar(

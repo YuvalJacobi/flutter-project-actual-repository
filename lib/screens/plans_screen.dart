@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../model/plan.dart';
 import '../provider/plan_in_progress_provider.dart';
 import '../provider/user_provider.dart';
-import 'edit_plan.dart';
+import 'edit_plan_screen.dart';
 
 void main() {
   runApp(PlanApp());
@@ -87,9 +87,10 @@ class _PlanScreenState extends State<PlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<PlanProvider>(context, listen: true).current_edited_plan = null;
+    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
+        null;
 
-    plans = Provider.of<UserProvider>(context, listen: true).myUser.plans;
+    plans = Provider.of<UserProvider>(context, listen: false).myUser.plans;
 
     return Scaffold(
       appBar: AppBar(

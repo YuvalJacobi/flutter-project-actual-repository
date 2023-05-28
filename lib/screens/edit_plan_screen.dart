@@ -49,10 +49,6 @@ class _EditPlanScreen extends State<EditPlanScreen> {
     );
   }
 
-  void savePlan(Plan plan) {
-    Provider.of<PlanProvider>(context, listen: false).addData(plan);
-  }
-
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -68,7 +64,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
         itemBuilder: (context, index) {
           ExerciseInPlan exerciseInPlan = exercisesInPlan[index];
           Exercise exercise =
-              Provider.of<ExerciseProvider>(context, listen: true)
+              Provider.of<ExerciseProvider>(context, listen: false)
                   .getExercisesWithSorting(
                       id: exerciseInPlan.exercise_id, active_muscles: [])[0];
 
@@ -171,13 +167,9 @@ class _EditPlanScreen extends State<EditPlanScreen> {
       return Center(child: CircularProgressIndicator());
     }
 
-    Plan plan = _plan;
-
     exercisesInPlan = Provider.of<PlanProvider>(context, listen: false)
         .current_edited_plan!
         .exercises;
-
-    savePlan(plan); // add plan to plans db
 
     return Scaffold(
         appBar: AppBar(

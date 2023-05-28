@@ -5,7 +5,7 @@ import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'edit_plan.dart';
+import 'edit_plan_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -67,7 +67,12 @@ class PlanAdderScreen extends StatelessWidget {
                         user_id: _uid,
                         id: "");
 
-                Provider.of<PlanProvider>(context, listen: false).addData(p);
+                p = Provider.of<PlanProvider>(context, listen: false)
+                        .current_edited_plan =
+                    Provider.of<UserProvider>(context, listen: false)
+                        .myUser
+                        .plans
+                        .last;
 
                 Provider.of<UserProvider>(context, listen: false)
                     .updatePlanOfUser(p);

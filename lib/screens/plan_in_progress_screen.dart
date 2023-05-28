@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/screens/exercise_in_progress_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../model/plan.dart';
 import '../provider/plan_in_progress_provider.dart';
-import '../provider/plans_provider.dart';
 
 void main() {
   runApp(PlanInProgress());
