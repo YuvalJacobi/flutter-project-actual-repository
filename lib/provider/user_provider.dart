@@ -86,7 +86,8 @@ class UserProvider extends ChangeNotifier {
       eip.add(ExerciseInPlan(
           sets: item['sets'] ?? -1,
           reps: item['reps'] ?? -1,
-          weight: item['weight'] == null ? -1 : item['weight'],
+          weight:
+              item['weight'] == null ? -1 : (item['weight'] as num).toDouble(),
           rest: item['rest'] ?? -1,
           exercise_id: item['exercise_id'] ?? '',
           plan_id: item['plan_id'] ?? ''));

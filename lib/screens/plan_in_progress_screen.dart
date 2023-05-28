@@ -28,13 +28,26 @@ class PlanInProgressScreen extends StatefulWidget {
 
 class _PlanInProgressScreen extends State<PlanInProgressScreen> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration.zero, () {
+      navigateToExerciseInProgressScreen();
+    });
+  }
+
+  void navigateToExerciseInProgressScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => ExerciseInProgressScreen(),
+      ),
+    );
+
     Provider.of<PlanInProgressProvider>(context, listen: false).index += 1;
+  }
 
-    Navigator.of(context).pop();
-    Navigator.of(context).push(new MaterialPageRoute(
-        builder: (BuildContext context) => new ExerciseInProgressScreen()));
-
-    return Scaffold();
+  @override
+  Widget build(BuildContext context) {
+    return Center();
   }
 }

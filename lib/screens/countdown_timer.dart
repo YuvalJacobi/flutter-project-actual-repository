@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/provider/timer_elapsing.dart';
+import 'package:provider/provider.dart';
 
 class CountdownTimerWidget extends StatefulWidget {
   final int durationInSeconds;
@@ -18,11 +20,14 @@ class CountdownTimerWidget extends StatefulWidget {
 
 class _CountdownTimerWidgetState extends State<CountdownTimerWidget> {
   late Timer _timer;
-  int _remainingSeconds = 0;
+  int remainingSeconds = 0;
 
   @override
   void initState() {
     super.initState();
+    Provider.of<TimerElapsing>(context, listen: false).remaining_interval =
+        widget.durationInSeconds;
+
     startTimer();
   }
 
@@ -33,12 +38,15 @@ class _CountdownTimerWidgetState extends State<CountdownTimerWidget> {
   }
 
   void startTimer() {
-    _remainingSeconds = widget.durationInSeconds;
+    remainingSeconds = widget.durationInSeconds;
+
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (_remainingSeconds > 0) {
-          _remainingSeconds--;
-          widget.onInterval(_remainingSeconds);
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          Provider.of<TimerElapsing>(context, listen: false)
+              .remaining_interval = remainingSeconds;
+          widget.onInterval(remainingSeconds);
         } else {
           _timer.cancel();
           widget.onElapsed();

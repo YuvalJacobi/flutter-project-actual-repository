@@ -33,7 +33,6 @@ class _PlanScreenState extends State<PlanScreen> {
   List<Plan> plans = [];
 
   void startPlan(int index) {
-    // Logic to start the exercise plan
     debugPrint('Starting plan: ${plans[index].name}');
 
     Plan p = plans[index];
@@ -148,11 +147,11 @@ class PlanItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              onPressed: onStartPressed,
+              onPressed: () => onStartPressed(),
               icon: Icon(Icons.play_arrow),
             ),
             IconButton(
-              onPressed: onEditPressed,
+              onPressed: () => onEditPressed(),
               icon: Icon(Icons.edit),
             ),
           ],

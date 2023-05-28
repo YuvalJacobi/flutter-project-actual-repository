@@ -10,7 +10,7 @@ import '../model/exercise.dart';
 import 'countdown_timer.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ExerciseInProgress());
 }
 
 class ExerciseInProgress extends StatelessWidget {
@@ -21,7 +21,7 @@ class ExerciseInProgress extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ExerciseInProgress(),
+      home: ExerciseInProgressScreen(),
     );
   }
 }
@@ -47,7 +47,7 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
     timer?.cancel();
   }
 
-  void onFinishedButtonPressed() {
+  void onFinishedButtonPressed() async {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CountdownScreen()),
@@ -79,7 +79,6 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
     if (index >= exercisesInPlan.length) {
       debugPrint('Done!');
 
-      Navigator.of(context).pop();
       Navigator.of(context).push(new MaterialPageRoute(
           builder: (BuildContext context) => new HomeScreen()));
     }
@@ -108,18 +107,22 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
               'Tips: make sure to drink water often.',
               style: TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 20),
             CountdownTimerWidget(
-              durationInSeconds: 5,
+              durationInSeconds: 2,
               onInterval: handleInterval,
               onElapsed: handleElapsed,
             ),
             SizedBox(height: 20),
             if (toggle)
               ElevatedButton(
-                onPressed: onFinishedButtonPressed,
+                onPressed: () => onFinishedButtonPressed(),
                 child: Text('Done!'),
               ),
+            SizedBox(height: 200),
+            Container(
+              alignment: Alignment.bottomLeft,
+              child: Text("${index + 1} / ${exerciseInPlan.sets} sets"),
+            )
           ],
         ),
       ),

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
+import 'package:flutter_complete_guide/provider/timer_elapsing.dart';
 import 'package:provider/provider.dart';
-import 'dart:async';
 
 import '../model/exercise_in_plan.dart';
-import '../provider/exercise_in_plan_provider.dart';
+import '../model/plan.dart';
+import 'countdown_timer.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(Countdown());
 }
 
-class MyApp extends StatelessWidget {
+class Countdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,25 +34,11 @@ class _CountdownScreenState extends State<CountdownScreen> {
   int _countdown = 0;
   Color _backgroundColor = Color.fromARGB(255, 144, 49, 47);
 
-  void startCountdown() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_countdown > 0) {
-          _countdown--;
-        } else {
-          timer.cancel();
-          _showNotification();
-          _changeBackgroundColor();
-        }
-      });
-    });
+  void showNotification() {
+    debugPrint('Rest time ended!');
   }
 
-  void _showNotification() {
-    print('Rest time ended!');
-  }
-
-  void _changeBackgroundColor() {
+  void changeBackgroundColor() {
     setState(() {
       _backgroundColor = Colors.green;
     });
@@ -59,11 +47,41 @@ class _CountdownScreenState extends State<CountdownScreen> {
   @override
   void initState() {
     super.initState();
-    startCountdown();
+
+    Plan plan =
+        Provider.of<PlanInProgressProvider>(context, listen: false).plan!;
+
+    int index =
+        Provider.of<PlanInProgressProvider>(context, listen: false).index;
+
+    ExerciseInPlan exerciseInPlan = plan.exercises[index];
+
+    _countdown = exerciseInPlan.rest;
+
+    debugPrint(
+        "Countdown of exercise no.${index + 1}:" + _countdown.toString());
+
+    countdown_timer = CountdownTimerWidget(
+      durationInSeconds: _countdown,
+      onInterval: handleInterval,
+      onElapsed: handleElapsed,
+    );
+  }
+
+  void handleInterval(int time) {
+    setState(() {
+      _countdown =
+          Provider.of<TimerElapsing>(context, listen: false).remaining_interval;
+    });
+  }
+
+  void handleElapsed() {
+    changeBackgroundColor();
+    showNotification();
   }
 
   Text countdown_to_text() {
-    int minutes = (_countdown / 60) as int;
+    int minutes = _countdown ~/ 60;
     int seconds = (_countdown % 60);
 
     String minutes_str = minutes < 10 ? '0$minutes' : '$minutes';
@@ -77,30 +95,29 @@ class _CountdownScreenState extends State<CountdownScreen> {
   }
 
   void skipCountdown() {
-    Navigator.of(context).pop();
     Navigator.of(context).push(new MaterialPageRoute(
         builder: (BuildContext context) => new PlanInProgressScreen()));
   }
 
+  CountdownTimerWidget? countdown_timer = null;
+
   @override
   Widget build(BuildContext context) {
-    ExerciseInPlan exerciseInPlan =
-        Provider.of<ExerciseInPlanProvider>(context, listen: false)
-            .current_played_exercise_in_plan!;
-
-    _countdown = exerciseInPlan.rest;
-
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: Column(children: [
-        Center(child: countdown_to_text()),
+        countdown_timer!,
+        Container(
+            padding: EdgeInsets.only(top: 100),
+            alignment: Alignment.center,
+            child: Center(child: countdown_to_text())),
         Container(
           width: 150,
           height: 150,
           alignment: Alignment.bottomCenter,
           child: IconButton(
-            icon: Icon(Icons.skip_next),
-            onPressed: skipCountdown,
+            icon: Icon(Icons.next_plan),
+            onPressed: () => skipCountdown(),
           ),
         )
       ]),

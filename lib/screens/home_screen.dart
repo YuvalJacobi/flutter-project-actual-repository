@@ -74,19 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.redAccent,
         ),
         drawer: myDrawer(),
-        body: _isInit
-            ? Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemBuilder: (context, index) {
-                  Exercise exercise =
-                      Provider.of<ExerciseProvider>(context, listen: true)
-                          .exercises[index];
-                  return myExerciseWidget(exercise);
-                },
-                itemCount: Provider.of<ExerciseProvider>(context, listen: true)
-                    .exercises
-                    .length,
-              ));
+        body: _isInit ? Center(child: CircularProgressIndicator()) : Center());
   }
 
   Image imageFromExercise(Exercise exercise) {
