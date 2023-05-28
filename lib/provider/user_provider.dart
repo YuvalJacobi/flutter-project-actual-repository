@@ -86,7 +86,7 @@ class UserProvider extends ChangeNotifier {
       eip.add(ExerciseInPlan(
           sets: item['sets'] ?? -1,
           reps: item['reps'] ?? -1,
-          weight: item['weight'] ?? -1,
+          weight: item['weight'] == null ? -1 : item['weight'],
           rest: item['rest'] ?? -1,
           exercise_id: item['exercise_id'] ?? '',
           plan_id: item['plan_id'] ?? ''));
@@ -118,8 +118,10 @@ class UserProvider extends ChangeNotifier {
               myUser.last_name = doc['last_name'] ?? '',
               myUser.email = doc['email'] ?? '',
               myUser.age = doc['age'] ?? '',
-              myUser.height = doc['height'] ?? -1,
-              myUser.weight = doc['weight'] ?? -1,
+              myUser.height =
+                  doc['height'] == null ? -1 : doc['height'] as double,
+              myUser.weight =
+                  doc['weight'] == null ? -1 : doc['weight'] as double,
               myUser.username = doc['username'] ?? '',
               myUser.plans = doc['plans'] == null
                   ? []

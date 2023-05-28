@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         drawer: myDrawer(),
         body: _isInit
-            ? CircularProgressIndicator()
+            ? Center(child: CircularProgressIndicator())
             : ListView.builder(
                 itemBuilder: (context, index) {
                   Exercise exercise =

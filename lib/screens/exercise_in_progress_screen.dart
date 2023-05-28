@@ -7,6 +7,7 @@ import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/rest_screen.dart';
 import 'package:provider/provider.dart';
 import '../model/exercise.dart';
+import 'countdown_timer.dart';
 
 void main() {
   runApp(MyApp());
@@ -53,6 +54,18 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
     );
   }
 
+  void handleInterval(int remainingSeconds) {
+    debugPrint('Remaining time: $remainingSeconds');
+  }
+
+  void handleElapsed() {
+    setState(() {
+      toggle = true;
+    });
+  }
+
+  bool toggle = false;
+
   @override
   Widget build(BuildContext context) {
     int index =
@@ -78,12 +91,6 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
 
     textToShow = exercise.name;
 
-    timer = Timer(Duration(seconds: secondsToShow), () {
-      setState(() {
-        textToShow = 'GO!';
-      });
-    });
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Plan in progress'),
@@ -102,7 +109,13 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 20),
-            if (textToShow == 'GO!')
+            CountdownTimerWidget(
+              durationInSeconds: 5,
+              onInterval: handleInterval,
+              onElapsed: handleElapsed,
+            ),
+            SizedBox(height: 20),
+            if (toggle)
               ElevatedButton(
                 onPressed: onFinishedButtonPressed,
                 child: Text('Done!'),

@@ -219,9 +219,6 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         Provider.of<PlanProvider>(context, listen: false)
                             .current_edited_plan = current_edited_plan;
 
-                        Provider.of<PlanProvider>(context, listen: false)
-                            .addData(current_edited_plan!);
-
                         debugPrint("Exercise was successfully added!\n\n" +
                             _exerciseInPlan.toString());
 
