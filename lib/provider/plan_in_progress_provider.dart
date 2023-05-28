@@ -6,6 +6,7 @@ import '../model/plan.dart';
 class PlanInProgressProvider extends ChangeNotifier {
   Plan? plan = null;
   int index = 0;
+  int set_index = 0;
 
   ExerciseInPlan? getNextExerciseInPlan() {
     index += 1;
