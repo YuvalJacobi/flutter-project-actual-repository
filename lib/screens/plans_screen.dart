@@ -72,6 +72,9 @@ class _PlanScreenState extends State<PlanScreen> {
       return;
     }
 
+    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
+        null;
+
     Navigator.push(
       context,
       MaterialPageRoute(

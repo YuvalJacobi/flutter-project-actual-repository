@@ -158,7 +158,8 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
               padding: const EdgeInsets.only(right: 15.0),
               child: Container(
                 alignment: Alignment.bottomRight,
-                child: Text("${set_index + 1} / ${exerciseInPlan.sets} sets"),
+                child: Text("${set_index + 1} / ${exerciseInPlan.sets} sets",
+                    style: TextStyle(fontSize: 12)),
               ),
             )
           ],
