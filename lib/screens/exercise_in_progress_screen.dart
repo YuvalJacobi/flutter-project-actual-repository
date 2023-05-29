@@ -64,12 +64,41 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
     });
   }
 
+  Text exerciseInfoFromExerciseInPlan(ExerciseInPlan exerciseInPlan) {
+    String weight_str;
+    double weight = exerciseInPlan.weight;
+
+    String reps_str;
+    int reps = exerciseInPlan.reps;
+
+    if (weight <= 0) {
+      // Weightless
+      weight_str = "No weight";
+    } else {
+      weight_str = "Using ${weight}kg";
+    }
+
+    if (reps == -69) {
+      // Until failure
+      reps_str = "Until failure";
+    } else {
+      reps_str = "for ${reps} repetitions";
+    }
+
+    String result = '$weight_str ${reps_str}';
+
+    return Text(result, style: TextStyle(fontSize: 20));
+  }
+
   bool toggle = false;
 
   @override
   Widget build(BuildContext context) {
     int index =
         Provider.of<PlanInProgressProvider>(context, listen: false).index;
+
+    int set_index =
+        Provider.of<PlanInProgressProvider>(context, listen: false).set_index;
 
     List<ExerciseInPlan> exercisesInPlan =
         Provider.of<PlanInProgressProvider>(context, listen: false)
@@ -102,7 +131,9 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
               textToShow,
               style: TextStyle(fontSize: 24),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
+            exerciseInfoFromExerciseInPlan(exerciseInPlan),
+            SizedBox(height: 40),
             Text(
               'Tips: make sure to drink water often.',
               style: TextStyle(fontSize: 16),
@@ -112,16 +143,23 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
               onInterval: handleInterval,
               onElapsed: handleElapsed,
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 40),
             if (toggle)
-              ElevatedButton(
-                onPressed: () => onFinishedButtonPressed(),
-                child: Text('Done!'),
+              ButtonTheme(
+                minWidth: 250,
+                height: 200,
+                child: ElevatedButton(
+                  onPressed: () => onFinishedButtonPressed(),
+                  child: Text('Done!'),
+                ),
               ),
             SizedBox(height: 200),
-            Container(
-              alignment: Alignment.bottomLeft,
-              child: Text("${index + 1} / ${exerciseInPlan.sets} sets"),
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: Container(
+                alignment: Alignment.bottomRight,
+                child: Text("${set_index + 1} / ${exerciseInPlan.sets} sets"),
+              ),
             )
           ],
         ),

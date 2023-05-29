@@ -37,7 +37,9 @@ class _PlanScreenState extends State<PlanScreen> {
 
     Plan p = plans[index];
     Provider.of<PlanInProgressProvider>(context, listen: false).plan = p;
-    Provider.of<PlanInProgressProvider>(context, listen: false).index = 0;
+    Provider.of<PlanInProgressProvider>(context, listen: false).index =
+        -1; // since it adds 1 prematurely and I don't want to meddle with it.
+    Provider.of<PlanInProgressProvider>(context, listen: false).set_index = 0;
 
     Navigator.of(context).pop();
     Navigator.push(

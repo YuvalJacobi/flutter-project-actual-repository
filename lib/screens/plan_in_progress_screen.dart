@@ -42,7 +42,7 @@ class _PlanInProgressScreen extends State<PlanInProgressScreen> {
         builder: (BuildContext context) => ExerciseInProgressScreen(),
       ),
     );
-
+    Provider.of<PlanInProgressProvider>(context, listen: false).set_index = 0;
     Provider.of<PlanInProgressProvider>(context, listen: false).index += 1;
   }
 

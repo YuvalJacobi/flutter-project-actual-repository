@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
+import 'package:flutter_complete_guide/screens/exercise_in_progress_screen.dart';
 import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
 import 'package:flutter_complete_guide/provider/timer_elapsing.dart';
 import 'package:provider/provider.dart';
@@ -95,8 +96,29 @@ class _CountdownScreenState extends State<CountdownScreen> {
   }
 
   void skipCountdown() {
-    Navigator.of(context).push(new MaterialPageRoute(
-        builder: (BuildContext context) => new PlanInProgressScreen()));
+    int set_index =
+        Provider.of<PlanInProgressProvider>(context, listen: false).set_index;
+
+    Plan plan =
+        Provider.of<PlanInProgressProvider>(context, listen: false).plan!;
+
+    int index =
+        Provider.of<PlanInProgressProvider>(context, listen: false).index;
+
+    ExerciseInPlan current_exercise_in_plan = plan.exercises[index];
+
+    set_index += 1;
+
+    if (set_index >= current_exercise_in_plan.sets) {
+      Navigator.of(context).push(new MaterialPageRoute(
+          builder: (BuildContext context) => new PlanInProgressScreen()));
+    } else {
+      Provider.of<PlanInProgressProvider>(context, listen: false).set_index +=
+          1;
+
+      Navigator.of(context).push(new MaterialPageRoute(
+          builder: (BuildContext context) => new ExerciseInProgressScreen()));
+    }
   }
 
   CountdownTimerWidget? countdown_timer = null;
