@@ -29,6 +29,8 @@ class PlanAdderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<PlanProvider>(context, listen: false).fetchPlans();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Plan Adder'),
@@ -59,23 +61,27 @@ class PlanAdderScreen extends StatelessWidget {
                     .myUser
                     .user_id;
 
-                Plan p = Provider.of<PlanProvider>(context, listen: false)
-                        .current_edited_plan =
-                    Plan(
-                        exercises: [],
-                        name: nameController.text,
-                        user_id: _uid,
-                        id: "");
+                Plan p = Plan(
+                    exercises: [],
+                    name: nameController.text,
+                    user_id: _uid,
+                    id: "");
+
+                Provider.of<PlanProvider>(context, listen: false).addData(p);
 
                 p = Provider.of<PlanProvider>(context, listen: false)
+                    .getPlans
+                    .last;
+
+                Provider.of<UserProvider>(context, listen: false)
+                    .updatePlanOfUser(p);
+
+                Provider.of<PlanProvider>(context, listen: false)
                         .current_edited_plan =
                     Provider.of<UserProvider>(context, listen: false)
                         .myUser
                         .plans
                         .last;
-
-                Provider.of<UserProvider>(context, listen: false)
-                    .updatePlanOfUser(p);
 
                 Navigator.of(context).pop();
                 Navigator.push(

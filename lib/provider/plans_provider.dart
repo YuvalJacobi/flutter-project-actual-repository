@@ -39,6 +39,27 @@ class PlanProvider extends ChangeNotifier {
               user_id: plan.user_id,
               id: doc.id))
         });
+
+    notifyListeners();
+  }
+
+  Future<void> fetchPlans() async {
+    await FirebaseFirestore.instance.collection("exercises").get().then(
+      (querySnapshot) {
+        print("Successfully fetched exercises!");
+        for (var doc in querySnapshot.docs) {
+          _plans.add(Plan(
+              name: doc['name'],
+              exercises: (doc['exercises'] as List<dynamic>).cast(),
+              user_id: doc['user_id'],
+              id: doc.id));
+        }
+        debugPrint("Successfully added exercises to list!");
+      },
+      onError: (e) => debugPrint("Error completing: $e"),
+    );
+
+    notifyListeners();
   }
 
   Map<String, dynamic> exerciseInPlanToMap(ExerciseInPlan exerciseInPlan) {
