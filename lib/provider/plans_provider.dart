@@ -23,6 +23,7 @@ class PlanProvider extends ChangeNotifier {
     if (getPlans.map((e) => e.id).contains(plan.id)) {
       await setData(plan);
 
+      debugPrint('Plan already exists, replacing data');
       return;
     }
 
@@ -86,7 +87,7 @@ class PlanProvider extends ChangeNotifier {
     });
     _plans.add(plan);
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   Plan getPlanFromExerciseInPlan(ExerciseInPlan exerciseInPlan) {

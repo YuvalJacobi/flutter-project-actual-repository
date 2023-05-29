@@ -66,7 +66,7 @@ class UserProvider extends ChangeNotifier {
 
     print('Successfully updated user!');
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   void updatePlanOfUser(Plan plan) {

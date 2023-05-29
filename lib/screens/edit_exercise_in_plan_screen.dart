@@ -4,7 +4,6 @@ import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
-import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
@@ -192,77 +191,13 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                       },
                     ),
                     SizedBox(height: 32.0),
-                    Column(
-                      children: [
-                        Text(
-                          'Weight:',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        DecimalNumberPicker(
-                            value: weightController.text as double,
-                            minValue: 0,
-                            maxValue: 500,
-                            selectedTextStyle: TextStyle(fontSize: 12),
-                            textStyle: TextStyle(fontSize: 8),
-                            onChanged: (value) => setState(() {
-                                  weightController.text = value.toString();
-                                })),
-                      ],
-                    ),
+                    weightSelection(),
                     SizedBox(height: 16.0),
-                    Column(
-                      children: [
-                        Text(
-                          'Sets:',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        NumberPicker(
-                            value: setsController.text as int,
-                            minValue: 0,
-                            maxValue: 50,
-                            selectedTextStyle: TextStyle(fontSize: 12),
-                            textStyle: TextStyle(fontSize: 8),
-                            onChanged: (value) => setState(() {
-                                  setsController.text = value.toString();
-                                })),
-                      ],
-                    ),
+                    setsSelection(),
                     SizedBox(height: 16.0),
-                    Column(
-                      children: [
-                        Text(
-                          'Reps:',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        NumberPicker(
-                            value: repsController.text as int,
-                            minValue: 0,
-                            maxValue: 100,
-                            selectedTextStyle: TextStyle(fontSize: 12),
-                            textStyle: TextStyle(fontSize: 8),
-                            onChanged: (value) => setState(() {
-                                  repsController.text = value.toString();
-                                })),
-                      ],
-                    ),
+                    repsSelection(),
                     SizedBox(height: 16.0),
-                    Column(
-                      children: [
-                        Text(
-                          'Rest:',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        NumberPicker(
-                            value: restController.text as int,
-                            minValue: 0,
-                            maxValue: 600,
-                            selectedTextStyle: TextStyle(fontSize: 12),
-                            textStyle: TextStyle(fontSize: 8),
-                            onChanged: (value) => setState(() {
-                                  restController.text = value.toString();
-                                })),
-                      ],
-                    ),
+                    restSelection(),
                     SizedBox(height: 16.0),
                     ElevatedButton(
                       onPressed: () {

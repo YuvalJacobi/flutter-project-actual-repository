@@ -5,6 +5,7 @@ import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
@@ -154,39 +155,107 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                       },
                     ),
                     SizedBox(height: 32.0),
-                    TextField(
-                      controller: weightController,
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        labelText: 'Weight',
-                      ),
+                    // TextField(
+                    //   controller: weightController,
+                    //   keyboardType:
+                    //       TextInputType.numberWithOptions(decimal: true),
+                    //   decoration: InputDecoration(
+                    //     labelText: 'Weight',
+                    //   ),
+                    // ),
+                    Column(
+                      children: [
+                        Text(
+                          'Weight:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        DecimalNumberPicker(
+                            value: weightController.text as double,
+                            minValue: 0,
+                            maxValue: 500,
+                            selectedTextStyle: TextStyle(fontSize: 12),
+                            textStyle: TextStyle(fontSize: 8),
+                            onChanged: (value) => setState(() {
+                                  weightController.text = value.toString();
+                                })),
+                      ],
                     ),
                     SizedBox(height: 16.0),
-                    TextField(
-                      controller: setsController,
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: false),
-                      decoration: InputDecoration(
-                        labelText: 'Sets',
-                      ),
+                    // TextField(
+                    //   controller: setsController,
+                    //   keyboardType:
+                    //       TextInputType.numberWithOptions(decimal: false),
+                    //   decoration: InputDecoration(
+                    //     labelText: 'Sets',
+                    //   ),
+                    // ),
+                    Column(
+                      children: [
+                        Text(
+                          'Sets:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        NumberPicker(
+                            value: setsController.text as int,
+                            minValue: 0,
+                            maxValue: 50,
+                            selectedTextStyle: TextStyle(fontSize: 12),
+                            textStyle: TextStyle(fontSize: 8),
+                            onChanged: (value) => setState(() {
+                                  setsController.text = value.toString();
+                                })),
+                      ],
                     ),
                     SizedBox(height: 16.0),
-                    TextField(
-                      controller: repsController,
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: false),
-                      decoration: InputDecoration(
-                        labelText: 'Reps',
-                      ),
+                    // TextField(
+                    //   controller: repsController,
+                    //   keyboardType:
+                    //       TextInputType.numberWithOptions(decimal: false),
+                    //   decoration: InputDecoration(
+                    //     labelText: 'Reps',
+                    //   ),
+                    // ),
+                    Column(
+                      children: [
+                        Text(
+                          'Reps:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        NumberPicker(
+                            value: repsController.text as int,
+                            minValue: 0,
+                            maxValue: 100,
+                            selectedTextStyle: TextStyle(fontSize: 12),
+                            textStyle: TextStyle(fontSize: 8),
+                            onChanged: (value) => setState(() {
+                                  repsController.text = value.toString();
+                                })),
+                      ],
                     ),
                     SizedBox(height: 16.0),
-                    TextField(
-                      controller: restController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Rest',
-                      ),
+                    // TextField(
+                    //   controller: restController,
+                    //   keyboardType: TextInputType.number,
+                    //   decoration: InputDecoration(
+                    //     labelText: 'Rest',
+                    //   ),
+                    // ),
+                    Column(
+                      children: [
+                        Text(
+                          'Rest:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        NumberPicker(
+                            value: restController.text as int,
+                            minValue: 0,
+                            maxValue: 600,
+                            selectedTextStyle: TextStyle(fontSize: 12),
+                            textStyle: TextStyle(fontSize: 8),
+                            onChanged: (value) => setState(() {
+                                  restController.text = value.toString();
+                                })),
+                      ],
                     ),
                     SizedBox(height: 16.0),
                     ElevatedButton(
