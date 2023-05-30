@@ -1,6 +1,3 @@
-import 'dart:js';
-import 'dart:js_interop';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
@@ -9,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../model/exercise.dart';
 import '../model/plan.dart';
-import 'exercise_provider.dart';
 
 class ExerciseInPlanProvider extends ChangeNotifier {
   Future<void> addData(ExerciseInPlan exerciseInPlan) async {

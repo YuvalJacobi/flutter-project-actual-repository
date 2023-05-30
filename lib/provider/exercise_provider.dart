@@ -1,9 +1,6 @@
-import 'dart:js';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
-import 'package:provider/provider.dart';
 
 class ExerciseProvider extends ChangeNotifier {
   List<Exercise> _exercises = [];
@@ -51,13 +48,16 @@ class ExerciseProvider extends ChangeNotifier {
       (querySnapshot) {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
+          if (_exercises.map((e) => e.exercise_id).contains(doc.id)) continue;
           _exercises.add(Exercise(
-              name: doc['name'],
-              category: doc['category'],
-              active_muscles: (doc['active_muscles'] as List<dynamic>).cast(),
-              level: doc['level'],
-              image_url: doc['image_url'],
-              user_id: doc['user_id'],
+              name: doc['name'] ?? '',
+              category: doc['category'] ?? '',
+              active_muscles: doc['active_muscles'] == null
+                  ? []
+                  : List.from(doc['active_muscles'] as Iterable<dynamic>),
+              level: doc['level'] ?? '',
+              image_url: doc['image_url'] ?? '',
+              user_id: doc['user_id'] ?? '',
               exercise_id: doc.id));
         }
         debugPrint("Successfully added exercises to list!");

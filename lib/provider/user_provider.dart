@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../model/exercise_in_plan.dart';
@@ -20,6 +21,10 @@ class UserProvider extends ChangeNotifier {
 
   String getUserId() {
     return myUser.user_id;
+  }
+
+  void addPlan(Plan p) {
+    _plans.add(p);
   }
 
   // void debugUser(UserProfile user) {
@@ -104,12 +109,11 @@ class UserProvider extends ChangeNotifier {
 
   List<Plan> dynamicOfPlansToPlansList(dynamic d, BuildContext context) {
     List<Plan> plans = [];
-    for (Map<String, dynamic> item in d) {
-      String plan_id = item.toString();
+    for (String item in d) {
+      String plan_id = item;
 
-      Plan p = Provider.of<UserProvider>(context, listen: false)
-          .my_plans
-          .firstWhere((element) => element.id == plan_id);
+      Plan p = Provider.of<PlanProvider>(context, listen: false)
+          .getPlanById(plan_id);
 
       plans.add(p);
     }
@@ -128,7 +132,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> fetchUserData(BuildContext context) async {
-    debugPrint(getUserId());
+    //debugPrint(getUserId());
     await FirebaseFirestore.instance
         .collection('users')
         .doc(myUser.user_id)

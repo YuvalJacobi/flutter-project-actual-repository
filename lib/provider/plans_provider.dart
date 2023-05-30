@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
+import 'package:flutter_complete_guide/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
+import '../screens/edit_plan_screen.dart';
 
 class PlanProvider extends ChangeNotifier {
   List<Plan> plans = [];
@@ -27,7 +30,7 @@ class PlanProvider extends ChangeNotifier {
     return plans.where((item) => item.user_id == uid).toList();
   }
 
-  Future<void> addData(Plan plan) async {
+  Future<void> addData(Plan plan, BuildContext context) async {
     if (getPlans.map((e) => e.id).contains(plan.id)) {
       await setData(plan);
 
@@ -35,34 +38,48 @@ class PlanProvider extends ChangeNotifier {
       return;
     }
 
-    await Future.microtask(() => {
-          FirebaseFirestore.instance.collection('plans').add({
-            'exercises_in_plan':
-                plan.exercises.map((e) => exerciseInPlanToMap(e)).toList(),
-            'name': plan.name,
-            'user_id': plan.user_id
-          }).then((doc) => {
-                plan.id = doc.id,
-                plans.add(Plan(
-                    exercises: plan.exercises,
-                    name: plan.name,
-                    user_id: plan.user_id,
-                    id: doc.id))
-              })
+    await FirebaseFirestore.instance.collection('plans').add({
+      'exercises_in_plan':
+          plan.exercises.map((e) => exerciseInPlanToMap(e)).toList(),
+      'name': plan.name,
+      'user_id': plan.user_id
+    }).then((doc) => {
+          plan.id = doc.id,
+          plans.add(Plan(
+              exercises: plan.exercises,
+              name: plan.name,
+              user_id: plan.user_id,
+              id: doc.id)),
+          Provider.of<UserProvider>(context, listen: false).addPlan(plan)
         });
 
-    notifyListeners();
+    Provider.of<UserProvider>(context, listen: false).updatePlanOfUser(plan);
+
+    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
+        plan;
+
+    Navigator.of(context).pop();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditPlanScreen(),
+      ),
+    );
+
+    //notifyListeners();
   }
 
   Future<void> fetchPlans() async {
-    await FirebaseFirestore.instance.collection("exercises").get().then(
+    await FirebaseFirestore.instance.collection("plans").get().then(
       (querySnapshot) {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
           plans.add(Plan(
-              name: doc['name'],
-              exercises: (doc['exercises'] as List<dynamic>).cast(),
-              user_id: doc['user_id'],
+              name: doc['name'] ?? '',
+              exercises: doc['exercises_in_plan'] == null
+                  ? []
+                  : List.from(doc['exercises_in_plan'] as Iterable<dynamic>),
+              user_id: doc['user_id'] ?? '',
               id: doc.id));
         }
         debugPrint("Successfully added exercises to list!");

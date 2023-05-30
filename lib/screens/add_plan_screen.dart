@@ -77,10 +77,11 @@ class PlanAdderScreen extends StatelessWidget {
                     user_id: _uid,
                     id: "");
 
-                Provider.of<PlanProvider>(context, listen: false).addData(p);
+                Provider.of<PlanProvider>(context, listen: false)
+                    .addData(p, context);
 
                 // adding manual delay since await doesn't wait for some reason
-                manualDelay();
+                //manualDelay();
 
                 // try {
                 //   p = Provider.of<PlanProvider>(context, listen: false)
@@ -97,24 +98,6 @@ class PlanAdderScreen extends StatelessWidget {
                 // } on Error catch (_) {
                 //   return;
                 // }
-
-                Provider.of<UserProvider>(context, listen: false)
-                    .updatePlanOfUser(p);
-
-                Provider.of<PlanProvider>(context, listen: false)
-                        .current_edited_plan =
-                    Provider.of<UserProvider>(context, listen: false)
-                        .myUser
-                        .plans
-                        .last;
-
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditPlanScreen(),
-                  ),
-                );
               },
               child: Text('Confirm'),
             ),
