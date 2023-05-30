@@ -80,6 +80,6 @@ class ExerciseProvider extends ChangeNotifier {
     }).then((doc) =>
         {debugPrint("Successfully added exercise: " + exercise.toString())});
 
-    fetchExercises();
+    await fetchExercises();
   }
 }
