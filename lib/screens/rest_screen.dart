@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/model/exercise.dart';
+import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/screens/exercise_in_progress_screen.dart';
 import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
@@ -46,6 +48,11 @@ class _CountdownScreenState extends State<CountdownScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
 
@@ -55,7 +62,9 @@ class _CountdownScreenState extends State<CountdownScreen> {
     int index =
         Provider.of<PlanInProgressProvider>(context, listen: false).index;
 
-    ExerciseInPlan exerciseInPlan = plan.exercises[index];
+    ExerciseInPlan exerciseInPlan =
+        Provider.of<ExerciseInPlanProvider>(context, listen: false)
+            .getExerciseInPlanById(plan.exercises_in_plan[index]);
 
     _countdown = exerciseInPlan.rest;
 
@@ -105,19 +114,27 @@ class _CountdownScreenState extends State<CountdownScreen> {
     int index =
         Provider.of<PlanInProgressProvider>(context, listen: false).index;
 
-    ExerciseInPlan current_exercise_in_plan = plan.exercises[index];
+    ExerciseInPlan current_exercise_in_plan =
+        Provider.of<ExerciseInPlanProvider>(context, listen: false)
+            .getExerciseInPlanById(plan.exercises_in_plan[index]);
 
     set_index += 1;
 
     if (set_index >= current_exercise_in_plan.sets) {
-      Navigator.of(context).push(new MaterialPageRoute(
-          builder: (BuildContext context) => new PlanInProgressScreen()));
+      Future.delayed(Duration.zero, () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (BuildContext context) => PlanInProgressScreen(),
+        ));
+      });
     } else {
-      Provider.of<PlanInProgressProvider>(context, listen: false).set_index +=
-          1;
+      Future.delayed(Duration.zero, () {
+        Provider.of<PlanInProgressProvider>(context, listen: false).set_index +=
+            1;
 
-      Navigator.of(context).push(new MaterialPageRoute(
-          builder: (BuildContext context) => new ExerciseInProgressScreen()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (BuildContext context) => ExerciseInProgressScreen(),
+        ));
+      });
     }
   }
 

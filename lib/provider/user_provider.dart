@@ -11,12 +11,17 @@ import '../model/user_profile.dart';
 class UserProvider extends ChangeNotifier {
   UserProfile myUser = new UserProfile(plans: []);
 
-  List<Plan> _plans = [];
-
   final _auth = FirebaseAuth.instance;
 
   List<Plan> get my_plans {
-    return [..._plans];
+    return [...myUser.plans];
+  }
+
+  Plan getPlanById(String id) {
+    if (my_plans.map((e) => e.id).contains(id)) {
+      return my_plans.firstWhere((element) => element.id == id);
+    }
+    return Plan(exercises_in_plan: [], name: '', user_id: '', id: '');
   }
 
   String getUserId() {
@@ -24,7 +29,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void addPlan(Plan p) {
-    _plans.add(p);
+    myUser.plans.add(p);
   }
 
   // void debugUser(UserProfile user) {
@@ -47,15 +52,6 @@ class UserProvider extends ChangeNotifier {
       'sets': exerciseInPlan.sets,
       'rest': exerciseInPlan.rest,
       'weight': exerciseInPlan.weight
-    };
-  }
-
-  Map<String, dynamic> planToMap(Plan plan) {
-    return {
-      'name': plan.name,
-      'user_id': plan.user_id,
-      'exercises_in_plan':
-          plan.exercises.map((e) => exerciseInPlanToMap(e)).toList()
     };
   }
 
@@ -92,21 +88,6 @@ class UserProvider extends ChangeNotifier {
     setData();
   }
 
-  List<ExerciseInPlan> dynamicOfExercisesInPlanToExercisesInPlan(dynamic d) {
-    List<ExerciseInPlan> eip = [];
-    for (Map<String, dynamic> item in d) {
-      eip.add(ExerciseInPlan(
-          sets: item['sets'] ?? -1,
-          reps: item['reps'] ?? -1,
-          weight:
-              item['weight'] == null ? -1 : (item['weight'] as num).toDouble(),
-          rest: item['rest'] ?? -1,
-          exercise_id: item['exercise_id'] ?? '',
-          plan_id: item['plan_id'] ?? ''));
-    }
-    return eip;
-  }
-
   List<Plan> dynamicOfPlansToPlansList(dynamic d, BuildContext context) {
     List<Plan> plans = [];
     for (String item in d) {
@@ -115,6 +96,7 @@ class UserProvider extends ChangeNotifier {
       Plan p = Provider.of<PlanProvider>(context, listen: false)
           .getPlanById(plan_id);
 
+      if (p.id == '') continue;
       plans.add(p);
     }
     return plans;

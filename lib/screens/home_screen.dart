@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
-import 'package:flutter_complete_guide/model/plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
@@ -34,15 +33,16 @@ class _HomeScreenState extends State<HomeScreen> {
       // });
 
       try {
-        Provider.of<ExerciseProvider>(context, listen: false)
-            .fetchExercises()
-            .then((_) => Provider.of<UserProvider>(context, listen: false)
-                    .fetchUserData(context)
-                    .then((_) {
-                  setState(() {
-                    _isInit = false;
-                  });
-                }));
+        Provider.of<PlanProvider>(context, listen: false)
+            .fetchPlans(context)
+            .then((_) => Provider.of<ExerciseProvider>(context, listen: false)
+                .fetchExercises()
+                .then((_) => Provider.of<UserProvider>(context, listen: false)
+                    .fetchUserData(context)))
+            .then((_) =>
+                Provider.of<ExerciseInPlanProvider>(context, listen: false)
+                    .fetchData()
+                    .then((_) => setState(() => {_isInit = false})));
       } catch (e) {
         debugPrint(e.toString());
       }
@@ -68,9 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
     //         'https://weighttraining.guide/wp-content/uploads/2021/09/Seated-Alternating-dumbbell-Curl.png',
     //     category: 'lift',
     //     id: ""));
-    Provider.of<PlanProvider>(context, listen: false).fetchPlans();
-    Provider.of<ExerciseProvider>(context, listen: false).fetchExercises();
-    Provider.of<UserProvider>(context, listen: false).fetchUserData(context);
+
+    ;
     return Scaffold(
         appBar: new AppBar(
           title: new Text("Our Fitness"),
@@ -172,19 +171,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: new Text("View Profile"),
                     leading: new Icon(Icons.person),
                     onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              new ProfileScreen()));
+                      Navigator.of(context).pushReplacement(
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  new ProfileScreen()));
                     }),
                 new Divider(),
                 new ListTile(
                     title: new Text("View Plans"),
                     leading: new Icon(Icons.calendar_view_day),
                     onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (BuildContext context) => new PlanScreen()));
+                      Navigator.of(context).pushReplacement(
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  new PlanScreen()));
                     }),
                 new Divider(),
                 new ListTile(
@@ -203,8 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(
+                      Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (BuildContext context) => AuthScreen(),
                         ),

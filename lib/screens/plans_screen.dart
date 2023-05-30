@@ -36,13 +36,19 @@ class _PlanScreenState extends State<PlanScreen> {
     debugPrint('Starting plan: ${plans[index].name}');
 
     Plan p = plans[index];
+
+    if (p.exercises_in_plan.isEmpty) {
+      debugPrint('Plan is empty :(');
+      return;
+    }
+
     Provider.of<PlanInProgressProvider>(context, listen: false).plan = p;
     Provider.of<PlanInProgressProvider>(context, listen: false).index =
         -1; // since it adds 1 prematurely and I don't want to meddle with it.
-    Provider.of<PlanInProgressProvider>(context, listen: false).set_index = 0;
+    Provider.of<PlanInProgressProvider>(context, listen: false).set_index =
+        -1; // since it adds 1 prematurely and I don't want to meddle with it.
 
-    Navigator.of(context).pop();
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => PlanInProgressScreen(),
@@ -54,11 +60,10 @@ class _PlanScreenState extends State<PlanScreen> {
     debugPrint("Should navigate to edit screen");
     plans = Provider.of<UserProvider>(context, listen: false).myUser.plans;
 
-    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
-        plans[index];
+    Provider.of<PlanProvider>(context, listen: false)
+        .setCurrentEditedPlanId(plans[index].id);
 
-    Navigator.of(context).pop();
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => EditPlanScreen(),
@@ -67,13 +72,8 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   void addPlan() {
-    if (plans.length >= 10) {
-      debugPrint("Cannot have more than 10 plans!");
-      return;
-    }
-
-    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
-        null;
+    Provider.of<PlanProvider>(context, listen: false)
+        .setCurrentEditedPlanId('');
 
     Navigator.push(
       context,
@@ -89,44 +89,58 @@ class _PlanScreenState extends State<PlanScreen> {
     });
   }
 
+  bool isInit = false;
+
   @override
   Widget build(BuildContext context) {
-    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
-        null;
+    if (isInit == false) {
+      Provider.of<PlanProvider>(context, listen: false)
+          .setCurrentEditedPlanId('');
+    }
 
-    plans = Provider.of<UserProvider>(context, listen: false).myUser.plans;
+    Provider.of<UserProvider>(context, listen: false)
+        .fetchUserData(context)
+        .then((value) => plans =
+            Provider.of<UserProvider>(context, listen: false).myUser.plans)
+        .then((value) => {
+              setState(() {
+                isInit = true;
+              })
+            });
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Plans'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: ElevatedButton(
-              onPressed: addPlan,
-              child: Text('Add Plan'),
+      body: isInit == false
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: addPlan,
+                    child: Text('Add Plan'),
+                  ),
+                ),
+                SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: plans.length,
+                    itemBuilder: (context, index) {
+                      final _plan = plans[index];
+                      return PlanItem(
+                        name: _plan.name,
+                        onEditPressed: () => editPlan(index),
+                        onDeletePressed: () => deletePlan(index),
+                        onStartPressed: () => startPlan(index),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-          SizedBox(
-            height: 200,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: plans.length,
-              itemBuilder: (context, index) {
-                final _plan = plans[index];
-                return PlanItem(
-                  name: _plan.name,
-                  onEditPressed: () => editPlan(index),
-                  onDeletePressed: () => deletePlan(index),
-                  onStartPressed: () => startPlan(index),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

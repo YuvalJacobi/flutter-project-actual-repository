@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
+import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/screens/home_screen.dart';
@@ -48,7 +49,7 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
   }
 
   void onFinishedButtonPressed() async {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => CountdownScreen()),
     );
@@ -78,7 +79,7 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
       weight_str = "Using ${weight}kg";
     }
 
-    if (reps == -69) {
+    if (reps == 0) {
       // Until failure
       reps_str = "Until failure";
     } else {
@@ -100,16 +101,24 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
     int set_index =
         Provider.of<PlanInProgressProvider>(context, listen: false).set_index;
 
-    List<ExerciseInPlan> exercisesInPlan =
+    List<String> exercisesInPlanIds =
         Provider.of<PlanInProgressProvider>(context, listen: false)
             .plan!
-            .exercises;
+            .exercises_in_plan;
+
+    List<ExerciseInPlan> exercisesInPlan =
+        Provider.of<ExerciseInPlanProvider>(context, listen: false)
+            .exercisesInPlanByIds(exercisesInPlanIds);
 
     if (index >= exercisesInPlan.length) {
       debugPrint('Done!');
 
-      Navigator.of(context).push(new MaterialPageRoute(
-          builder: (BuildContext context) => new HomeScreen()));
+      Future.delayed(
+          Duration.zero,
+          () => {
+                Navigator.of(context).pushReplacement(new MaterialPageRoute(
+                    builder: (BuildContext context) => new HomeScreen()))
+              });
     }
     ExerciseInPlan exerciseInPlan = exercisesInPlan[index];
 

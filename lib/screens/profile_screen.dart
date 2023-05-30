@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
+import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -77,6 +78,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     print('Age: $age');
     print('Height: $height');
     print('Weight: $weight');
+
+    Future.delayed(
+      Duration.zero,
+      () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (BuildContext context) => HomeScreen(),
+        ));
+      },
+    );
   }
 
   @override

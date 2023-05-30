@@ -37,13 +37,16 @@ class _PlanInProgressScreen extends State<PlanInProgressScreen> {
   }
 
   void navigateToExerciseInProgressScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) => ExerciseInProgressScreen(),
-      ),
-    );
     Provider.of<PlanInProgressProvider>(context, listen: false).set_index = 0;
     Provider.of<PlanInProgressProvider>(context, listen: false).index += 1;
+    Future.delayed(
+      Duration.zero,
+      () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (BuildContext context) => ExerciseInProgressScreen(),
+        ));
+      },
+    );
   }
 
   @override

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
+import 'package:flutter_complete_guide/model/user_profile.dart';
+import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -8,26 +10,48 @@ import '../model/plan.dart';
 import '../screens/edit_plan_screen.dart';
 
 class PlanProvider extends ChangeNotifier {
-  List<Plan> plans = [];
-
-  Plan? currently_played_plan = null;
+  List<Plan> _plans = [];
 
   List<Plan> get getPlans {
-    return [...plans];
+    return [..._plans];
   }
 
-  Plan? getCurrentEditedPlan() {
-    return current_edited_plan;
+  Plan getCurrentEditedPlan(BuildContext context) {
+    return Provider.of<UserProvider>(context, listen: false)
+        .getPlanById(_current_edited_plan);
   }
 
-  Plan? current_edited_plan = null;
+  void updateCurrentEditedPlan(Plan plan, [bool cloud_update = false]) {
+    updatePlan(plan, cloud_update);
+  }
+
+  void updatePlan(Plan plan, [bool cloud_update = false]) {
+    int index = _plans.map((e) => e.id).toList().indexOf(plan.id);
+
+    if (index == -1) {
+      // plans doesn't have plan?!?!
+      return;
+    }
+
+    _plans[index] = plan;
+
+    if (cloud_update) {
+      setData(plan);
+    }
+  }
+
+  void setCurrentEditedPlanId(String new_id) {
+    _current_edited_plan = new_id;
+  }
+
+  String _current_edited_plan = '';
 
   Future<void> deletePlanByName(String name) async {
     await FirebaseFirestore.instance.collection('plans').doc(name).delete();
   }
 
   List<Plan> getPlansOfUser(String uid) {
-    return plans.where((item) => item.user_id == uid).toList();
+    return _plans.where((item) => item.user_id == uid).toList();
   }
 
   Future<void> addData(Plan plan, BuildContext context) async {
@@ -39,44 +63,31 @@ class PlanProvider extends ChangeNotifier {
     }
 
     await FirebaseFirestore.instance.collection('plans').add({
-      'exercises_in_plan':
-          plan.exercises.map((e) => exerciseInPlanToMap(e)).toList(),
+      'exercises_in_plan': plan.exercises_in_plan.toList(),
       'name': plan.name,
       'user_id': plan.user_id
     }).then((doc) => {
           plan.id = doc.id,
-          plans.add(Plan(
-              exercises: plan.exercises,
+          _plans.add(Plan(
+              exercises_in_plan: plan.exercises_in_plan,
               name: plan.name,
               user_id: plan.user_id,
               id: doc.id)),
           Provider.of<UserProvider>(context, listen: false).addPlan(plan)
         });
 
-    Provider.of<UserProvider>(context, listen: false).updatePlanOfUser(plan);
-
-    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
-        plan;
-
-    Navigator.of(context).pop();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditPlanScreen(),
-      ),
-    );
-
     //notifyListeners();
   }
 
-  Future<void> fetchPlans() async {
+  Future<void> fetchPlans(BuildContext context) async {
     await FirebaseFirestore.instance.collection("plans").get().then(
       (querySnapshot) {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
-          plans.add(Plan(
+          if (_plans.map((e) => e.id).contains(doc.id) == true) continue;
+          _plans.add(Plan(
               name: doc['name'] ?? '',
-              exercises: doc['exercises_in_plan'] == null
+              exercises_in_plan: doc['exercises_in_plan'] == null
                   ? []
                   : List.from(doc['exercises_in_plan'] as Iterable<dynamic>),
               user_id: doc['user_id'] ?? '',
@@ -88,6 +99,17 @@ class PlanProvider extends ChangeNotifier {
     );
 
     notifyListeners();
+  }
+
+  List<ExerciseInPlan> exercisesInPlanFromIds(
+      List<String> ids, BuildContext context) {
+    if (ids.isEmpty) return [];
+    List<ExerciseInPlan> lst = [];
+    for (String id in ids) {
+      lst.add(Provider.of<ExerciseInPlanProvider>(context, listen: false)
+          .getExerciseInPlanById(id));
+    }
+    return lst;
   }
 
   Map<String, dynamic> exerciseInPlanToMap(ExerciseInPlan exerciseInPlan) {
@@ -102,17 +124,12 @@ class PlanProvider extends ChangeNotifier {
   }
 
   Future<void> setData(Plan plan) async {
-    List<ExerciseInPlan> lst = plan.exercises;
-
-    await FirebaseFirestore.instance
-        .collection('plans')
-        .doc(plan.id.isEmpty ? null : plan.id)
-        .set({
-      'exercises_in_plan': lst.map((e) => exerciseInPlanToMap(e)).toList(),
+    await FirebaseFirestore.instance.collection('plans').doc(plan.id).set({
+      'exercises_in_plan': plan.exercises_in_plan,
       'name': plan.name,
       'user_id': plan.user_id
     });
-    plans.add(plan);
+    _plans.add(plan);
 
     //notifyListeners();
   }
@@ -121,18 +138,28 @@ class PlanProvider extends ChangeNotifier {
     return getPlanById(exerciseInPlan.exercise_id);
   }
 
+  Plan getPlanByName(String name) {
+    if (_plans.isEmpty)
+      return Plan(exercises_in_plan: [], name: '', user_id: '', id: '');
+
+    return _plans.firstWhere((element) => element.name == name);
+  }
+
   Plan getPlanById(String planId) {
-    return plans.firstWhere((element) => element.id == planId);
+    if (_plans.isEmpty)
+      return Plan(exercises_in_plan: [], name: '', user_id: '', id: '');
+
+    return _plans.firstWhere((element) => element.id == planId);
   }
 
   Future<void> deletePlanInUser(Plan plan) async {
-    plans.removeWhere((element) => element.id == plan.id);
+    _plans.removeWhere((element) => element.id == plan.id);
 
     // Remove plan from user's plans.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(plan.user_id)
-        .set({'plans': plans});
+        .set({'plans': _plans});
 
     // Remove plan from plans.
     await FirebaseFirestore.instance.collection('plans').doc(plan.id).delete();

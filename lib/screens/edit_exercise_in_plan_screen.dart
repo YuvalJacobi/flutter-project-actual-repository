@@ -80,7 +80,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
     debugPrint("trying to get current edited plan.");
 
     current_edited_plan = Provider.of<PlanProvider>(context, listen: false)
-        .getCurrentEditedPlan();
+        .getCurrentEditedPlan(context);
 
     debugPrint("Successfully got current edited plan!" +
         current_edited_plan.toString());
@@ -217,19 +217,21 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                             reps: int.parse(repsController.text),
                             weight: double.parse(weightController.text),
                             rest: int.parse(restController.text),
-                            plan_id: current_edited_plan!.id);
+                            plan_id: current_edited_plan!.id,
+                            exercise_in_plan_id: '');
 
                         if (isExerciseValid(_exerciseInPlan) == false) {
                           debugPrint("Selections are not valid!");
                           return;
                         }
-                        current_edited_plan!.exercises.add(_exerciseInPlan);
+                        current_edited_plan!.exercises_in_plan
+                            .add(_exerciseInPlan.exercise_in_plan_id);
 
                         setState(() {
                           Provider.of<PlanProvider>(context, listen: false)
-                              .current_edited_plan!
-                              .exercises
-                              .add(_exerciseInPlan);
+                              .getCurrentEditedPlan(context)
+                              .exercises_in_plan
+                              .add(_exerciseInPlan.exercise_in_plan_id);
                         });
 
                         debugPrint("Exercise was successfully added!\n\n" +
@@ -238,14 +240,15 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         debugPrint("Current amount of exercises in plan: " +
                             current_edited_plan!.name +
                             ":\n" +
-                            current_edited_plan!.exercises.length.toString());
+                            current_edited_plan!.exercises_in_plan.length
+                                .toString());
 
                         clearSelections();
 
-                        Navigator.of(context).pop();
-                        Navigator.of(context).push(new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                new PlanScreen()));
+                        Navigator.of(context).pushReplacement(
+                            new MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    new PlanScreen()));
                       },
                       child: Text('Add'),
                     ),
