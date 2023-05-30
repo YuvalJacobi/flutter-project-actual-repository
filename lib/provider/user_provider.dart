@@ -1,23 +1,71 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:provider/provider.dart';
 
+import '../model/exercise_in_plan.dart';
 import '../model/plan.dart';
 import '../model/user_profile.dart';
 
 class UserProvider extends ChangeNotifier {
   UserProfile myUser = new UserProfile(plans: []);
 
+  List<Plan> _plans = [];
+
   final _auth = FirebaseAuth.instance;
+
+  List<Plan> get my_plans {
+    return [..._plans];
+  }
 
   String getUserId() {
     return myUser.user_id;
   }
 
+  void addPlan(Plan p) {
+    _plans.add(p);
+  }
+
+  // void debugUser(UserProfile user) {
+  //   int ind = 1;
+  //   for (Plan p in user.plans) {
+  //     debugPrint(ind.toString() +
+  //         '#: ' +
+  //         p.name +
+  //         ' ' +
+  //         p.exercises.length.toString());
+  //     ind++;
+  //   }
+  // }
+
+  Map<String, dynamic> exerciseInPlanToMap(ExerciseInPlan exerciseInPlan) {
+    return {
+      'exercise_id': exerciseInPlan.exercise_id,
+      'plan_id': exerciseInPlan.plan_id,
+      'reps': exerciseInPlan.reps,
+      'sets': exerciseInPlan.sets,
+      'rest': exerciseInPlan.rest,
+      'weight': exerciseInPlan.weight
+    };
+  }
+
+  Map<String, dynamic> planToMap(Plan plan) {
+    return {
+      'name': plan.name,
+      'user_id': plan.user_id,
+      'exercises_in_plan':
+          plan.exercises.map((e) => exerciseInPlanToMap(e)).toList()
+    };
+  }
+
   Future<void> setData() async {
     debugPrint(myUser.toString());
 
-    FirebaseFirestore.instance.collection('users').doc(myUser.user_id).set({
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(myUser.user_id)
+        .set({
       'first_name': myUser.first_name,
       'last_name': myUser.last_name,
       'email': myUser.email,
@@ -25,34 +73,86 @@ class UserProvider extends ChangeNotifier {
       'height': myUser.height,
       'weight': myUser.weight,
       'username': myUser.username,
-      'plans': myUser.plans,
+      'plans': myUser.plans.map((e) => e.id).toList(),
     });
 
     print('Successfully updated user!');
 
-    notifyListeners();
+    //notifyListeners();
   }
 
-  Future<void> fetchUserData() async {
-    debugPrint(getUserId());
-    FirebaseFirestore.instance
+  void updatePlanOfUser(Plan plan) {
+    if (myUser.plans.map((e) => e.id).contains(plan.id)) {
+      int ind = myUser.plans.map((e) => e.id).toList().indexOf(plan.id);
+      myUser.plans[ind] = plan;
+    } else {
+      myUser.plans.add(plan);
+    }
+
+    setData();
+  }
+
+  List<ExerciseInPlan> dynamicOfExercisesInPlanToExercisesInPlan(dynamic d) {
+    List<ExerciseInPlan> eip = [];
+    for (Map<String, dynamic> item in d) {
+      eip.add(ExerciseInPlan(
+          sets: item['sets'] ?? -1,
+          reps: item['reps'] ?? -1,
+          weight:
+              item['weight'] == null ? -1 : (item['weight'] as num).toDouble(),
+          rest: item['rest'] ?? -1,
+          exercise_id: item['exercise_id'] ?? '',
+          plan_id: item['plan_id'] ?? ''));
+    }
+    return eip;
+  }
+
+  List<Plan> dynamicOfPlansToPlansList(dynamic d, BuildContext context) {
+    List<Plan> plans = [];
+    for (String item in d) {
+      String plan_id = item;
+
+      Plan p = Provider.of<PlanProvider>(context, listen: false)
+          .getPlanById(plan_id);
+
+      plans.add(p);
+    }
+    return plans;
+
+    // List<Plan> plans = [];
+    // for (Map<String, dynamic> item in d) {
+    //   plans.add(Plan(
+    //       exercises: dynamicOfExercisesInPlanToExercisesInPlan(
+    //           item['exercises_in_plan'] ?? ''),
+    //       name: item['name'] ?? '',
+    //       user_id: item['user_id'] ?? '',
+    //       id: item['plan_id'] ?? ''));
+    // }
+    // return plans;
+  }
+
+  Future<void> fetchUserData(BuildContext context) async {
+    //debugPrint(getUserId());
+    await FirebaseFirestore.instance
         .collection('users')
         .doc(myUser.user_id)
         .get()
         .then((doc) => {
-              myUser.first_name = doc['first_name'],
-              myUser.last_name = doc['last_name'],
-              myUser.email = doc['email'],
-              myUser.age = doc['age'],
-              myUser.height = doc['height'],
-              myUser.weight = doc['weight'],
-              myUser.username = doc['username'],
-              myUser.plans = (doc['plans'] as List<dynamic>)
-                  .map((item) => item as Plan)
-                  .toList(),
+              myUser.first_name = doc['first_name'] ?? '',
+              myUser.last_name = doc['last_name'] ?? '',
+              myUser.email = doc['email'] ?? '',
+              myUser.age = doc['age'] ?? '',
+              myUser.height =
+                  doc['height'] == null ? -1 : doc['height'] as double,
+              myUser.weight =
+                  doc['weight'] == null ? -1 : doc['weight'] as double,
+              myUser.username = doc['username'] ?? '',
+              myUser.plans = doc['plans'] == null
+                  ? []
+                  : dynamicOfPlansToPlansList(doc['plans'] ?? '', context)
             });
 
-    debugPrint(myUser.toString());
+    //debugUser(myUser);
     notifyListeners();
   }
 

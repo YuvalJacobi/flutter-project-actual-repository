@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -84,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Provider.of<UserProvider>(context, listen: false)
-        .fetchUserData()
+        .fetchUserData(context)
         .then((value) => {
               firstName = Provider.of<UserProvider>(context, listen: false)
                   .myUser

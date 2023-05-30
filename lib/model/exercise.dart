@@ -9,7 +9,9 @@ class Exercise {
 
   String image_url;
 
-  String id;
+  String user_id;
+
+  String exercise_id;
 
   Exercise(
       {required this.name,
@@ -17,5 +19,6 @@ class Exercise {
       required this.active_muscles,
       required this.level,
       required this.image_url,
-      required this.id});
+      required this.user_id,
+      required this.exercise_id});
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/model/user_profile.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/screens/add_plan_screen.dart';
-import 'package:flutter_complete_guide/screens/edit_plan_screen.dart';
+import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../model/exercise.dart';
 import '../model/plan.dart';
+import '../provider/plan_in_progress_provider.dart';
 import '../provider/user_provider.dart';
+import 'edit_plan_screen.dart';
 
 void main() {
   runApp(PlanApp());
@@ -33,29 +33,47 @@ class _PlanScreenState extends State<PlanScreen> {
   List<Plan> plans = [];
 
   void startPlan(int index) {
-    // Logic to start the exercise plan
     debugPrint('Starting plan: ${plans[index].name}');
+
+    Plan p = plans[index];
+    Provider.of<PlanInProgressProvider>(context, listen: false).plan = p;
+    Provider.of<PlanInProgressProvider>(context, listen: false).index =
+        -1; // since it adds 1 prematurely and I don't want to meddle with it.
+    Provider.of<PlanInProgressProvider>(context, listen: false).set_index = 0;
+
+    Navigator.of(context).pop();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlanInProgressScreen(),
+      ),
+    );
   }
 
   void editPlan(int index) {
     debugPrint("Should navigate to edit screen");
+    plans = Provider.of<UserProvider>(context, listen: false).myUser.plans;
 
-    Provider.of<PlanProvider>(context, listen: true).current_edited_plan =
+    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
         plans[index];
 
+    Navigator.of(context).pop();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlanEditorScreen(),
+        builder: (context) => EditPlanScreen(),
       ),
     );
   }
 
   void addPlan() {
-    if (plans.length > 10) {
+    if (plans.length >= 10) {
       debugPrint("Cannot have more than 10 plans!");
       return;
     }
+
+    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
+        null;
 
     Navigator.push(
       context,
@@ -73,9 +91,10 @@ class _PlanScreenState extends State<PlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<PlanProvider>(context, listen: true).current_edited_plan = null;
+    Provider.of<PlanProvider>(context, listen: false).current_edited_plan =
+        null;
 
-    plans = Provider.of<UserProvider>(context, listen: true).myUser.plans;
+    plans = Provider.of<UserProvider>(context, listen: false).myUser.plans;
 
     return Scaffold(
       appBar: AppBar(
@@ -90,8 +109,10 @@ class _PlanScreenState extends State<PlanScreen> {
               child: Text('Add Plan'),
             ),
           ),
-          Expanded(
+          SizedBox(
+            height: 200,
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: plans.length,
               itemBuilder: (context, index) {
                 final _plan = plans[index];
@@ -131,11 +152,11 @@ class PlanItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              onPressed: onStartPressed,
+              onPressed: () => onStartPressed(),
               icon: Icon(Icons.play_arrow),
             ),
             IconButton(
-              onPressed: onEditPressed,
+              onPressed: () => onEditPressed(),
               icon: Icon(Icons.edit),
             ),
           ],

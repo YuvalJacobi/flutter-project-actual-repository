@@ -9,14 +9,6 @@ class ExerciseProvider extends ChangeNotifier {
     return [..._exercises];
   }
 
-  List<Exercise> getExercisesByCategory(String category) {
-    return _exercises.where((element) => element.category == category).toList();
-  }
-
-  List<Exercise> getExercisesByLevel(String level) {
-    return _exercises.where((element) => element.level == level).toList();
-  }
-
   bool doListContainsList(List<dynamic> lst1, List<dynamic> lst2) {
     if (lst2.isEmpty) return true;
 
@@ -28,58 +20,72 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
-  List<Exercise> getExercisesWithSorting({
-    String name = '',
-    String category = '',
-    required List<String> active_muscles,
-    String level = '',
-  }) {
+  List<Exercise> getExercisesOfUser(String uid) {
+    return _exercises.where((element) => element.user_id == uid).toList();
+  }
+
+  List<Exercise> getExercisesWithSorting(
+      {String name = '',
+      String category = '',
+      required List<String> active_muscles,
+      String level = '',
+      String user_id = '',
+      String exercise_id = ''}) {
     return _exercises
         .where((element) =>
             (element.name.contains(name) || name == '') &&
             (element.category == category || category == '') &&
             (doListContainsList(element.active_muscles, active_muscles) ||
                 active_muscles.isEmpty) &&
-            (element.level == level || level == ''))
+            (element.level == level || level == '') &&
+            (element.user_id == user_id || user_id == '') &&
+            (element.exercise_id == exercise_id || exercise_id == ''))
         .toList();
   }
 
   Future<void> fetchExercises() async {
-    FirebaseFirestore.instance.collection("exercises").get().then(
+    await FirebaseFirestore.instance.collection("exercises").get().then(
       (querySnapshot) {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
+          if (_exercises.map((e) => e.exercise_id).contains(doc.id)) continue;
           _exercises.add(Exercise(
-              name: doc['name'],
-              category: doc['category'],
-              active_muscles:
-                  (doc['active_muscles'] as List<dynamic>).cast<String>(),
-              level: doc['level'],
-              image_url: doc['image_url'],
-              id: doc.id));
+              name: doc['name'] ?? '',
+              category: doc['category'] ?? '',
+              active_muscles: doc['active_muscles'] == null
+                  ? []
+                  : List.from(doc['active_muscles'] as Iterable<dynamic>),
+              level: doc['level'] ?? '',
+              image_url: doc['image_url'] ?? '',
+              user_id: doc['user_id'] ?? '',
+              exercise_id: doc.id));
         }
-        print("Successfully added exercises to list!");
+        debugPrint("Successfully added exercises to list!");
       },
-      onError: (e) => print("Error completing: $e"),
+      onError: (e) => debugPrint("Error completing: $e"),
     );
 
     notifyListeners();
   }
 
   Future<void> addData(Exercise exercise) async {
-    if (exercises.map((e) => e.id).contains(exercise.id)) {
+    if (exercises.map((e) => e.exercise_id).contains(exercise.exercise_id)) {
       debugPrint("Exercise already exists within database!");
       return;
     }
-    FirebaseFirestore.instance.collection('exercises').add({
+    await FirebaseFirestore.instance.collection('exercises').add({
       'name': exercise.name,
       'active_muscles': exercise.active_muscles,
       'category': exercise.category,
       'image_url': exercise.image_url,
-      'level': exercise.level
-    }).then((doc) =>
-        {debugPrint("Successfully added exercise: " + exercise.toString())});
+      'level': exercise.level,
+      'user_id': exercise.user_id
+    }).then((doc) => {
+          exercise.exercise_id = doc.id,
+          debugPrint("Successfully added exercise: " + exercise.toString()),
+          _exercises.add(exercise),
+        });
 
-    await fetchExercises();
+    debugPrint("Finished await");
   }
 }

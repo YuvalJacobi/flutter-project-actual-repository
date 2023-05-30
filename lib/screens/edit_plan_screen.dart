@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/model/exercise.dart';
-import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
+import 'package:flutter_complete_guide/model/plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
-import 'package:flutter_complete_guide/screens/plans_screen.dart';
+import 'package:flutter_complete_guide/screens/add_exercise_to_plan_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../model/plan.dart';
+import '../model/exercise.dart';
+import '../model/exercise_in_plan.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,32 +20,26 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: PlanEditorScreen(),
+      home: EditPlanScreen(),
     );
   }
 }
 
-class PlanEditorScreen extends StatefulWidget {
+class EditPlanScreen extends StatefulWidget {
   @override
-  _PlanEditorScreen createState() => _PlanEditorScreen();
+  _EditPlanScreen createState() => _EditPlanScreen();
 }
 
-class _PlanEditorScreen extends State<PlanEditorScreen> {
-  final TextEditingController exerciseController = TextEditingController();
-  final TextEditingController setsController = TextEditingController();
-  final TextEditingController repsController = TextEditingController();
-  final TextEditingController weightController = TextEditingController();
-  final TextEditingController restController = TextEditingController();
-  List<Exercise> exerciseOptions = [];
-  Plan? current_edited_plan = null;
-  bool isInit = false;
-  Exercise? selectedExercise = null;
-
+class _EditPlanScreen extends State<EditPlanScreen> {
   Image imageFromExercise(Exercise exercise) {
     if (exercise.image_url.isEmpty) {
       // return white square
       return Image.network(
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s',
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+      );
     }
     return Image.network(
       exercise.image_url,
@@ -55,160 +49,145 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
     );
   }
 
-  bool isExerciseValid(ExerciseInPlan exerciseInPlan) {
-    if (exerciseInPlan.reps <= 0 ||
-        exerciseInPlan.sets <= 0 ||
-        exerciseInPlan.rest < 0 ||
-        exerciseInPlan.weight < 0) return false;
-    return true;
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
   }
 
-  void clearSelections() {
-    exerciseController.text = "";
-    setsController.text = "";
-    repsController.text = "";
-    weightController.text = "";
-    restController.text = "";
-    selectedExercise = null;
+  List<ExerciseInPlan> exercisesInPlan = [];
+
+  Widget myExercisesWidget() {
+    return Center(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: exercisesInPlan.length,
+        itemBuilder: (context, index) {
+          ExerciseInPlan exerciseInPlan = exercisesInPlan[index];
+          Exercise exercise =
+              Provider.of<ExerciseProvider>(context, listen: false)
+                  .getExercisesWithSorting(
+                      exercise_id: exerciseInPlan.exercise_id,
+                      active_muscles: [])[0];
+
+          String weight_representation;
+
+          if (exerciseInPlan.weight == 0 || exerciseInPlan == -1) {
+            weight_representation = "Weightless";
+          } else if (exerciseInPlan.weight == -69) // failure
+          {
+            weight_representation = "To failure";
+          } else {
+            weight_representation = exerciseInPlan.weight.toString() + 'kg';
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              child: Row(
+                children: [
+                  Container(
+                    child: Expanded(
+                      child: Flexible(
+                        child: imageFromExercise(exercise), // img
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          exercise.name,
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ), // name
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          exerciseInPlan.sets.toString() + ' sets',
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ), // sets
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          exerciseInPlan.reps.toString() + ' reps',
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ), // reps
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Expanded(
+                      child: Flexible(
+                        child: Text(
+                          weight_representation,
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void addExercise() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(new MaterialPageRoute(
+        builder: (BuildContext context) => new PlanEditorScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("trying to get current edited plan.");
+    Plan? _plan =
+        Provider.of<PlanProvider>(context, listen: false).current_edited_plan;
 
-    current_edited_plan = Provider.of<PlanProvider>(context, listen: false)
-        .getCurrentEditedPlan();
+    if (_plan == null) {
+      return Center(child: CircularProgressIndicator());
+    }
 
-    debugPrint("Successfully got current edited plan!" +
-        current_edited_plan.toString());
-
-    debugPrint("isInit: " + isInit.toString());
-
-    Provider.of<ExerciseProvider>(context, listen: false).fetchExercises().then(
-      (value) {
-        exerciseOptions =
-            Provider.of<ExerciseProvider>(context, listen: false).exercises;
-        isInit = true;
-      },
-    );
-    debugPrint("isInit: " + isInit.toString());
-
-    print("Exercises: " + exerciseOptions.toString());
+    exercisesInPlan = Provider.of<PlanProvider>(context, listen: false)
+        .current_edited_plan!
+        .exercises;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Exercise'),
-      ),
-      body: isInit == false
-          ? CircularProgressIndicator()
-          : Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: exerciseController,
-                    decoration: InputDecoration(
-                      labelText: 'Exercise',
+        appBar: AppBar(
+          title: Text('Plan Editor'),
+        ),
+        body: ListView(
+          children: [
+            exercisesInPlan.length == 0 ? Center() : myExercisesWidget(),
+            SizedBox(height: 15),
+            Container(
+                alignment: Alignment.topLeft,
+                child: ElevatedButton(
+                    child: Text(
+                      "Add exercise",
                     ),
-                    onChanged: (text) {
-                      setState(() => selectedExercise = null);
-                    },
-                  ),
-                  SizedBox(height: 16.0),
-                  Text(
-                    'Available exercises:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: exerciseOptions.length,
-                    itemBuilder: (context, index) {
-                      final option = exerciseOptions[index];
-                      if (option.name
-                          .toLowerCase()
-                          .contains(exerciseController.text.toLowerCase())) {
-                        return ListTile(
-                          title: Text(option.name),
-                          leading: imageFromExercise(option),
-                          onTap: () {
-                            setState(() {
-                              exerciseController.text = option.name;
-                              selectedExercise = option;
-                            });
-                          },
-                        );
-                      }
-                      return SizedBox.shrink();
-                    },
-                  ),
-                  SizedBox(height: 16.0),
-                  TextField(
-                    controller: weightController,
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(
-                      labelText: 'Weight',
-                    ),
-                  ),
-                  SizedBox(height: 16.0),
-                  TextField(
-                    controller: restController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Rest',
-                    ),
-                  ),
-                  SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (current_edited_plan == null) {
-                        debugPrint("No plan is currently being edited!");
-                        return;
-                      }
-
-                      if (selectedExercise == null) {
-                        debugPrint("No exercise was selected!");
-                        return;
-                      }
-
-                      ExerciseInPlan _exerciseInPlan = ExerciseInPlan(
-                          exercise_id: selectedExercise!.id,
-                          sets: int.parse(setsController.text),
-                          reps: int.parse(repsController.text),
-                          weight: double.parse(weightController.text),
-                          rest: int.parse(restController.text),
-                          plan_id: current_edited_plan!.id);
-
-                      if (isExerciseValid(_exerciseInPlan) == false) {
-                        debugPrint("Selections are not valid!");
-                        return;
-                      }
-                      current_edited_plan!.exercises.add(_exerciseInPlan);
-
-                      Provider.of<PlanProvider>(context, listen: false)
-                          .current_edited_plan!
-                          .exercises
-                          .add(_exerciseInPlan);
-
-                      debugPrint("Exercise was successfully added!\n\n" +
-                          _exerciseInPlan.toString());
-
-                      debugPrint("Current amount of exercises in plan: " +
-                          current_edited_plan!.name +
-                          ":\n" +
-                          current_edited_plan!.exercises.length.toString());
-
-                      clearSelections();
-                    },
-                    child: Text('Add'),
-                  ),
-                ],
-              ),
-            ),
-    );
+                    onPressed: addExercise))
+          ],
+        ));
   }
 }
