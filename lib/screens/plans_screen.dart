@@ -67,7 +67,7 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   void addPlan() {
-    if (plans.length > 10) {
+    if (plans.length >= 10) {
       debugPrint("Cannot have more than 10 plans!");
       return;
     }

@@ -212,7 +212,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         }
 
                         ExerciseInPlan _exerciseInPlan = ExerciseInPlan(
-                            exercise_id: selectedExercise!.id,
+                            exercise_id: selectedExercise!.exercise_id,
                             sets: int.parse(setsController.text),
                             reps: int.parse(repsController.text),
                             weight: double.parse(weightController.text),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 import '../model/exercise_in_plan.dart';
 import '../model/plan.dart';
@@ -9,23 +10,29 @@ import '../model/user_profile.dart';
 class UserProvider extends ChangeNotifier {
   UserProfile myUser = new UserProfile(plans: []);
 
+  List<Plan> _plans = [];
+
   final _auth = FirebaseAuth.instance;
+
+  List<Plan> get my_plans {
+    return [..._plans];
+  }
 
   String getUserId() {
     return myUser.user_id;
   }
 
-  void debugUser(UserProfile user) {
-    int ind = 1;
-    for (Plan p in user.plans) {
-      debugPrint(ind.toString() +
-          '#: ' +
-          p.name +
-          ' ' +
-          p.exercises.length.toString());
-      ind++;
-    }
-  }
+  // void debugUser(UserProfile user) {
+  //   int ind = 1;
+  //   for (Plan p in user.plans) {
+  //     debugPrint(ind.toString() +
+  //         '#: ' +
+  //         p.name +
+  //         ' ' +
+  //         p.exercises.length.toString());
+  //     ind++;
+  //   }
+  // }
 
   Map<String, dynamic> exerciseInPlanToMap(ExerciseInPlan exerciseInPlan) {
     return {
@@ -61,7 +68,7 @@ class UserProvider extends ChangeNotifier {
       'height': myUser.height,
       'weight': myUser.weight,
       'username': myUser.username,
-      'plans': myUser.plans.map((e) => planToMap(e)).toList(),
+      'plans': myUser.plans.map((e) => e.id).toList(),
     });
 
     print('Successfully updated user!');
@@ -95,20 +102,32 @@ class UserProvider extends ChangeNotifier {
     return eip;
   }
 
-  List<Plan> dynamicOfPlansToPlansList(dynamic d) {
+  List<Plan> dynamicOfPlansToPlansList(dynamic d, BuildContext context) {
     List<Plan> plans = [];
     for (Map<String, dynamic> item in d) {
-      plans.add(Plan(
-          exercises: dynamicOfExercisesInPlanToExercisesInPlan(
-              item['exercises_in_plan'] ?? ''),
-          name: item['name'] ?? '',
-          user_id: item['user_id'] ?? '',
-          id: item['plan_id'] ?? ''));
+      String plan_id = item.toString();
+
+      Plan p = Provider.of<UserProvider>(context, listen: false)
+          .my_plans
+          .firstWhere((element) => element.id == plan_id);
+
+      plans.add(p);
     }
     return plans;
+
+    // List<Plan> plans = [];
+    // for (Map<String, dynamic> item in d) {
+    //   plans.add(Plan(
+    //       exercises: dynamicOfExercisesInPlanToExercisesInPlan(
+    //           item['exercises_in_plan'] ?? ''),
+    //       name: item['name'] ?? '',
+    //       user_id: item['user_id'] ?? '',
+    //       id: item['plan_id'] ?? ''));
+    // }
+    // return plans;
   }
 
-  Future<void> fetchUserData() async {
+  Future<void> fetchUserData(BuildContext context) async {
     debugPrint(getUserId());
     await FirebaseFirestore.instance
         .collection('users')
@@ -126,10 +145,10 @@ class UserProvider extends ChangeNotifier {
               myUser.username = doc['username'] ?? '',
               myUser.plans = doc['plans'] == null
                   ? []
-                  : dynamicOfPlansToPlansList(doc['plans'] ?? '')
+                  : dynamicOfPlansToPlansList(doc['plans'] ?? '', context)
             });
 
-    debugUser(myUser);
+    //debugUser(myUser);
     notifyListeners();
   }
 

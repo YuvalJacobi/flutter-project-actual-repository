@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<ExerciseProvider>(context, listen: false)
             .fetchExercises()
             .then((_) => Provider.of<UserProvider>(context, listen: false)
-                    .fetchUserData()
+                    .fetchUserData(context)
                     .then((_) {
                   setState(() {
                     _isInit = false;
@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //     category: 'lift',
     //     id: ""));
 
-    Provider.of<UserProvider>(context, listen: false).fetchUserData();
+    Provider.of<UserProvider>(context, listen: false).fetchUserData(context);
 
     return Scaffold(
         appBar: new AppBar(

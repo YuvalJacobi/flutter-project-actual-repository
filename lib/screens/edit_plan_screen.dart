@@ -66,7 +66,8 @@ class _EditPlanScreen extends State<EditPlanScreen> {
           Exercise exercise =
               Provider.of<ExerciseProvider>(context, listen: false)
                   .getExercisesWithSorting(
-                      id: exerciseInPlan.exercise_id, active_muscles: [])[0];
+                      exercise_id: exerciseInPlan.exercise_id,
+                      active_muscles: [])[0];
 
           String weight_representation;
 

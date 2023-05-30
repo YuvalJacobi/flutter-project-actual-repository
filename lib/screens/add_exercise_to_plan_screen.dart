@@ -57,6 +57,43 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
     );
   }
 
+  ExerciseInPlan getExerciseInPlanFromControllers(
+      String exercise_id, String plan_id) {
+    try {
+      if (isExerciseValid(ExerciseInPlan(
+              sets: int.parse(setsController.text),
+              reps: int.parse(repsController.text),
+              weight: double.parse(weightController.text),
+              rest: int.parse(restController.text),
+              exercise_id: exercise_id,
+              plan_id: plan_id)) ==
+          false)
+        return ExerciseInPlan(
+            sets: -1,
+            reps: -1,
+            weight: -1,
+            rest: -1,
+            exercise_id: '',
+            plan_id: '');
+
+      return ExerciseInPlan(
+          sets: int.parse(setsController.text),
+          reps: int.parse(repsController.text),
+          weight: double.parse(weightController.text),
+          rest: int.parse(restController.text),
+          exercise_id: exercise_id,
+          plan_id: plan_id);
+    } catch (e) {
+      return ExerciseInPlan(
+          sets: -1,
+          reps: -1,
+          weight: -1,
+          rest: -1,
+          exercise_id: '',
+          plan_id: '');
+    }
+  }
+
   bool isExerciseValid(ExerciseInPlan exerciseInPlan) {
     if (exerciseInPlan.reps <= 0 ||
         exerciseInPlan.sets <= 0 ||
@@ -101,7 +138,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<ExerciseInPlanProvider>(context, listen: false).Empty();
+    String uid = Provider.of<UserProvider>(context, listen: false).getUserId();
+    Plan current_edited_plan = Provider.of<PlanProvider>(context, listen: true)
+        .getCurrentEditedPlan()!;
 
     return Scaffold(
       appBar: AppBar(
@@ -140,15 +179,121 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         if (option.name
                             .toLowerCase()
                             .contains(exerciseController.text.toLowerCase())) {
-                          return ListTile(
-                            title: Text(option.name),
-                            leading: imageFromExercise(option),
-                            onTap: () {
-                              setState(() {
-                                exerciseController.text = option.name;
-                                selectedExercise = option;
-                              });
-                            },
+                          return Card(
+                            color: Colors.grey[350],
+                            child: Column(
+                              children: [
+                                Container(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(option.name,
+                                        style: TextStyle(
+                                            color: Colors.blueGrey[900],
+                                            fontSize: 24))),
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.all(8),
+                                  child: SizedBox.expand(
+                                    child: ListTile(
+                                      // title: Text(option.name),
+                                      leading: imageFromExercise(option),
+                                      // onTap: () {
+                                      //   setState(() {
+                                      //     exerciseController.text = option.name;
+                                      //     selectedExercise = option;
+                                      //   });
+                                      // },
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  alignment: Alignment.bottomLeft,
+                                  child: PopupMenuButton(
+                                    onOpened: () {
+                                      clearSelections();
+                                    },
+                                    onCanceled: () {},
+                                    onSelected: (value) {},
+                                    child: Text(
+                                      'Add',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    itemBuilder: (context) {
+                                      return [
+                                        PopupMenuItem(
+                                          child: TextField(
+                                            controller: setsController,
+                                            keyboardType:
+                                                TextInputType.numberWithOptions(
+                                                    decimal: false),
+                                            decoration: InputDecoration(
+                                              labelText: 'Sets',
+                                            ),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: TextField(
+                                            controller: repsController,
+                                            keyboardType:
+                                                TextInputType.numberWithOptions(
+                                                    decimal: false),
+                                            decoration: InputDecoration(
+                                              labelText: 'Reps',
+                                            ),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: TextField(
+                                            controller: weightController,
+                                            keyboardType:
+                                                TextInputType.numberWithOptions(
+                                                    decimal: true),
+                                            decoration: InputDecoration(
+                                              labelText: 'Weight',
+                                            ),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: TextField(
+                                            controller: restController,
+                                            keyboardType:
+                                                TextInputType.numberWithOptions(
+                                                    decimal: false),
+                                            decoration: InputDecoration(
+                                              labelText: 'Rest',
+                                            ),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                            child: ElevatedButton(
+                                          child: Text(
+                                            'Confirm',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                          onPressed: () {
+                                            if ( //Provider.of<ExerciseInPlanProvider>(
+                                                //             context,
+                                                //             listen: false)
+                                                //         .Validate(
+                                                //             option, uid, context) ==
+                                                true) {
+                                              Provider.of<ExerciseInPlanProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .addData(
+                                                      getExerciseInPlanFromControllers(
+                                                          option.exercise_id,
+                                                          current_edited_plan
+                                                              .id));
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                        ))
+                                      ];
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
                           );
                         }
                         return SizedBox.shrink();
@@ -170,7 +315,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                           style: TextStyle(fontSize: 16),
                         ),
                         DecimalNumberPicker(
-                            value: weightController.text as double,
+                            value: weightController.text.isEmpty
+                                ? 0
+                                : double.parse(weightController.text),
                             minValue: 0,
                             maxValue: 500,
                             selectedTextStyle: TextStyle(fontSize: 12),
@@ -196,7 +343,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                           style: TextStyle(fontSize: 16),
                         ),
                         NumberPicker(
-                            value: setsController.text as int,
+                            value: setsController.text.isEmpty
+                                ? 0
+                                : int.parse(setsController.text),
                             minValue: 0,
                             maxValue: 50,
                             selectedTextStyle: TextStyle(fontSize: 12),
@@ -222,7 +371,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                           style: TextStyle(fontSize: 16),
                         ),
                         NumberPicker(
-                            value: repsController.text as int,
+                            value: repsController.text.isEmpty
+                                ? 0
+                                : int.parse(repsController.text),
                             minValue: 0,
                             maxValue: 100,
                             selectedTextStyle: TextStyle(fontSize: 12),
@@ -247,7 +398,9 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                           style: TextStyle(fontSize: 16),
                         ),
                         NumberPicker(
-                            value: restController.text as int,
+                            value: restController.text.isEmpty
+                                ? 0
+                                : int.parse(restController.text),
                             minValue: 0,
                             maxValue: 600,
                             selectedTextStyle: TextStyle(fontSize: 12),
@@ -272,7 +425,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         }
 
                         ExerciseInPlan _exerciseInPlan = ExerciseInPlan(
-                            exercise_id: selectedExercise!.id,
+                            exercise_id: selectedExercise!.exercise_id,
                             sets: int.parse(setsController.text),
                             reps: int.parse(repsController.text),
                             weight: double.parse(weightController.text),

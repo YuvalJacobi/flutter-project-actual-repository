@@ -5,12 +5,12 @@ import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 import '../model/plan.dart';
 
 class PlanProvider extends ChangeNotifier {
-  List<Plan> _plans = [];
+  List<Plan> plans = [];
 
   Plan? currently_played_plan = null;
 
   List<Plan> get getPlans {
-    return [..._plans];
+    return [...plans];
   }
 
   Plan? getCurrentEditedPlan() {
@@ -18,6 +18,14 @@ class PlanProvider extends ChangeNotifier {
   }
 
   Plan? current_edited_plan = null;
+
+  Future<void> deletePlanByName(String name) async {
+    await FirebaseFirestore.instance.collection('plans').doc(name).delete();
+  }
+
+  List<Plan> getPlansOfUser(String uid) {
+    return plans.where((item) => item.user_id == uid).toList();
+  }
 
   Future<void> addData(Plan plan) async {
     if (getPlans.map((e) => e.id).contains(plan.id)) {
@@ -27,18 +35,20 @@ class PlanProvider extends ChangeNotifier {
       return;
     }
 
-    await FirebaseFirestore.instance.collection('plans').add({
-      'exercises_in_plan':
-          plan.exercises.map((e) => exerciseInPlanToMap(e)).toList(),
-      'name': plan.name,
-      'user_id': plan.user_id
-    }).then((doc) => {
-          plan.id = doc.id,
-          _plans.add(Plan(
-              exercises: plan.exercises,
-              name: plan.name,
-              user_id: plan.user_id,
-              id: doc.id))
+    await Future.microtask(() => {
+          FirebaseFirestore.instance.collection('plans').add({
+            'exercises_in_plan':
+                plan.exercises.map((e) => exerciseInPlanToMap(e)).toList(),
+            'name': plan.name,
+            'user_id': plan.user_id
+          }).then((doc) => {
+                plan.id = doc.id,
+                plans.add(Plan(
+                    exercises: plan.exercises,
+                    name: plan.name,
+                    user_id: plan.user_id,
+                    id: doc.id))
+              })
         });
 
     notifyListeners();
@@ -49,7 +59,7 @@ class PlanProvider extends ChangeNotifier {
       (querySnapshot) {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
-          _plans.add(Plan(
+          plans.add(Plan(
               name: doc['name'],
               exercises: (doc['exercises'] as List<dynamic>).cast(),
               user_id: doc['user_id'],
@@ -85,7 +95,7 @@ class PlanProvider extends ChangeNotifier {
       'name': plan.name,
       'user_id': plan.user_id
     });
-    _plans.add(plan);
+    plans.add(plan);
 
     //notifyListeners();
   }
@@ -95,17 +105,17 @@ class PlanProvider extends ChangeNotifier {
   }
 
   Plan getPlanById(String planId) {
-    return _plans.firstWhere((element) => element.id == planId);
+    return plans.firstWhere((element) => element.id == planId);
   }
 
   Future<void> deletePlanInUser(Plan plan) async {
-    _plans.removeWhere((element) => element.id == plan.id);
+    plans.removeWhere((element) => element.id == plan.id);
 
     // Remove plan from user's plans.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(plan.user_id)
-        .set({'plans': _plans});
+        .set({'plans': plans});
 
     // Remove plan from plans.
     await FirebaseFirestore.instance.collection('plans').doc(plan.id).delete();

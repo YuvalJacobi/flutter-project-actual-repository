@@ -82,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Provider.of<UserProvider>(context, listen: false)
-        .fetchUserData()
+        .fetchUserData(context)
         .then((value) => {
               firstName = Provider.of<UserProvider>(context, listen: false)
                   .myUser

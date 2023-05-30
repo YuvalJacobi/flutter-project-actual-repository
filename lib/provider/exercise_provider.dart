@@ -1,6 +1,9 @@
+import 'dart:js';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
+import 'package:provider/provider.dart';
 
 class ExerciseProvider extends ChangeNotifier {
   List<Exercise> _exercises = [];
@@ -20,12 +23,17 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
+  List<Exercise> getExercisesOfUser(String uid) {
+    return _exercises.where((element) => element.user_id == uid).toList();
+  }
+
   List<Exercise> getExercisesWithSorting(
       {String name = '',
       String category = '',
       required List<String> active_muscles,
       String level = '',
-      String id = ''}) {
+      String user_id = '',
+      String exercise_id = ''}) {
     return _exercises
         .where((element) =>
             (element.name.contains(name) || name == '') &&
@@ -33,7 +41,8 @@ class ExerciseProvider extends ChangeNotifier {
             (doListContainsList(element.active_muscles, active_muscles) ||
                 active_muscles.isEmpty) &&
             (element.level == level || level == '') &&
-            (element.id == id || id == ''))
+            (element.user_id == user_id || user_id == '') &&
+            (element.exercise_id == exercise_id || exercise_id == ''))
         .toList();
   }
 
@@ -48,7 +57,8 @@ class ExerciseProvider extends ChangeNotifier {
               active_muscles: (doc['active_muscles'] as List<dynamic>).cast(),
               level: doc['level'],
               image_url: doc['image_url'],
-              id: doc.id));
+              user_id: doc['user_id'],
+              exercise_id: doc.id));
         }
         debugPrint("Successfully added exercises to list!");
       },
@@ -59,7 +69,7 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   Future<void> addData(Exercise exercise) async {
-    if (exercises.map((e) => e.id).contains(exercise.id)) {
+    if (exercises.map((e) => e.exercise_id).contains(exercise.exercise_id)) {
       debugPrint("Exercise already exists within database!");
       return;
     }
@@ -68,9 +78,10 @@ class ExerciseProvider extends ChangeNotifier {
       'active_muscles': exercise.active_muscles,
       'category': exercise.category,
       'image_url': exercise.image_url,
-      'level': exercise.level
+      'level': exercise.level,
+      'user_id': exercise.user_id
     }).then((doc) => {
-          exercise.id = doc.id,
+          exercise.exercise_id = doc.id,
           debugPrint("Successfully added exercise: " + exercise.toString()),
           _exercises.add(exercise),
         });

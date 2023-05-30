@@ -115,7 +115,7 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
 
     Exercise exercise = Provider.of<ExerciseProvider>(context, listen: false)
         .getExercisesWithSorting(
-            id: exerciseInPlan.exercise_id, active_muscles: [])[0];
+            exercise_id: exerciseInPlan.exercise_id, active_muscles: [])[0];
 
     textToShow = exercise.name;
 

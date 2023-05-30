@@ -24,6 +24,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+Future<void> manualDelay() async {
+  Future.wait([delay()]);
+}
+
+Future<void> delay() async {
+  await Future.delayed(const Duration(seconds: 5));
+  return;
+}
+
 class PlanAdderScreen extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
 
@@ -47,6 +56,7 @@ class PlanAdderScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
+                // move to provider
                 List<Plan> _plans =
                     Provider.of<UserProvider>(context, listen: false)
                         .myUser
@@ -69,9 +79,24 @@ class PlanAdderScreen extends StatelessWidget {
 
                 Provider.of<PlanProvider>(context, listen: false).addData(p);
 
-                p = Provider.of<PlanProvider>(context, listen: false)
-                    .getPlans
-                    .last;
+                // adding manual delay since await doesn't wait for some reason
+                manualDelay();
+
+                // try {
+                //   p = Provider.of<PlanProvider>(context, listen: false)
+                //       .plans
+                //       .last;
+
+                //   if (p.name != nameController.text) {
+                //     // wrong plan was used (last one)
+
+                //     Provider.of<PlanProvider>(context, listen: false)
+                //         .deletePlanByName(nameController.text);
+                //     return;
+                //   }
+                // } on Error catch (_) {
+                //   return;
+                // }
 
                 Provider.of<UserProvider>(context, listen: false)
                     .updatePlanOfUser(p);

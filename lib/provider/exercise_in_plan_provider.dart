@@ -1,49 +1,38 @@
+import 'dart:js';
+import 'dart:js_interop';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
+import 'package:flutter_complete_guide/provider/user_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../model/exercise.dart';
+import '../model/plan.dart';
+import 'exercise_provider.dart';
 
 class ExerciseInPlanProvider extends ChangeNotifier {
-  ExerciseInPlan current_edited_exercise_in_plan = ExerciseInPlan(
-      sets: -1,
-      reps: -1,
-      weight: -1,
-      rest: -1,
-      exercise_id: '-1',
-      plan_id: '-1');
-
-  ExerciseInPlan? current_played_exercise_in_plan = null;
-
-  void Empty() {
-    current_edited_exercise_in_plan = ExerciseInPlan(
-        sets: -1,
-        reps: -1,
-        weight: -1,
-        rest: -1,
-        exercise_id: '-1',
-        plan_id: '-1');
+  Future<void> addData(ExerciseInPlan exerciseInPlan) async {
+    await FirebaseFirestore.instance.collection('exercises_in_plan').add({
+      'sets': exerciseInPlan.sets,
+      'reps': exerciseInPlan.reps,
+      'weight': exerciseInPlan.weight,
+      'rest': exerciseInPlan.rest,
+      'exercise_id': exerciseInPlan.exercise_id,
+      'plan_id': exerciseInPlan.plan_id
+    });
   }
 
-  bool isExerciseValid(ExerciseInPlan exerciseInPlan) {
-    if (exerciseInPlan.reps <= 0 ||
-        exerciseInPlan.sets <= 0 ||
-        exerciseInPlan.rest < 0 ||
-        exerciseInPlan.weight < 0) return false;
-    return true;
-  }
+  bool Validate(
+      Exercise exercise, String uid, String plan_id, BuildContext context) {
+    List<Plan> plans =
+        Provider.of<UserProvider>(context, listen: false).myUser.plans;
 
-  bool isExerciseConnectedToPlan(ExerciseInPlan exerciseInPlan) {
-    if (exerciseInPlan.exercise_id == '-1' || exerciseInPlan.plan_id == '-1')
-      return false;
-    return true;
-  }
+    Plan plan = plans.firstWhere((element) => element.id == plan_id);
 
-  bool isExerciseInPlanEmpty(ExerciseInPlan exerciseInPlan) {
-    if (isExerciseValid(exerciseInPlan) == false) return false;
-
-    if (isExerciseConnectedToPlan(exerciseInPlan) == false) return false;
+    ExerciseInPlan exerciseInPlan = plan.exercises
+        .firstWhere((element) => element.exercise_id == exercise.exercise_id);
 
     return true;
   }
-
-  bool isEditingExerciseInPlan() =>
-      isExerciseInPlanEmpty(current_edited_exercise_in_plan);
 }
