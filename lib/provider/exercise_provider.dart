@@ -49,6 +49,8 @@ class ExerciseProvider extends ChangeNotifier {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
           if (_exercises.map((e) => e.exercise_id).contains(doc.id)) continue;
+
+          if (doc['name'] == null || doc['name'] == '') continue;
           _exercises.add(Exercise(
               name: doc['name'] ?? '',
               category: doc['category'] ?? '',

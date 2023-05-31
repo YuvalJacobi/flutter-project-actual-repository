@@ -85,6 +85,9 @@ class PlanProvider extends ChangeNotifier {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
           if (_plans.map((e) => e.id).contains(doc.id) == true) continue;
+
+          if (doc['user_id'] == null || doc['user_id'] == '') continue;
+
           _plans.add(Plan(
               name: doc['name'] ?? '',
               exercises_in_plan: doc['exercises_in_plan'] == null
@@ -154,12 +157,23 @@ class PlanProvider extends ChangeNotifier {
 
   Future<void> deletePlanInUser(Plan plan, BuildContext context) async {
     _plans.removeWhere((element) => element.id == plan.id);
+    UserProfile userProfile =
+        Provider.of<UserProvider>(context, listen: false).myUser;
 
     // Remove plan from user's plans.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(plan.user_id)
-        .set({'plans': _plans.map((e) => e.id).toList()});
+        .update({
+      'plans': _plans.map((e) => e.id).toList(),
+      // 'first_name': userProfile.first_name,
+      // 'last_name': userProfile.last_name,
+      // 'username': userProfile.username,
+      // 'age': userProfile.age,
+      // 'weight': userProfile.weight,
+      // 'height': userProfile.height,
+      // 'email': userProfile.email
+    });
 
     // Remove plan from plans.
     await FirebaseFirestore.instance.collection('plans').doc(plan.id).delete();
@@ -171,9 +185,9 @@ class PlanProvider extends ChangeNotifier {
 
   Future<void> deleteExercisesInPlanOfPlanByPlanId(
       String id, BuildContext context) async {
-    List<ExerciseInPlan> lst =
+    List<ExerciseInPlan> lst = List.from(
         Provider.of<ExerciseInPlanProvider>(context, listen: false)
-            .ExercisesInPlanList;
+            .ExercisesInPlanList);
 
     for (ExerciseInPlan exerciseInPlan in lst) {
       if (exerciseInPlan.plan_id == id) {

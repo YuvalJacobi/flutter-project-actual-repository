@@ -38,6 +38,8 @@ class ExerciseInPlanProvider extends ChangeNotifier {
       (querySnapshot) {
         print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
+          if (doc['plan_id'] == null || doc['plan_id'] == '') continue;
+
           addExerciseInPlanToList(ExerciseInPlan(
               sets: doc['sets'] ?? -1,
               weight: doc['weight'] == null
