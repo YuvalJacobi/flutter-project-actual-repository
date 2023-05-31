@@ -106,6 +106,9 @@ class _PlanAdderScreen extends State<PlanAdderScreen> {
                                 Provider.of<PlanProvider>(context,
                                         listen: false)
                                     .updateCurrentEditedPlan(p),
+                                Provider.of<PlanProvider>(context,
+                                        listen: false)
+                                    .setCurrentEditedPlanId(p.id),
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

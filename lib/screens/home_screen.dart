@@ -51,25 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of<ExerciseProvider>(context, listen: false).addData(Exercise(
-    //     name: "Bench Press",
-    //     active_muscles: ['Chest', 'Triceps'],
-    //     level: 'Intermediate',
-    //     image_url:
-    //         'https://s3assets.skimble.com/assets/2289486/image_iphone.jpg',
-    //     category: 'compound',
-    //     id: ""));
-
-    // Provider.of<ExerciseProvider>(context, listen: false).addData(Exercise(
-    //     name: "Bicep Curl Seated",
-    //     active_muscles: ['Biceps'],
-    //     level: 'Beginner',
-    //     image_url:
-    //         'https://weighttraining.guide/wp-content/uploads/2021/09/Seated-Alternating-dumbbell-Curl.png',
-    //     category: 'lift',
-    //     id: ""));
-
-    ;
     return Scaffold(
         appBar: new AppBar(
           title: new Text("Our Fitness"),

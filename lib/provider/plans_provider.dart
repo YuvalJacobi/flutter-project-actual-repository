@@ -152,18 +152,34 @@ class PlanProvider extends ChangeNotifier {
     return _plans.firstWhere((element) => element.id == planId);
   }
 
-  Future<void> deletePlanInUser(Plan plan) async {
+  Future<void> deletePlanInUser(Plan plan, BuildContext context) async {
     _plans.removeWhere((element) => element.id == plan.id);
 
     // Remove plan from user's plans.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(plan.user_id)
-        .set({'plans': _plans});
+        .set({'plans': _plans.map((e) => e.id).toList()});
 
     // Remove plan from plans.
     await FirebaseFirestore.instance.collection('plans').doc(plan.id).delete();
 
+    await deleteExercisesInPlanOfPlanByPlanId(plan.id, context);
+
     notifyListeners();
+  }
+
+  Future<void> deleteExercisesInPlanOfPlanByPlanId(
+      String id, BuildContext context) async {
+    List<ExerciseInPlan> lst =
+        Provider.of<ExerciseInPlanProvider>(context, listen: false)
+            .ExercisesInPlanList;
+
+    for (ExerciseInPlan exerciseInPlan in lst) {
+      if (exerciseInPlan.plan_id == id) {
+        Provider.of<ExerciseInPlanProvider>(context, listen: false)
+            .removeExerciseInPlan(exerciseInPlan);
+      }
+    }
   }
 }

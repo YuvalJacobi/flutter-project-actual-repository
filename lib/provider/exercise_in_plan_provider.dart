@@ -14,6 +14,11 @@ class ExerciseInPlanProvider extends ChangeNotifier {
     return _exercisesInPlan;
   }
 
+  void removeExerciseInPlan(ExerciseInPlan exerciseInPlan) {
+    if (_exercisesInPlan.contains(exerciseInPlan) == false) return;
+    _exercisesInPlan.remove(exerciseInPlan);
+  }
+
   void addExerciseInPlanToList(ExerciseInPlan exerciseInPlan) {
     if (_exercisesInPlan
         .map((e) => e.exercise_in_plan_id)

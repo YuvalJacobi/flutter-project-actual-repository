@@ -407,44 +407,36 @@ class _CardWidgetState extends State<CardWidget> {
                                   style: TextStyle(fontSize: 20),
                                 ),
                                 onPressed: () {
-                                  if ( //Provider.of<ExerciseInPlanProvider>(
-                                      //             context,
-                                      //             listen: false)
-                                      //         .Validate(
-                                      //             option, uid, context) ==
-                                      true) {
-                                    ExerciseInPlan exerciseInPlan =
-                                        getExerciseInPlanFromControllersWithValidityCheck(
-                                            widget.exercise.exercise_id,
-                                            current_edited_plan!.id);
+                                  ExerciseInPlan exerciseInPlan =
+                                      getExerciseInPlanFromControllersWithValidityCheck(
+                                          widget.exercise.exercise_id,
+                                          current_edited_plan!.id);
 
-                                    if (exerciseInPlan.plan_id == '') {
-                                      // values were invalid
-                                      debugPrint('values were invalid!');
-                                      return;
-                                    }
-
-                                    Provider.of<ExerciseInPlanProvider>(context,
-                                            listen: false)
-                                        .addData(exerciseInPlan)
-                                        .then((_) => {
-                                              current_edited_plan!
-                                                  .exercises_in_plan
-                                                  .add(Provider.of<
-                                                              ExerciseInPlanProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .ExercisesInPlanList
-                                                      .last
-                                                      .exercise_in_plan_id),
-                                              Provider.of<PlanProvider>(context,
-                                                      listen: false)
-                                                  .updateCurrentEditedPlan(
-                                                      current_edited_plan!,
-                                                      true),
-                                              Navigator.pop(context)
-                                            });
+                                  if (exerciseInPlan.plan_id == '') {
+                                    // values were invalid
+                                    debugPrint('values were invalid!');
+                                    return;
                                   }
+
+                                  Provider.of<ExerciseInPlanProvider>(context,
+                                          listen: false)
+                                      .addData(exerciseInPlan)
+                                      .then((_) => {
+                                            current_edited_plan!
+                                                .exercises_in_plan
+                                                .add(Provider.of<
+                                                            ExerciseInPlanProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .ExercisesInPlanList
+                                                    .last
+                                                    .exercise_in_plan_id),
+                                            Provider.of<PlanProvider>(context,
+                                                    listen: false)
+                                                .updateCurrentEditedPlan(
+                                                    current_edited_plan!, true),
+                                            Navigator.pop(context)
+                                          });
                                 },
                               ))
                             ];

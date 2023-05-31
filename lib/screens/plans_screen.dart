@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/screens/add_plan_screen.dart';
+import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -75,7 +76,7 @@ class _PlanScreenState extends State<PlanScreen> {
     Provider.of<PlanProvider>(context, listen: false)
         .setCurrentEditedPlanId('');
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => PlanAdderScreen(),
@@ -84,19 +85,47 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   void deletePlan(int index) {
-    setState(() {
-      plans.removeAt(index);
-    });
+    showDialog(
+        context: context,
+        builder: ((ctx) => AlertDialog(
+              title: Text('Delete Plan'),
+              content: Text(
+                'WARNING: This action will permanently delete this plan',
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.red.shade800),
+                  ),
+                  onPressed: () {
+                    Provider.of<PlanProvider>(context, listen: false)
+                        .deletePlanInUser(plans[index], context);
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlanScreen(),
+                      ),
+                    );
+                  },
+                )
+              ],
+            )));
   }
 
   bool isInit = false;
 
   @override
-  Widget build(BuildContext context) {
-    if (isInit == false) {
-      Provider.of<PlanProvider>(context, listen: false)
-          .setCurrentEditedPlanId('');
-    }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     Provider.of<UserProvider>(context, listen: false)
         .fetchUserData(context)
@@ -107,6 +136,24 @@ class _PlanScreenState extends State<PlanScreen> {
                 isInit = true;
               })
             });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isInit == false) {
+      Provider.of<PlanProvider>(context, listen: false)
+          .setCurrentEditedPlanId('');
+
+      Provider.of<UserProvider>(context, listen: false)
+          .fetchUserData(context)
+          .then((value) => plans =
+              Provider.of<UserProvider>(context, listen: false).myUser.plans)
+          .then((value) => {
+                setState(() {
+                  isInit = true;
+                })
+              });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -139,6 +186,20 @@ class _PlanScreenState extends State<PlanScreen> {
                     },
                   ),
                 ),
+                SizedBox(height: 150),
+                ElevatedButton(
+                    onPressed: () => {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                          )
+                        },
+                    child: Text(
+                      'Close',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ))
               ],
             ),
     );
@@ -149,12 +210,13 @@ class PlanItem extends StatelessWidget {
   final String name;
   final VoidCallback onStartPressed;
   final VoidCallback onEditPressed;
+  final VoidCallback onDeletePressed;
 
   const PlanItem({
     required this.name,
     required this.onStartPressed,
     required this.onEditPressed,
-    required void Function() onDeletePressed,
+    required this.onDeletePressed,
   });
 
   @override
@@ -172,6 +234,10 @@ class PlanItem extends StatelessWidget {
             IconButton(
               onPressed: () => onEditPressed(),
               icon: Icon(Icons.edit),
+            ),
+            IconButton(
+              onPressed: () => onDeletePressed(),
+              icon: Icon(Icons.delete),
             ),
           ],
         ),

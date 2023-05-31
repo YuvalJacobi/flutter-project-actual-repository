@@ -167,67 +167,92 @@ class _EditPlanScreen extends State<EditPlanScreen> {
       ),
       body: isInit == false
           ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                      onPressed: () => addExercise(),
-                      child: Text(
-                        'Add exercise',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                  SizedBox(height: 8.0),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.6,
-                    child: SingleChildScrollView(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount:
-                            current_edited_plan!.exercises_in_plan.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          ExerciseInPlan exerciseInPlan =
-                              Provider.of<ExerciseInPlanProvider>(context,
-                                      listen: false)
-                                  .getExerciseInPlanById(current_edited_plan!
-                                      .exercises_in_plan[index]);
-
-                          Exercise exercise = Provider.of<ExerciseProvider>(
-                                  context,
-                                  listen: false)
-                              .getExercisesWithSorting(
-                                  exercise_id: exerciseInPlan.exercise_id,
-                                  active_muscles: [])[0];
-
-                          return Container(
-                            width: 200,
-                            height: 250,
-                            child: CardWidget(
-                              exerciseInPlan: exerciseInPlan,
-                              exercise: exercise,
-                              imageUrl: exercise.image_url,
-                              key: Key(exerciseInPlan.exercise_in_plan_id),
-                            ),
-                          );
-                        },
+          : Container(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: EdgeInsets.all(3.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(width: 30),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            width: 120,
+                            height: 50,
+                            child: ElevatedButton(
+                                onPressed: () => {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              PlanScreen(),
+                                        ),
+                                      )
+                                    },
+                                child: Text(
+                                  'Close',
+                                  style: TextStyle(fontSize: 20),
+                                )),
+                          ),
+                          SizedBox(width: 110),
+                          Container(
+                            alignment: Alignment.topRight,
+                            width: 100,
+                            height: 50,
+                            child: ElevatedButton(
+                                onPressed: () => addExercise(),
+                                child: Text(
+                                  'Add exercise',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 15),
+                                )),
+                          ),
+                        ],
                       ),
-                    ),
+                      SizedBox(height: 8.0),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: SingleChildScrollView(
+                          child: ListView.builder(
+                            physics: ScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount:
+                                current_edited_plan!.exercises_in_plan.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              ExerciseInPlan exerciseInPlan =
+                                  Provider.of<ExerciseInPlanProvider>(context,
+                                          listen: false)
+                                      .getExerciseInPlanById(
+                                          current_edited_plan!
+                                              .exercises_in_plan[index]);
+
+                              Exercise exercise = Provider.of<ExerciseProvider>(
+                                      context,
+                                      listen: false)
+                                  .getExercisesWithSorting(
+                                      exercise_id: exerciseInPlan.exercise_id,
+                                      active_muscles: [])[0];
+
+                              return Container(
+                                width: 250,
+                                height: 250,
+                                child: CardWidget(
+                                  exerciseInPlan: exerciseInPlan,
+                                  exercise: exercise,
+                                  imageUrl: exercise.image_url,
+                                  key: Key(exerciseInPlan.exercise_in_plan_id),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                    ],
                   ),
-                  SizedBox(height: 32.0),
-                  ElevatedButton(
-                      onPressed: () => {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (BuildContext context) => PlanScreen(),
-                              ),
-                            )
-                          },
-                      child: Text(
-                        'Close',
-                        style: TextStyle(fontSize: 20),
-                      ))
-                ],
+                ),
               ),
             ),
     );
@@ -360,62 +385,74 @@ class _CardWidgetState extends State<CardWidget> {
         .getCurrentEditedPlan(context);
 
     return Card(
-      margin: EdgeInsets.all(8.0),
       child: Row(
         children: [
           Container(
-            alignment: Alignment.centerLeft,
-            width: MediaQuery.of(context).size.width * 0.5,
+            alignment: Alignment.topLeft,
+            width: MediaQuery.of(context).size.width * 0.43,
             height: MediaQuery.of(context).size.height * 0.5,
-            child: imageFromExercise(widget.exercise, 200, 200, BoxFit.contain),
+            child: imageFromExercise(
+                widget.exercise,
+                MediaQuery.of(context).size.width * 0.6,
+                MediaQuery.of(context).size.height * 0.6,
+                BoxFit.contain),
           ),
+          SizedBox(width: 6),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
                     widget.exercise.name,
                     style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    'Active Muscles',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    activeMusclesRepresentation(),
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Align(
-                      alignment: Alignment.bottomLeft,
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  'Active Muscles',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      fontSize: 15.0,
+                      color: Colors.white),
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  activeMusclesRepresentation(),
+                  style: TextStyle(fontSize: 12.0, color: Colors.white),
+                ),
+                SizedBox(height: 8.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                      alignment: Alignment.center,
                       child: Container(
-                        constraints: BoxConstraints(
-                            minWidth: 200,
-                            maxWidth: 250,
-                            minHeight: 20,
-                            maxHeight: 55),
+                        // constraints: BoxConstraints(
+                        //     minWidth: 200,
+                        //     maxWidth: 250,
+                        //     minHeight: 20,
+                        //     maxHeight: 55),
                         alignment: Alignment.bottomLeft,
                         child: PopupMenuButton(
-                          onOpened: () {},
+                          onOpened: () {
+                            setSelectionsByExerciseInPlan(
+                                widget.exerciseInPlan);
+                          },
                           onCanceled: () {},
                           onSelected: (value) {},
                           child: Container(
-                              alignment: Alignment.bottomRight,
-                              child:
-                                  Text('Edit', style: TextStyle(fontSize: 20))),
+                              alignment: Alignment.bottomCenter,
+                              decoration: BoxDecoration(
+                                  color: Colors.indigo,
+                                  borderRadius: BorderRadius.circular(4)),
+                              child: Text('Edit',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      backgroundColor: Colors.indigo))),
                           itemBuilder: (context) {
                             return [
                               PopupMenuItem(
@@ -465,48 +502,45 @@ class _CardWidgetState extends State<CardWidget> {
                                   style: TextStyle(fontSize: 20),
                                 ),
                                 onPressed: () {
-                                  if (true) {
-                                    ExerciseInPlan _exerciseInPlan =
-                                        getExerciseInPlanFromControllersWithValidityCheck(
-                                            widget.exercise.exercise_id,
-                                            current_edited_plan!.id,
-                                            widget.exerciseInPlan
-                                                .exercise_in_plan_id);
+                                  ExerciseInPlan _exerciseInPlan =
+                                      getExerciseInPlanFromControllersWithValidityCheck(
+                                          widget.exercise.exercise_id,
+                                          current_edited_plan!.id,
+                                          widget.exerciseInPlan
+                                              .exercise_in_plan_id);
 
-                                    if (_exerciseInPlan.plan_id == '') {
-                                      // values were invalid
-                                      debugPrint('values were invalid!');
-                                      return;
-                                    }
-
-                                    Provider.of<ExerciseInPlanProvider>(context,
-                                            listen: false)
-                                        .updateData(_exerciseInPlan)
-                                        .then((_) => {
-                                              updateCurrentEditedPlan(
-                                                  _exerciseInPlan
-                                                      .exercise_in_plan_id),
-                                              Provider.of<PlanProvider>(context,
-                                                      listen: false)
-                                                  .updateCurrentEditedPlan(
-                                                      current_edited_plan!),
-                                              Provider.of<PlanProvider>(context,
-                                                      listen: false)
-                                                  .addData(current_edited_plan!,
-                                                      context)
-                                                  .then((_) =>
-                                                      Navigator.of(context)
-                                                          .pop())
-                                            });
+                                  if (_exerciseInPlan.plan_id == '') {
+                                    // values were invalid
+                                    debugPrint('values were invalid!');
+                                    return;
                                   }
+
+                                  Provider.of<ExerciseInPlanProvider>(context,
+                                          listen: false)
+                                      .updateData(_exerciseInPlan)
+                                      .then((_) => {
+                                            updateCurrentEditedPlan(
+                                                _exerciseInPlan
+                                                    .exercise_in_plan_id),
+                                            Provider.of<PlanProvider>(context,
+                                                    listen: false)
+                                                .updateCurrentEditedPlan(
+                                                    current_edited_plan!),
+                                            Provider.of<PlanProvider>(context,
+                                                    listen: false)
+                                                .addData(current_edited_plan!,
+                                                    context)
+                                                .then((_) =>
+                                                    Navigator.of(context).pop())
+                                          });
                                 },
                               ))
                             ];
                           },
                         ),
                       )),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
