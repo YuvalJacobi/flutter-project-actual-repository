@@ -4,7 +4,6 @@ import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
-import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 
 import 'package:provider/provider.dart';
@@ -531,7 +530,9 @@ class _CardWidgetState extends State<CardWidget> {
                                                 .addData(current_edited_plan!,
                                                     context)
                                                 .then((_) =>
-                                                    Navigator.of(context).pop())
+                                                    Navigator.of(context)
+                                                        .pop()),
+                                            setState(() {})
                                           });
                                 },
                               ))

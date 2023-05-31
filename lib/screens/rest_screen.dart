@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/model/exercise.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/screens/exercise_in_progress_screen.dart';
