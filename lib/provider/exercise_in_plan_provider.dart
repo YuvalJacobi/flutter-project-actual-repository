@@ -1,11 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
-import 'package:flutter_complete_guide/provider/user_provider.dart';
-import 'package:provider/provider.dart';
-
-import '../model/exercise.dart';
-import '../model/plan.dart';
 
 class ExerciseInPlanProvider extends ChangeNotifier {
   List<ExerciseInPlan> _exercisesInPlan = [];
@@ -106,15 +101,5 @@ class ExerciseInPlanProvider extends ChangeNotifier {
 
     return _exercisesInPlan
         .firstWhere((element) => element.exercise_in_plan_id == id);
-  }
-
-  bool Validate(
-      Exercise exercise, String uid, String plan_id, BuildContext context) {
-    List<Plan> plans =
-        Provider.of<UserProvider>(context, listen: false).myUser.plans;
-
-    Plan plan = plans.firstWhere((element) => element.id == plan_id);
-
-    return true;
   }
 }

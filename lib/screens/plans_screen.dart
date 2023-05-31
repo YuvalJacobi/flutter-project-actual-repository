@@ -140,21 +140,6 @@ class _PlanScreenState extends State<PlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (isInit == false) {
-      Provider.of<PlanProvider>(context, listen: false)
-          .setCurrentEditedPlanId('');
-
-      Provider.of<UserProvider>(context, listen: false)
-          .fetchUserData(context)
-          .then((value) => plans =
-              Provider.of<UserProvider>(context, listen: false).myUser.plans)
-          .then((value) => {
-                setState(() {
-                  isInit = true;
-                })
-              });
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Plans'),

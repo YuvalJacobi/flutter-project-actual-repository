@@ -164,7 +164,7 @@ class UserProvider extends ChangeNotifier {
       setData();
     }
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   // Future<void> addData(User user) async {

@@ -529,10 +529,11 @@ class _CardWidgetState extends State<CardWidget> {
                                                     listen: false)
                                                 .addData(current_edited_plan!,
                                                     context)
-                                                .then((_) =>
-                                                    Navigator.of(context)
-                                                        .pop()),
-                                            setState(() {})
+                                                .then((_) => {
+                                                      Navigator.of(context)
+                                                          .pop(),
+                                                      setState(() {})
+                                                    }),
                                           });
                                 },
                               ))

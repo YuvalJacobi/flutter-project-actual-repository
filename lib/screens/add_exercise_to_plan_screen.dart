@@ -434,7 +434,14 @@ class _CardWidgetState extends State<CardWidget> {
                                                     listen: false)
                                                 .updateCurrentEditedPlan(
                                                     current_edited_plan!, true),
-                                            Navigator.pop(context)
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        PlanScreen(),
+                                              ),
+                                            )
                                           });
                                 },
                               ))

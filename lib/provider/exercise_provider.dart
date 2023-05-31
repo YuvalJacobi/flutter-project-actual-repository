@@ -67,7 +67,7 @@ class ExerciseProvider extends ChangeNotifier {
       onError: (e) => debugPrint("Error completing: $e"),
     );
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   Future<void> addData(Exercise exercise) async {

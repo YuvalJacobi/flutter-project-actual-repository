@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
-import 'package:flutter_complete_guide/model/user_profile.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -81,7 +80,6 @@ class PlanProvider extends ChangeNotifier {
   Future<void> fetchPlans(BuildContext context) async {
     await FirebaseFirestore.instance.collection("plans").get().then(
       (querySnapshot) {
-        print("Successfully fetched exercises!");
         for (var doc in querySnapshot.docs) {
           if (_plans.map((e) => e.id).contains(doc.id) == true) continue;
 
@@ -95,12 +93,11 @@ class PlanProvider extends ChangeNotifier {
               user_id: doc['user_id'] ?? '',
               id: doc.id));
         }
-        debugPrint("Successfully added exercises to list!");
       },
       onError: (e) => debugPrint("Error completing: $e"),
     );
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   List<ExerciseInPlan> exercisesInPlanFromIds(
@@ -156,8 +153,6 @@ class PlanProvider extends ChangeNotifier {
 
   Future<void> deletePlanInUser(Plan plan, BuildContext context) async {
     _plans.removeWhere((element) => element.id == plan.id);
-    UserProfile userProfile =
-        Provider.of<UserProvider>(context, listen: false).myUser;
 
     // Remove plan from user's plans.
     await FirebaseFirestore.instance
@@ -165,13 +160,6 @@ class PlanProvider extends ChangeNotifier {
         .doc(plan.user_id)
         .update({
       'plans': _plans.map((e) => e.id).toList(),
-      // 'first_name': userProfile.first_name,
-      // 'last_name': userProfile.last_name,
-      // 'username': userProfile.username,
-      // 'age': userProfile.age,
-      // 'weight': userProfile.weight,
-      // 'height': userProfile.height,
-      // 'email': userProfile.email
     });
 
     // Remove plan from plans.
@@ -179,7 +167,7 @@ class PlanProvider extends ChangeNotifier {
 
     await deleteExercisesInPlanOfPlanByPlanId(plan.id, context);
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   Future<void> deleteExercisesInPlanOfPlanByPlanId(
