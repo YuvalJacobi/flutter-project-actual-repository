@@ -7,7 +7,6 @@ import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../model/plan.dart';
-import '../screens/edit_plan_screen.dart';
 
 class PlanProvider extends ChangeNotifier {
   List<Plan> _plans = [];

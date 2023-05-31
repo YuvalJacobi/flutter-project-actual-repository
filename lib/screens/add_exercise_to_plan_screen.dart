@@ -160,7 +160,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                   children: [
                     SizedBox(height: 8.0),
                     Container(
-                      height: 300.0,
+                      height: 600.0,
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemCount: exerciseOptions.length,
