@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
             .then((_) =>
                 Provider.of<ExerciseInPlanProvider>(context, listen: false)
                     .fetchData()
-                    .then((_) => setState(() => {_isInit = false})));
+                    .then((_) => setState(() => _isInit = false)));
       } catch (e) {
         debugPrint(e.toString());
       }

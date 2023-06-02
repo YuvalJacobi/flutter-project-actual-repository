@@ -152,7 +152,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
                           current_edited_plan =
                               Provider.of<PlanProvider>(context, listen: false)
                                   .getCurrentEditedPlan(context),
-                          setState(() => {isInit = true})
+                          setState(() => isInit = true)
                         })));
 
     super.didChangeDependencies();
