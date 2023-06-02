@@ -20,16 +20,11 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
-  List<Exercise> getExercisesOfUser(String uid) {
-    return _exercises.where((element) => element.user_id == uid).toList();
-  }
-
   List<Exercise> getExercisesWithSorting(
       {String name = '',
       String category = '',
       required List<String> active_muscles,
       String level = '',
-      String user_id = '',
       String exercise_id = ''}) {
     return _exercises
         .where((element) =>
@@ -38,7 +33,6 @@ class ExerciseProvider extends ChangeNotifier {
             (doListContainsList(element.active_muscles, active_muscles) ||
                 active_muscles.isEmpty) &&
             (element.level == level || level == '') &&
-            (element.user_id == user_id || user_id == '') &&
             (element.exercise_id == exercise_id || exercise_id == ''))
         .toList();
   }
@@ -59,7 +53,6 @@ class ExerciseProvider extends ChangeNotifier {
                   : List.from(doc['active_muscles'] as Iterable<dynamic>),
               level: doc['level'] ?? '',
               image_url: doc['image_url'] ?? '',
-              user_id: doc['user_id'] ?? '',
               exercise_id: doc.id));
         }
         debugPrint("Successfully added exercises to list!");
@@ -81,7 +74,6 @@ class ExerciseProvider extends ChangeNotifier {
       'category': exercise.category,
       'image_url': exercise.image_url,
       'level': exercise.level,
-      'user_id': exercise.user_id
     }).then((doc) => {
           exercise.exercise_id = doc.id,
           debugPrint("Successfully added exercise: " + exercise.toString()),
