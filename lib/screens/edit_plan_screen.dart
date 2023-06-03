@@ -214,38 +214,49 @@ class _EditPlanScreen extends State<EditPlanScreen> {
                         width: MediaQuery.of(context).size.width * 0.8,
                         height: MediaQuery.of(context).size.height * 0.5,
                         child: SingleChildScrollView(
-                          child: ListView.builder(
-                            physics: ScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount:
-                                current_edited_plan!.exercises_in_plan.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              ExerciseInPlan exerciseInPlan =
-                                  Provider.of<ExerciseInPlanProvider>(context,
-                                          listen: false)
-                                      .getExerciseInPlanById(
-                                          current_edited_plan!
-                                              .exercises_in_plan[index]);
+                          child: current_edited_plan!
+                                      .exercises_in_plan.length ==
+                                  0
+                              ? Container(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Text('You have no exercises :(',
+                                      style: TextStyle(fontSize: 20)))
+                              : ListView.builder(
+                                  physics: ScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: current_edited_plan!
+                                      .exercises_in_plan.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    ExerciseInPlan exerciseInPlan =
+                                        Provider.of<ExerciseInPlanProvider>(
+                                                context,
+                                                listen: false)
+                                            .getExerciseInPlanById(
+                                                current_edited_plan!
+                                                    .exercises_in_plan[index]);
 
-                              Exercise exercise = Provider.of<ExerciseProvider>(
-                                      context,
-                                      listen: false)
-                                  .getExercisesWithSorting(
-                                      exercise_id: exerciseInPlan.exercise_id,
-                                      active_muscles: [])[0];
+                                    Exercise exercise =
+                                        Provider.of<ExerciseProvider>(context,
+                                                listen: false)
+                                            .getExercisesWithSorting(
+                                                exercise_id:
+                                                    exerciseInPlan.exercise_id,
+                                                active_muscles: [])[0];
 
-                              return Container(
-                                width: 250,
-                                height: 250,
-                                child: CardWidget(
-                                  exerciseInPlan: exerciseInPlan,
-                                  exercise: exercise,
-                                  imageUrl: exercise.image_url,
-                                  key: Key(exerciseInPlan.exercise_in_plan_id),
+                                    return Container(
+                                      width: 250,
+                                      height: 250,
+                                      child: CardWidget(
+                                        exerciseInPlan: exerciseInPlan,
+                                        exercise: exercise,
+                                        imageUrl: exercise.image_url,
+                                        key: Key(
+                                            exerciseInPlan.exercise_in_plan_id),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
                         ),
                       ),
                       SizedBox(height: 20.0),
@@ -542,6 +553,28 @@ class _CardWidgetState extends State<CardWidget> {
                         ),
                       )),
                 ),
+                Container(
+                    width: 120,
+                    alignment: Alignment.bottomCenter,
+                    decoration: BoxDecoration(
+                        color: Colors.indigo,
+                        borderRadius: BorderRadius.circular(4)),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Provider.of<ExerciseInPlanProvider>(context,
+                                listen: false)
+                            .removeData(widget.exerciseInPlan, context)
+                            .then((value) => Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PlanScreen(),
+                                  ),
+                                ));
+                      },
+                      child: Text('Delete',
+                          style: TextStyle(
+                              fontSize: 20, backgroundColor: Colors.indigo)),
+                    )),
               ],
             ),
           ),

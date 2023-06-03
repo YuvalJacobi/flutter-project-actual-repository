@@ -157,19 +157,24 @@ class _PlanScreenState extends State<PlanScreen> {
                 ),
                 SizedBox(
                   height: 200,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: plans.length,
-                    itemBuilder: (context, index) {
-                      final _plan = plans[index];
-                      return PlanItem(
-                        name: _plan.name,
-                        onEditPressed: () => editPlan(index),
-                        onDeletePressed: () => deletePlan(index),
-                        onStartPressed: () => startPlan(index),
-                      );
-                    },
-                  ),
+                  child: plans.length == 0
+                      ? Container(
+                          alignment: Alignment.center,
+                          child: Text('You have no plans :(',
+                              style: TextStyle(fontSize: 20)))
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: plans.length,
+                          itemBuilder: (context, index) {
+                            final _plan = plans[index];
+                            return PlanItem(
+                              name: _plan.name,
+                              onEditPressed: () => editPlan(index),
+                              onDeletePressed: () => deletePlan(index),
+                              onStartPressed: () => startPlan(index),
+                            );
+                          },
+                        ),
                 ),
                 SizedBox(height: 150),
                 ElevatedButton(

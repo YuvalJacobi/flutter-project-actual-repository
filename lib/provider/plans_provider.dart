@@ -179,7 +179,7 @@ class PlanProvider extends ChangeNotifier {
     for (ExerciseInPlan exerciseInPlan in lst) {
       if (exerciseInPlan.plan_id == id) {
         Provider.of<ExerciseInPlanProvider>(context, listen: false)
-            .removeExerciseInPlan(exerciseInPlan);
+            .removeExerciseInPlan(exerciseInPlan, context);
       }
     }
   }

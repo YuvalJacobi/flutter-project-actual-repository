@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
+import 'package:flutter_complete_guide/model/user_profile.dart';
+import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:flutter_complete_guide/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class ExerciseInPlanProvider extends ChangeNotifier {
   List<ExerciseInPlan> _exercisesInPlan = [];
@@ -9,9 +13,25 @@ class ExerciseInPlanProvider extends ChangeNotifier {
     return _exercisesInPlan;
   }
 
-  void removeExerciseInPlan(ExerciseInPlan exerciseInPlan) {
-    if (_exercisesInPlan.contains(exerciseInPlan) == false) return;
-    _exercisesInPlan.remove(exerciseInPlan);
+  void removeExerciseInPlan(
+      ExerciseInPlan exerciseInPlan, BuildContext context) {
+    if (_exercisesInPlan.contains(exerciseInPlan)) {
+      _exercisesInPlan.remove(exerciseInPlan);
+    }
+
+    if (Provider.of<PlanProvider>(context, listen: false)
+        .getCurrentEditedPlan(context)
+        .exercises_in_plan
+        .contains(exerciseInPlan.exercise_in_plan_id)) {
+      Provider.of<PlanProvider>(context, listen: false)
+          .getCurrentEditedPlan(context)
+          .exercises_in_plan
+          .remove(exerciseInPlan.exercise_in_plan_id);
+
+      Provider.of<UserProvider>(context, listen: false).updatePlanOfUser(
+          Provider.of<PlanProvider>(context, listen: false)
+              .getCurrentEditedPlan(context));
+    }
   }
 
   void addExerciseInPlanToList(ExerciseInPlan exerciseInPlan) {
@@ -64,6 +84,15 @@ class ExerciseInPlanProvider extends ChangeNotifier {
           exerciseInPlan.exercise_in_plan_id = doc.id,
           addExerciseInPlanToList(exerciseInPlan)
         });
+  }
+
+  Future<void> removeData(
+      ExerciseInPlan exerciseInPlan, BuildContext context) async {
+    removeExerciseInPlan(exerciseInPlan, context);
+    await FirebaseFirestore.instance
+        .collection('exercises_in_plan')
+        .doc(exerciseInPlan.exercise_in_plan_id)
+        .delete();
   }
 
   List<ExerciseInPlan> exercisesInPlanByIds(List<String> ids) {
