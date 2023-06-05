@@ -555,10 +555,11 @@ class _CardWidgetState extends State<CardWidget> {
                 ),
                 Container(
                     width: 120,
+                    height: 50,
                     alignment: Alignment.bottomCenter,
                     decoration: BoxDecoration(
                         color: Colors.indigo,
-                        borderRadius: BorderRadius.circular(4)),
+                        borderRadius: BorderRadius.circular(2)),
                     child: ElevatedButton(
                       onPressed: () {
                         Provider.of<ExerciseInPlanProvider>(context,
@@ -573,7 +574,7 @@ class _CardWidgetState extends State<CardWidget> {
                       },
                       child: Text('Delete',
                           style: TextStyle(
-                              fontSize: 20, backgroundColor: Colors.indigo)),
+                              fontSize: 15, backgroundColor: Colors.indigo)),
                     )),
               ],
             ),
