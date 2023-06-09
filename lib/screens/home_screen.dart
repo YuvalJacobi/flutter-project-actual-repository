@@ -28,10 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInit) {
-      // setState() {
-      //   _isLoading = true;
-      // });
-
       try {
         Provider.of<PlanProvider>(context, listen: false)
             .fetchPlans(context)
@@ -51,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// return visual representation of screen
     return Scaffold(
         appBar: new AppBar(
           title: new Text("Our Fitness"),
@@ -61,11 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Image imageFromExercise(Exercise exercise) {
+    /// returns image of exercise if the image_url is non-null.
     if (exercise.image_url.isEmpty) {
       // return white square
       return Image.network(
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
     }
+
+    /// return image of exercise from the network.
     return Image.network(
       exercise.image_url,
       width: 100,
@@ -75,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget myExerciseWidget(Exercise exercise) {
+    /// return a Container which represents the visualization of a single exercise.
     return Container(
       width: 200,
       height: 200,
@@ -117,11 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   NetworkImage randomBackground() {
+    /// return random background
     int rnd = Random.secure().nextInt(backgrounds.length);
     return new NetworkImage(backgrounds[rnd]);
   }
 
   Widget myDrawer() {
+    /// return drawer widget
     return new Drawer(
       child: Column(
         children: [

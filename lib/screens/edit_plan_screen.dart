@@ -46,6 +46,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
   bool isInit = false;
 
   Image imageFromExercise(Exercise exercise) {
+    /// return image of an exercise if an exercise's image url is non-empty.
     if (exercise.image_url.isEmpty) {
       // return white square
       return Image.network(
@@ -61,6 +62,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
 
   ExerciseInPlan getExerciseInPlanFromControllers(
       String exercise_id, String plan_id) {
+    /// check if text controllers are filled with valid values to construct an exercise with.
     try {
       if (isExerciseValid(ExerciseInPlan(
               sets: int.parse(setsController.text),
@@ -101,6 +103,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
   }
 
   bool isExerciseValid(ExerciseInPlan exerciseInPlan) {
+    /// check if an exercise is valid
     if (exerciseInPlan.reps < 0 ||
         exerciseInPlan.sets <= 0 ||
         exerciseInPlan.rest < 0 ||
@@ -109,6 +112,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
   }
 
   void clearSelections() {
+    /// empty all text controllers' values
     setsController.text = "";
     repsController.text = "";
     weightController.text = "";
@@ -119,6 +123,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
   }
 
   void addExercise() {
+    /// go to adding an exercise screen
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => PlanEditorScreen(),
@@ -126,22 +131,9 @@ class _EditPlanScreen extends State<EditPlanScreen> {
     );
   }
 
-  List<Exercise> exercisesOfPlan(Plan p, BuildContext context) {
-    List<Exercise> lst = [];
-    for (String exerciseInPlanId in p.exercises_in_plan) {
-      ExerciseInPlan exerciseInPlan =
-          Provider.of<ExerciseInPlanProvider>(context, listen: false)
-              .getExerciseInPlanById(exerciseInPlanId);
-      Exercise exercise = Provider.of<ExerciseProvider>(context, listen: false)
-          .getExercisesWithSorting(
-              exercise_id: exerciseInPlan.exercise_id, active_muscles: [])[0];
-      lst.add(exercise);
-    }
-    return lst;
-  }
-
   @override
   void didChangeDependencies() async {
+    /// retrieve all relevant data.
     Provider.of<PlanProvider>(context, listen: false).fetchPlans(context).then(
         (_) => Provider.of<ExerciseProvider>(context, listen: false)
             .fetchExercises()
@@ -160,6 +152,7 @@ class _EditPlanScreen extends State<EditPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// return visualization of editing screen
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Your Exercises'),
@@ -303,6 +296,7 @@ class _CardWidgetState extends State<CardWidget> {
 
   ExerciseInPlan getExerciseInPlanFromControllersWithValidityCheck(
       String exercise_id, String plan_id, String exercise_in_plan_id) {
+    /// construct an exercise from text controllers' values and check its validity.
     try {
       if (isExerciseValid(ExerciseInPlan(
               sets: int.parse(setsController.text),
@@ -343,6 +337,7 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   bool isExerciseValid(ExerciseInPlan exerciseInPlan) {
+    /// check if an exercise in plan is valid.
     if (exerciseInPlan.reps < 0 ||
         exerciseInPlan.sets <= 0 ||
         exerciseInPlan.rest < 0 ||
@@ -351,6 +346,8 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   void clearSelections() {
+    /// empty all text controllers' values
+
     setsController.text = "";
     repsController.text = "";
     weightController.text = "";
@@ -361,6 +358,7 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   void setSelectionsByExerciseInPlan(ExerciseInPlan exerciseInPlan) {
+    /// set all text controllers with the values in an exercise in plan.
     setsController.text = exerciseInPlan.sets.toString();
     repsController.text = exerciseInPlan.reps.toString();
     weightController.text = exerciseInPlan.weight.toString();
@@ -371,6 +369,7 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   String activeMusclesRepresentation() {
+    /// return a string which lists all active muscles of an exercise
     String result = '';
     for (String s in widget.exercise.active_muscles) {
       result += s + '\n';
@@ -379,6 +378,7 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   void updateCurrentEditedPlan(String exerciseInPlanId) {
+    /// update the current edited plan with a new exercise_in_plan id
     if (current_edited_plan!.exercises_in_plan.contains(exerciseInPlanId)) {
       int index = current_edited_plan!.exercises_in_plan
           .toList()
@@ -391,9 +391,11 @@ class _CardWidgetState extends State<CardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    /// get current edited plan.
     current_edited_plan = Provider.of<PlanProvider>(context, listen: false)
         .getCurrentEditedPlan(context);
 
+    /// return a visual representation of a single exercise
     return Card(
       child: Row(
         children: [

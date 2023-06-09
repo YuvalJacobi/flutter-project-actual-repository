@@ -93,6 +93,11 @@ class ExerciseInPlanProvider extends ChangeNotifier {
         .collection('exercises_in_plan')
         .doc(exerciseInPlan.exercise_in_plan_id)
         .delete();
+
+    await FirebaseFirestore.instance
+        .collection('plans')
+        .doc(exerciseInPlan.exercise_in_plan_id)
+        .delete();
   }
 
   List<ExerciseInPlan> exercisesInPlanByIds(List<String> ids) {

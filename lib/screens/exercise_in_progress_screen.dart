@@ -91,28 +91,51 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
     return Text(result, style: TextStyle(fontSize: 20));
   }
 
+  Image imageFromExercise(Exercise exercise) {
+    /// returns image of exercise if the image_url is non-null.
+    if (exercise.image_url.isEmpty) {
+      // return white square
+      return Image.network(
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
+    }
+
+    /// return image of exercise from the network.
+    return Image.network(
+      exercise.image_url,
+      width: 100,
+      height: 100,
+      fit: BoxFit.cover,
+    );
+  }
+
   bool toggle = false;
 
   @override
   Widget build(BuildContext context) {
+    /// get index of current plan
     int index =
         Provider.of<PlanInProgressProvider>(context, listen: false).index;
 
+    /// get index of current set
     int set_index =
         Provider.of<PlanInProgressProvider>(context, listen: false).set_index;
 
+    /// get the ids of current exercises in plan
     List<String> exercisesInPlanIds =
         Provider.of<PlanInProgressProvider>(context, listen: false)
             .plan!
             .exercises_in_plan;
 
+    /// get exercises in current plan
     List<ExerciseInPlan> exercisesInPlan =
         Provider.of<ExerciseInPlanProvider>(context, listen: false)
             .exercisesInPlanByIds(exercisesInPlanIds);
 
+    /// check if last exercise was done
     if (index >= exercisesInPlan.length) {
       debugPrint('Done!');
 
+      /// navigate back to home screen
       Future.delayed(
           Duration.zero,
           () => {
@@ -120,14 +143,18 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
                     builder: (BuildContext context) => new HomeScreen()))
               });
     }
+
+    /// get current exercise in plan
     ExerciseInPlan exerciseInPlan = exercisesInPlan[index];
 
+    /// retrieve exercise component from it
     Exercise exercise = Provider.of<ExerciseProvider>(context, listen: false)
         .getExercisesWithSorting(
             exercise_id: exerciseInPlan.exercise_id, active_muscles: [])[0];
 
     textToShow = exercise.name;
 
+    /// return visual representation of screen.
     return Scaffold(
       appBar: AppBar(
         title: Text('Plan in progress'),
@@ -143,8 +170,10 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
             SizedBox(height: 30),
             exerciseInfoFromExerciseInPlan(exerciseInPlan),
             SizedBox(height: 40),
+            imageFromExercise(exercise),
+            SizedBox(height: 20),
             Text(
-              'Tips: make sure to drink water often.',
+              'Tips: make sure to drink water often.\nmachines at the gym are NOT parking in tel-aviv, don\'t just place your towel and leave.',
               style: TextStyle(fontSize: 16),
             ),
             CountdownTimerWidget(
