@@ -33,12 +33,11 @@ class CountdownScreen extends StatefulWidget {
 }
 
 class _CountdownScreenState extends State<CountdownScreen> {
+  /// countdown time will be stored in this variable
   int _countdown = 0;
-  Color _backgroundColor = Color.fromARGB(255, 144, 49, 47);
 
-  void showNotification() {
-    debugPrint('Rest time ended!');
-  }
+  /// current background color (when timer is active)
+  Color _backgroundColor = Color.fromARGB(255, 144, 49, 47);
 
   void changeBackgroundColor() {
     setState(() {
@@ -78,25 +77,38 @@ class _CountdownScreenState extends State<CountdownScreen> {
   }
 
   void handleInterval(int time) {
+    /// update screen each second that passes
     setState(() {
       _countdown =
           Provider.of<TimerElapsing>(context, listen: false).remaining_interval;
     });
+
+    /// returns after updating the screen with the new time remaining.
   }
 
   void handleElapsed() {
+    /// Entered upon timer ending
+
     changeBackgroundColor();
-    showNotification();
+
+    /// returns after changing background color
   }
 
   Text countdown_to_text() {
+    /// convert time remaining to representable form
+
+    /// minutes remaining
     int minutes = _countdown ~/ 60;
+
+    /// seconds remaining
     int seconds = (_countdown % 60);
 
+    /// formatting
     String minutes_str = minutes < 10 ? '0$minutes' : '$minutes';
     String seconds_str = seconds < 10 ? '0$seconds' : '$seconds';
     String time = '$minutes_str:$seconds_str';
 
+    /// return Text which represents the time remaining
     return Text(
       time,
       style: TextStyle(fontSize: 48, color: Colors.white),
@@ -104,22 +116,31 @@ class _CountdownScreenState extends State<CountdownScreen> {
   }
 
   void skipCountdown() {
+    /// Called when the skip button is pressed
+
+    /// get current index of set
     int set_index =
         Provider.of<PlanInProgressProvider>(context, listen: false).set_index;
 
+    /// get current plan
     Plan plan =
         Provider.of<PlanInProgressProvider>(context, listen: false).plan!;
 
+    /// get index of plan in progress
     int index =
         Provider.of<PlanInProgressProvider>(context, listen: false).index;
 
+    /// get current exercise being done
     ExerciseInPlan current_exercise_in_plan =
         Provider.of<ExerciseInPlanProvider>(context, listen: false)
             .getExerciseInPlanById(plan.exercises_in_plan[index]);
 
+    /// increment index of set by 1
     set_index += 1;
 
+    /// check if all sets of exercise were completed
     if (set_index >= current_exercise_in_plan.sets) {
+      /// navigate to plan in progress screen to proceed to next exercise
       Future.delayed(Duration.zero, () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => PlanInProgressScreen(),
@@ -127,20 +148,28 @@ class _CountdownScreenState extends State<CountdownScreen> {
       });
     } else {
       Future.delayed(Duration.zero, () {
+        // globally increment set of index by 1
         Provider.of<PlanInProgressProvider>(context, listen: false).set_index +=
             1;
 
+        // navigate to exercise screen without changing the exercise.
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => ExerciseInProgressScreen(),
         ));
       });
     }
+
+    /// After navigator has pushed a new screen depending on the current state of the plan
+    /// if last set of last exercise was done => go back to home screen
+    /// else => go to next set
   }
 
+  /// Countdown timer
   CountdownTimerWidget? countdown_timer = null;
 
   @override
   Widget build(BuildContext context) {
+    /// returns UI elements which are shown on screen.
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: Column(children: [
