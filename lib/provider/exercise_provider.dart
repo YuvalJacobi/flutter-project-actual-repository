@@ -31,7 +31,8 @@ class ExerciseProvider extends ChangeNotifier {
       String exercise_id = ''}) {
     return _exercises
         .where((element) =>
-            (element.name.contains(name) || name == '') &&
+            (element.name.toLowerCase().contains(name.toLowerCase()) ||
+                name == '') &&
             (element.category == category || category == '') &&
             (doListContainsList(element.active_muscles, active_muscles) ||
                 active_muscles.isEmpty) &&

@@ -475,11 +475,6 @@ class _CardWidgetState extends State<CardWidget> {
             child: Align(
                 alignment: Alignment.center,
                 child: Container(
-                  // constraints: BoxConstraints(
-                  //     minWidth: 200,
-                  //     maxWidth: 250,
-                  //     minHeight: 20,
-                  //     maxHeight: 55),
                   alignment: Alignment.bottomLeft,
                   child: PopupMenuButton(
                     onOpened: () {
@@ -488,7 +483,7 @@ class _CardWidgetState extends State<CardWidget> {
                     onCanceled: () {},
                     onSelected: (value) {},
                     child: Container(
-                        alignment: Alignment.bottomCenter,
+                        alignment: Alignment.center,
                         decoration: BoxDecoration(
                             color: Colors.indigo,
                             borderRadius: BorderRadius.circular(4)),
@@ -605,7 +600,7 @@ class _CardWidgetState extends State<CardWidget> {
                         fontSize: 15, backgroundColor: Colors.transparent)),
               )),
           Container(
-            alignment: Alignment.bottomLeft,
+            alignment: Alignment.bottomCenter,
             child: SizedBox(
               width: 140,
               height: 40,
@@ -618,21 +613,15 @@ class _CardWidgetState extends State<CardWidget> {
                       child: ElevatedButton(
                           onPressed: () =>
                               moveUp(widget.exerciseInPlan.exercise_in_plan_id),
-                          child: Text(
-                            'Up',
-                            style: TextStyle(fontSize: 9),
-                          ))),
-                  SizedBox(width: 20),
+                          child: Icon(Icons.arrow_upward))),
+                  SizedBox(width: 10),
                   Container(
                     width: 55,
                     height: 30,
                     child: ElevatedButton(
                         onPressed: () =>
                             moveDown(widget.exerciseInPlan.exercise_in_plan_id),
-                        child: Text(
-                          'Down',
-                          style: TextStyle(fontSize: 9),
-                        )),
+                        child: Icon(Icons.arrow_downward)),
                   ),
                 ],
               ),

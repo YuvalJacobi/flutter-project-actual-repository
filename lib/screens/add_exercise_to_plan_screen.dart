@@ -119,6 +119,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
 
   void clearSelections() {
     // clear all text controller's values.
+
     exerciseController.text = "";
     setsController.text = "";
     repsController.text = "";
@@ -377,7 +378,7 @@ class _CardWidgetState extends State<CardWidget> {
                   ),
                   SizedBox(height: 8.0),
                   Align(
-                      alignment: Alignment.bottomLeft,
+                      alignment: Alignment.center,
                       child: Container(
                         constraints: BoxConstraints(
                             minWidth: 200,
