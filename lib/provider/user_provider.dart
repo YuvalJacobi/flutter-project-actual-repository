@@ -93,17 +93,6 @@ class UserProvider extends ChangeNotifier {
       plans.add(p);
     }
     return plans;
-
-    // List<Plan> plans = [];
-    // for (Map<String, dynamic> item in d) {
-    //   plans.add(Plan(
-    //       exercises: dynamicOfExercisesInPlanToExercisesInPlan(
-    //           item['exercises_in_plan'] ?? ''),
-    //       name: item['name'] ?? '',
-    //       user_id: item['user_id'] ?? '',
-    //       id: item['plan_id'] ?? ''));
-    // }
-    // return plans;
   }
 
   Future<void> fetchUserData(BuildContext context) async {

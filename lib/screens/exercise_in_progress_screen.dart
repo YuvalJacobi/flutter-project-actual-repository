@@ -8,7 +8,7 @@ import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/rest_screen.dart';
 import 'package:provider/provider.dart';
 import '../model/exercise.dart';
-import 'countdown_timer_screen.dart';
+import '../widgets/countdown_timer.dart';
 
 void main() {
   runApp(ExerciseInProgress());

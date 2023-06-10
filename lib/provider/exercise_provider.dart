@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
 
 class ExerciseProvider extends ChangeNotifier {
+  /// list of exercises
   List<Exercise> _exercises = [];
 
   List<Exercise> get exercises {
     return [..._exercises];
   }
 
+  /// check if a list is contained in another list
   bool doListContainsList(List<dynamic> lst1, List<dynamic> lst2) {
     if (lst2.isEmpty) return true;
 
@@ -20,6 +22,7 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
+  /// get list of exercises with sorting arguments.
   List<Exercise> getExercisesWithSorting(
       {String name = '',
       String category = '',
@@ -37,6 +40,7 @@ class ExerciseProvider extends ChangeNotifier {
         .toList();
   }
 
+  /// fetch all exercises from database.
   Future<void> fetchExercises() async {
     await FirebaseFirestore.instance.collection("exercises").get().then(
       (querySnapshot) {
@@ -59,27 +63,5 @@ class ExerciseProvider extends ChangeNotifier {
       },
       onError: (e) => debugPrint("Error completing: $e"),
     );
-
-    //notifyListeners();
-  }
-
-  Future<void> addData(Exercise exercise) async {
-    if (exercises.map((e) => e.exercise_id).contains(exercise.exercise_id)) {
-      debugPrint("Exercise already exists within database!");
-      return;
-    }
-    await FirebaseFirestore.instance.collection('exercises').add({
-      'name': exercise.name,
-      'active_muscles': exercise.active_muscles,
-      'category': exercise.category,
-      'image_url': exercise.image_url,
-      'level': exercise.level,
-    }).then((doc) => {
-          exercise.exercise_id = doc.id,
-          debugPrint("Successfully added exercise: " + exercise.toString()),
-          _exercises.add(exercise),
-        });
-
-    debugPrint("Finished await");
   }
 }

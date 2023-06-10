@@ -11,6 +11,7 @@ class Exercise {
 
   String exercise_id;
 
+  /// constructor
   Exercise(
       {required this.name,
       required this.category,

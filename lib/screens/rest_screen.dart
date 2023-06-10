@@ -3,12 +3,12 @@ import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/screens/exercise_in_progress_screen.dart';
 import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
-import 'package:flutter_complete_guide/provider/timer_elapsing.dart';
+import 'package:flutter_complete_guide/widgets/timer_elapsing.dart';
 import 'package:provider/provider.dart';
 
 import '../model/exercise_in_plan.dart';
 import '../model/plan.dart';
-import 'countdown_timer_screen.dart';
+import '../widgets/countdown_timer.dart';
 
 void main() {
   runApp(Countdown());

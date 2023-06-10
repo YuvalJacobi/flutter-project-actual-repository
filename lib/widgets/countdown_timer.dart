@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/provider/timer_elapsing.dart';
+import 'package:flutter_complete_guide/widgets/timer_elapsing.dart';
 import 'package:provider/provider.dart';
 
 class CountdownTimerWidget extends StatefulWidget {
