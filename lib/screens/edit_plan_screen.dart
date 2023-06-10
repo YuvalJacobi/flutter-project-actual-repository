@@ -234,7 +234,8 @@ class _EditPlanScreen extends State<EditPlanScreen> {
                                 imageUrl: exercise.image_url,
                                 key: Key(exerciseInPlan.exercise_in_plan_id),
                                 index: index,
-                                func: () => func());
+                                func: () => func(),
+                                editExerciseInPlanData: editExerciseInPlanData);
                           },
                         ),
                       ),
@@ -251,6 +252,32 @@ class _EditPlanScreen extends State<EditPlanScreen> {
     /// rebuild the page
     setState(() {});
   }
+
+  void updateCurrentEditedPlan(String exerciseInPlanId) {
+    /// update the current edited plan with a new exercise_in_plan id
+    if (current_edited_plan!.exercises_in_plan.contains(exerciseInPlanId)) {
+      int index = current_edited_plan!.exercises_in_plan
+          .toList()
+          .indexOf(exerciseInPlanId);
+      current_edited_plan!.exercises_in_plan[index] = exerciseInPlanId;
+    } else {
+      current_edited_plan!.exercises_in_plan.add(exerciseInPlanId);
+    }
+  }
+
+  /// edit exercise in plan with new data and update in database
+  void editExerciseInPlanData(ExerciseInPlan _exerciseInPlan) {
+    Provider.of<ExerciseInPlanProvider>(context, listen: false)
+        .updateData(_exerciseInPlan)
+        .then((_) => {
+              updateCurrentEditedPlan(_exerciseInPlan.exercise_in_plan_id),
+              Provider.of<PlanProvider>(context, listen: false)
+                  .updateCurrentEditedPlan(current_edited_plan!),
+              Provider.of<PlanProvider>(context, listen: false)
+                  .addData(current_edited_plan!, context)
+                  .then((_) => {Navigator.of(context).pop(), setState(() {})}),
+            });
+  }
 }
 
 class CardWidget extends StatefulWidget {
@@ -259,6 +286,7 @@ class CardWidget extends StatefulWidget {
   final ExerciseInPlan exerciseInPlan;
   final int index;
   final Function func;
+  final Function(ExerciseInPlan e) editExerciseInPlanData;
 
   const CardWidget(
       {required Key key,
@@ -266,7 +294,8 @@ class CardWidget extends StatefulWidget {
       required this.exercise,
       required this.imageUrl,
       required this.index,
-      required this.func})
+      required this.func,
+      required this.editExerciseInPlanData})
       : super(key: key);
 
   @override
@@ -551,25 +580,7 @@ class _CardWidgetState extends State<CardWidget> {
                               return;
                             }
 
-                            Provider.of<ExerciseInPlanProvider>(context,
-                                    listen: false)
-                                .updateData(_exerciseInPlan)
-                                .then((_) => {
-                                      updateCurrentEditedPlan(
-                                          _exerciseInPlan.exercise_in_plan_id),
-                                      Provider.of<PlanProvider>(context,
-                                              listen: false)
-                                          .updateCurrentEditedPlan(
-                                              current_edited_plan!),
-                                      Provider.of<PlanProvider>(context,
-                                              listen: false)
-                                          .addData(
-                                              current_edited_plan!, context)
-                                          .then((_) => {
-                                                Navigator.of(context).pop(),
-                                                setState(() {})
-                                              }),
-                                    });
+                            widget.editExerciseInPlanData(_exerciseInPlan);
                           },
                         ))
                       ];

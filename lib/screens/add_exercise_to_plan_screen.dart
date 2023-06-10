@@ -170,6 +170,22 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    ElevatedButton(
+                        onPressed: () => {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      PlanScreen(),
+                                ),
+                              )
+                            },
+                        child: Text(
+                          'Close',
+                          style: TextStyle(fontSize: 20),
+                        )),
+                    SizedBox(
+                      height: 8,
+                    ),
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 20),
                       child: TextField(
@@ -207,20 +223,6 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         },
                       ),
                     ),
-                    SizedBox(height: 30.0),
-                    ElevatedButton(
-                        onPressed: () => {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      PlanScreen(),
-                                ),
-                              )
-                            },
-                        child: Text(
-                          'Close',
-                          style: TextStyle(fontSize: 20),
-                        ))
                   ],
                 ),
               ),
