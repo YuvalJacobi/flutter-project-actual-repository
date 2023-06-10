@@ -45,6 +45,7 @@ Plan? current_edited_plan = null;
 
 class _PlanEditorScreen extends State<PlanEditorScreen> {
   List<Exercise> exerciseOptions = [];
+  String nameFilter = '';
 
   bool isInit = false;
 
@@ -168,6 +169,24 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Exercise Name',
+                        ),
+                        controller: exerciseController,
+                        onChanged: (value) {
+                          setState(() {
+                            exerciseOptions = Provider.of<ExerciseProvider>(
+                                    context,
+                                    listen: false)
+                                .getExercisesWithSorting(
+                                    name: value, active_muscles: []);
+                          });
+                        },
+                      ),
+                    ),
                     SizedBox(height: 8.0),
                     Container(
                       height: 600.0,
@@ -187,7 +206,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         },
                       ),
                     ),
-                    SizedBox(height: 32.0),
+                    SizedBox(height: 30.0),
                     ElevatedButton(
                         onPressed: () => {
                               Navigator.of(context).pushReplacement(
@@ -340,7 +359,7 @@ class _CardWidgetState extends State<CardWidget> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  SizedBox(height: 5.0),
                   Text(
                     'Active Muscles',
                     style: TextStyle(
@@ -362,7 +381,7 @@ class _CardWidgetState extends State<CardWidget> {
                       child: Container(
                         constraints: BoxConstraints(
                             minWidth: 200,
-                            maxWidth: 250,
+                            maxWidth: 260,
                             minHeight: 50,
                             maxHeight: 75),
                         alignment: Alignment.bottomLeft,

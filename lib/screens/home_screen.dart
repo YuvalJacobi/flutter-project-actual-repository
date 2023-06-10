@@ -45,6 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String name = 'Seated Weighted Dip';
+  String level = 'Beginner';
+  String category = 'Compound';
+  List<String> active_muscles = ['Triceps', 'Chest'];
+  String image_url =
+      'https://static.strengthlevel.com/images/illustrations/seated-dip-machine-1000x1000.jpg';
+
   @override
   Widget build(BuildContext context) {
     /// return visual representation of screen
@@ -54,7 +61,18 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.redAccent,
         ),
         drawer: myDrawer(),
-        body: _isInit ? Center(child: CircularProgressIndicator()) : Center());
+        body: _isInit
+            ? Center(child: CircularProgressIndicator())
+            : Center(
+                // child: ElevatedButton(
+                //   child: Text('add'),
+                //   onPressed: () {
+                //     Provider.of<ExerciseProvider>(context, listen: false)
+                //         .addNewExercise(
+                //             name, level, category, active_muscles, image_url);
+                //   },
+                // ),
+                ));
   }
 
   Image imageFromExercise(Exercise exercise) {

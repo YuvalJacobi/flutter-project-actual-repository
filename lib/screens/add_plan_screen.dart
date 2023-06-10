@@ -121,25 +121,6 @@ class _PlanAdderScreen extends State<PlanAdderScreen> {
                                   ),
                                 )
                               });
-
-                      // adding manual delay since await doesn't wait for some reason
-                      //manualDelay();
-
-                      // try {
-                      //   p = Provider.of<PlanProvider>(context, listen: false)
-                      //       .plans
-                      //       .last;
-
-                      //   if (p.name != nameController.text) {
-                      //     // wrong plan was used (last one)
-
-                      //     Provider.of<PlanProvider>(context, listen: false)
-                      //         .deletePlanByName(nameController.text);
-                      //     return;
-                      //   }
-                      // } on Error catch (_) {
-                      //   return;
-                      // }
                     },
                     child: Text('Confirm'),
                   ),

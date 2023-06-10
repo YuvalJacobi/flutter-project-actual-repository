@@ -64,4 +64,15 @@ class ExerciseProvider extends ChangeNotifier {
       onError: (e) => debugPrint("Error completing: $e"),
     );
   }
+
+  Future<void> addNewExercise(String name, String level, String category,
+      List<String> active_muscles, String image_url) async {
+    await FirebaseFirestore.instance.collection("exercises").add({
+      'name': name,
+      'category': category,
+      'active_muscles': active_muscles,
+      'image_url': image_url,
+      'level': level
+    });
+  }
 }
