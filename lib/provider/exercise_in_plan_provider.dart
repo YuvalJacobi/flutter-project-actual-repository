@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
-import 'package:flutter_complete_guide/model/user_profile.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../model/plan.dart';
 
 class ExerciseInPlanProvider extends ChangeNotifier {
   List<ExerciseInPlan> _exercisesInPlan = [];
@@ -87,17 +88,20 @@ class ExerciseInPlanProvider extends ChangeNotifier {
   }
 
   Future<void> removeData(
-      ExerciseInPlan exerciseInPlan, BuildContext context) async {
+      Plan plan, ExerciseInPlan exerciseInPlan, BuildContext context) async {
     removeExerciseInPlan(exerciseInPlan, context);
     await FirebaseFirestore.instance
         .collection('exercises_in_plan')
         .doc(exerciseInPlan.exercise_in_plan_id)
         .delete();
 
+    List<String> lst = plan.exercises_in_plan
+        .where((element) => element != exerciseInPlan.exercise_in_plan_id)
+        .toList();
     await FirebaseFirestore.instance
         .collection('plans')
-        .doc(exerciseInPlan.exercise_in_plan_id)
-        .delete();
+        .doc(exerciseInPlan.plan_id)
+        .update({'exercises_in_plan': lst});
   }
 
   List<ExerciseInPlan> exercisesInPlanByIds(List<String> ids) {

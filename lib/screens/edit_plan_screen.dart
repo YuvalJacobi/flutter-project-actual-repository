@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
+import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 
 import 'package:provider/provider.dart';
@@ -33,6 +34,7 @@ class EditPlanScreen extends StatefulWidget {
   _EditPlanScreen createState() => _EditPlanScreen();
 }
 
+List<String> exercisesInPlanByOrder = [];
 final TextEditingController setsController = TextEditingController();
 final TextEditingController repsController = TextEditingController();
 final TextEditingController weightController = TextEditingController();
@@ -206,50 +208,34 @@ class _EditPlanScreen extends State<EditPlanScreen> {
                       Container(
                         width: MediaQuery.of(context).size.width * 0.8,
                         height: MediaQuery.of(context).size.height * 0.5,
-                        child: SingleChildScrollView(
-                          child: current_edited_plan!
-                                      .exercises_in_plan.length ==
-                                  0
-                              ? Container(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Text('You have no exercises :(',
-                                      style: TextStyle(fontSize: 20)))
-                              : ListView.builder(
-                                  physics: ScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: current_edited_plan!
-                                      .exercises_in_plan.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    ExerciseInPlan exerciseInPlan =
-                                        Provider.of<ExerciseInPlanProvider>(
-                                                context,
-                                                listen: false)
-                                            .getExerciseInPlanById(
-                                                current_edited_plan!
-                                                    .exercises_in_plan[index]);
+                        child: ListView.builder(
+                          key: UniqueKey(),
+                          physics: ScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount:
+                              current_edited_plan!.exercises_in_plan.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            ExerciseInPlan exerciseInPlan =
+                                Provider.of<ExerciseInPlanProvider>(context,
+                                        listen: false)
+                                    .getExerciseInPlanById(current_edited_plan!
+                                        .exercises_in_plan[index]);
 
-                                    Exercise exercise =
-                                        Provider.of<ExerciseProvider>(context,
-                                                listen: false)
-                                            .getExercisesWithSorting(
-                                                exercise_id:
-                                                    exerciseInPlan.exercise_id,
-                                                active_muscles: [])[0];
+                            Exercise exercise = Provider.of<ExerciseProvider>(
+                                    context,
+                                    listen: false)
+                                .getExercisesWithSorting(
+                                    exercise_id: exerciseInPlan.exercise_id,
+                                    active_muscles: [])[0];
 
-                                    return Container(
-                                      width: 250,
-                                      height: 250,
-                                      child: CardWidget(
-                                        exerciseInPlan: exerciseInPlan,
-                                        exercise: exercise,
-                                        imageUrl: exercise.image_url,
-                                        key: Key(
-                                            exerciseInPlan.exercise_in_plan_id),
-                                      ),
-                                    );
-                                  },
-                                ),
+                            return CardWidget(
+                                exerciseInPlan: exerciseInPlan,
+                                exercise: exercise,
+                                imageUrl: exercise.image_url,
+                                key: Key(exerciseInPlan.exercise_in_plan_id),
+                                index: index,
+                                func: () => func());
+                          },
                         ),
                       ),
                       SizedBox(height: 20.0),
@@ -260,18 +246,27 @@ class _EditPlanScreen extends State<EditPlanScreen> {
             ),
     );
   }
+
+  void func() {
+    /// rebuild the page
+    setState(() {});
+  }
 }
 
 class CardWidget extends StatefulWidget {
   final Exercise exercise;
   final String imageUrl;
   final ExerciseInPlan exerciseInPlan;
+  final int index;
+  final Function func;
 
   const CardWidget(
       {required Key key,
       required this.exerciseInPlan,
       required this.exercise,
-      required this.imageUrl})
+      required this.imageUrl,
+      required this.index,
+      required this.func})
       : super(key: key);
 
   @override
@@ -389,6 +384,44 @@ class _CardWidgetState extends State<CardWidget> {
     }
   }
 
+  void moveUp(String exercise_in_plan_id) async {
+    /// changing the order of a certain exercise in plan
+    if (widget.index != -1) {
+      final int newIndex = widget.index - 1;
+      if (newIndex >= 0 &&
+          newIndex < current_edited_plan!.exercises_in_plan.length) {
+        current_edited_plan!.exercises_in_plan.remove(exercise_in_plan_id);
+        current_edited_plan!.exercises_in_plan
+            .insert(newIndex, exercise_in_plan_id);
+
+        await Provider.of<PlanProvider>(context, listen: false)
+            .updateCurrentEditedPlan(current_edited_plan!, true)
+            .then((value) => Provider.of<UserProvider>(context, listen: false)
+                .updatePlanOfUser(current_edited_plan!))
+            .then((value) => widget.func());
+      }
+    }
+  }
+
+  void moveDown(String exercise_in_plan_id) async {
+    /// changing the order of a certain exercise in plan
+    if (widget.index != -1) {
+      final int newIndex = widget.index + 1;
+      if (newIndex >= 0 &&
+          newIndex < current_edited_plan!.exercises_in_plan.length) {
+        current_edited_plan!.exercises_in_plan.remove(exercise_in_plan_id);
+        current_edited_plan!.exercises_in_plan
+            .insert(newIndex, exercise_in_plan_id);
+
+        await Provider.of<PlanProvider>(context, listen: false)
+            .updateCurrentEditedPlan(current_edited_plan!, true)
+            .then((value) => Provider.of<UserProvider>(context, listen: false)
+                .updatePlanOfUser(current_edited_plan!))
+            .then((value) => widget.func());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     /// get current edited plan.
@@ -397,192 +430,216 @@ class _CardWidgetState extends State<CardWidget> {
 
     /// return a visual representation of a single exercise
     return Card(
-      child: Row(
+        child: Row(children: [
+      Container(
+        alignment: Alignment.topLeft,
+        width: MediaQuery.of(context).size.width * 0.43,
+        height: MediaQuery.of(context).size.height * 0.3,
+        child: imageFromExercise(
+            widget.exercise,
+            MediaQuery.of(context).size.width * 0.6,
+            MediaQuery.of(context).size.height * 0.6,
+            BoxFit.contain),
+      ),
+      SizedBox(width: 6),
+      Expanded(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            alignment: Alignment.topLeft,
-            width: MediaQuery.of(context).size.width * 0.43,
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: imageFromExercise(
-                widget.exercise,
-                MediaQuery.of(context).size.width * 0.6,
-                MediaQuery.of(context).size.height * 0.6,
-                BoxFit.contain),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              widget.exercise.name,
+              style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
           ),
-          SizedBox(width: 6),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.exercise.name,
-                    style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                Text(
-                  'Active Muscles',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontSize: 15.0,
-                      color: Colors.white),
-                ),
-                SizedBox(height: 8.0),
-                Text(
-                  activeMusclesRepresentation(),
-                  style: TextStyle(fontSize: 12.0, color: Colors.white),
-                ),
-                SizedBox(height: 8.0),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        // constraints: BoxConstraints(
-                        //     minWidth: 200,
-                        //     maxWidth: 250,
-                        //     minHeight: 20,
-                        //     maxHeight: 55),
-                        alignment: Alignment.bottomLeft,
-                        child: PopupMenuButton(
-                          onOpened: () {
-                            setSelectionsByExerciseInPlan(
-                                widget.exerciseInPlan);
-                          },
-                          onCanceled: () {},
-                          onSelected: (value) {},
-                          child: Container(
-                              alignment: Alignment.bottomCenter,
-                              decoration: BoxDecoration(
-                                  color: Colors.indigo,
-                                  borderRadius: BorderRadius.circular(4)),
-                              child: Text('Edit',
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      backgroundColor: Colors.indigo))),
-                          itemBuilder: (context) {
-                            return [
-                              PopupMenuItem(
-                                child: TextField(
-                                  controller: setsController,
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: false),
-                                  decoration: InputDecoration(
-                                    labelText: 'Sets',
-                                  ),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                child: TextField(
-                                  controller: repsController,
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: false),
-                                  decoration: InputDecoration(
-                                    labelText: 'Reps',
-                                  ),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                child: TextField(
-                                  controller: weightController,
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true),
-                                  decoration: InputDecoration(
-                                    labelText: 'Weight',
-                                  ),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                child: TextField(
-                                  controller: restController,
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: false),
-                                  decoration: InputDecoration(
-                                    labelText: 'Rest',
-                                  ),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                  child: ElevatedButton(
-                                child: Text(
-                                  'Confirm',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                onPressed: () {
-                                  ExerciseInPlan _exerciseInPlan =
-                                      getExerciseInPlanFromControllersWithValidityCheck(
-                                          widget.exercise.exercise_id,
-                                          current_edited_plan!.id,
-                                          widget.exerciseInPlan
-                                              .exercise_in_plan_id);
-
-                                  if (_exerciseInPlan.plan_id == '') {
-                                    // values were invalid
-                                    debugPrint('values were invalid!');
-                                    return;
-                                  }
-
-                                  Provider.of<ExerciseInPlanProvider>(context,
-                                          listen: false)
-                                      .updateData(_exerciseInPlan)
-                                      .then((_) => {
-                                            updateCurrentEditedPlan(
-                                                _exerciseInPlan
-                                                    .exercise_in_plan_id),
-                                            Provider.of<PlanProvider>(context,
-                                                    listen: false)
-                                                .updateCurrentEditedPlan(
-                                                    current_edited_plan!),
-                                            Provider.of<PlanProvider>(context,
-                                                    listen: false)
-                                                .addData(current_edited_plan!,
-                                                    context)
-                                                .then((_) => {
-                                                      Navigator.of(context)
-                                                          .pop(),
-                                                      setState(() {})
-                                                    }),
-                                          });
-                                },
-                              ))
-                            ];
-                          },
+          SizedBox(height: 8.0),
+          Text(
+            'Active Muscles',
+            style: TextStyle(
+                decoration: TextDecoration.underline,
+                fontSize: 15.0,
+                color: Colors.white),
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            activeMusclesRepresentation(),
+            style: TextStyle(fontSize: 12.0, color: Colors.white),
+          ),
+          SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  // constraints: BoxConstraints(
+                  //     minWidth: 200,
+                  //     maxWidth: 250,
+                  //     minHeight: 20,
+                  //     maxHeight: 55),
+                  alignment: Alignment.bottomLeft,
+                  child: PopupMenuButton(
+                    onOpened: () {
+                      setSelectionsByExerciseInPlan(widget.exerciseInPlan);
+                    },
+                    onCanceled: () {},
+                    onSelected: (value) {},
+                    child: Container(
+                        alignment: Alignment.bottomCenter,
+                        decoration: BoxDecoration(
+                            color: Colors.indigo,
+                            borderRadius: BorderRadius.circular(4)),
+                        child: Text('Edit',
+                            style: TextStyle(
+                                fontSize: 30, backgroundColor: Colors.indigo))),
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          child: TextField(
+                            controller: setsController,
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: false),
+                            decoration: InputDecoration(
+                              labelText: 'Sets',
+                            ),
+                          ),
                         ),
-                      )),
-                ),
-                Container(
-                    width: 120,
-                    height: 50,
-                    alignment: Alignment.bottomCenter,
-                    decoration: BoxDecoration(
-                        color: Colors.indigo,
-                        borderRadius: BorderRadius.circular(2)),
+                        PopupMenuItem(
+                          child: TextField(
+                            controller: repsController,
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: false),
+                            decoration: InputDecoration(
+                              labelText: 'Reps',
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: TextField(
+                            controller: weightController,
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                            decoration: InputDecoration(
+                              labelText: 'Weight',
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: TextField(
+                            controller: restController,
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: false),
+                            decoration: InputDecoration(
+                              labelText: 'Rest',
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                            child: ElevatedButton(
+                          child: Text(
+                            'Confirm',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          onPressed: () {
+                            ExerciseInPlan _exerciseInPlan =
+                                getExerciseInPlanFromControllersWithValidityCheck(
+                                    widget.exercise.exercise_id,
+                                    current_edited_plan!.id,
+                                    widget.exerciseInPlan.exercise_in_plan_id);
+
+                            if (_exerciseInPlan.plan_id == '') {
+                              // values were invalid
+                              debugPrint('values were invalid!');
+                              return;
+                            }
+
+                            Provider.of<ExerciseInPlanProvider>(context,
+                                    listen: false)
+                                .updateData(_exerciseInPlan)
+                                .then((_) => {
+                                      updateCurrentEditedPlan(
+                                          _exerciseInPlan.exercise_in_plan_id),
+                                      Provider.of<PlanProvider>(context,
+                                              listen: false)
+                                          .updateCurrentEditedPlan(
+                                              current_edited_plan!),
+                                      Provider.of<PlanProvider>(context,
+                                              listen: false)
+                                          .addData(
+                                              current_edited_plan!, context)
+                                          .then((_) => {
+                                                Navigator.of(context).pop(),
+                                                setState(() {})
+                                              }),
+                                    });
+                          },
+                        ))
+                      ];
+                    },
+                  ),
+                )),
+          ),
+          Container(
+              width: 120,
+              height: 35,
+              alignment: Alignment.bottomCenter,
+              decoration: BoxDecoration(
+                  color: Colors.indigo, borderRadius: BorderRadius.circular(2)),
+              child: ElevatedButton(
+                onPressed: () {
+                  Provider.of<ExerciseInPlanProvider>(context, listen: false)
+                      .removeData(
+                          current_edited_plan!, widget.exerciseInPlan, context)
+                      .then((value) => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlanScreen(),
+                            ),
+                          ));
+                },
+                child: Text('Delete',
+                    style: TextStyle(
+                        fontSize: 15, backgroundColor: Colors.transparent)),
+              )),
+          Container(
+            alignment: Alignment.bottomLeft,
+            child: SizedBox(
+              width: 140,
+              height: 40,
+              child: Row(
+                key: UniqueKey(),
+                children: [
+                  Container(
+                      width: 55,
+                      height: 30,
+                      child: ElevatedButton(
+                          onPressed: () =>
+                              moveUp(widget.exerciseInPlan.exercise_in_plan_id),
+                          child: Text(
+                            'Up',
+                            style: TextStyle(fontSize: 9),
+                          ))),
+                  SizedBox(width: 20),
+                  Container(
+                    width: 55,
+                    height: 30,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Provider.of<ExerciseInPlanProvider>(context,
-                                listen: false)
-                            .removeData(widget.exerciseInPlan, context)
-                            .then((value) => Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PlanScreen(),
-                                  ),
-                                ));
-                      },
-                      child: Text('Delete',
-                          style: TextStyle(
-                              fontSize: 15, backgroundColor: Colors.indigo)),
-                    )),
-              ],
+                        onPressed: () =>
+                            moveDown(widget.exerciseInPlan.exercise_in_plan_id),
+                        child: Text(
+                          'Down',
+                          style: TextStyle(fontSize: 9),
+                        )),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
-      ),
-    );
+      )),
+    ]));
   }
 }

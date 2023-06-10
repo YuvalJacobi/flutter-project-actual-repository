@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../model/exercise_in_plan.dart';
 import '../model/plan.dart';
-import 'countdown_timer.dart';
+import 'countdown_timer_screen.dart';
 
 void main() {
   runApp(Countdown());
