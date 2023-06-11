@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise_in_plan.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,10 @@ class PlanInProgressProvider extends ChangeNotifier {
 
   /// index of current set being done.
   int set_index = 0;
+
+  DateTime start = DateTime(-999);
+
+  DateTime end = DateTime(-999);
 
   ExerciseInPlan? getNextExerciseInPlan(BuildContext context) {
     /// increment index of current exercise by 1
@@ -37,5 +42,12 @@ class PlanInProgressProvider extends ChangeNotifier {
 
     // return next exercise to be done.
     return exercisesInPlan[index];
+  }
+
+  void Clear() {
+    plan = null;
+    index = 0;
+    set_index = 0;
+    end = DateTime(-999);
   }
 }

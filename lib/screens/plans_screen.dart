@@ -45,6 +45,9 @@ class _PlanScreenState extends State<PlanScreen> {
       return;
     }
 
+    Provider.of<PlanInProgressProvider>(context, listen: false).start =
+        DateTime.now();
+
     /// set current played plan
     Provider.of<PlanInProgressProvider>(context, listen: false).plan = p;
 

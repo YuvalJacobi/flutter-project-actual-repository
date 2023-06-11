@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
+import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
+import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:flutter_complete_guide/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -38,19 +40,67 @@ class _HomeScreenState extends State<HomeScreen> {
             .then((_) =>
                 Provider.of<ExerciseInPlanProvider>(context, listen: false)
                     .fetchData()
-                    .then((_) => setState(() => {_isInit = false})));
+                    .then((_) => setState(() => _isInit = false)));
       } catch (e) {
         debugPrint(e.toString());
       }
     }
   }
 
-  String name = 'Seated Weighted Dip';
-  String level = 'Beginner';
-  String category = 'Compound';
-  List<String> active_muscles = ['Triceps', 'Chest'];
-  String image_url =
-      'https://static.strengthlevel.com/images/illustrations/seated-dip-machine-1000x1000.jpg';
+  // String name = 'Wide Grip Pullups';
+  // String level = 'Intermediate';
+  // String category = 'Compound';
+  // List<String> active_muscles = [
+  //   'Lats',
+  //   'Biceps',
+  //   'Abs',
+  //   'Shoulders',
+  //   'Upper Back'
+  // ];
+  // String image_url =
+  //     'https://cdn.muscleandstrength.com/sites/default/files/wide-grip-pull-up-1.jpg';
+
+  format(Duration d) => d.toString().split('.').first.padLeft(8, "0");
+
+  Widget trainingDurationWidget() {
+    DateTime start =
+        Provider.of<PlanInProgressProvider>(context, listen: false).start;
+
+    if (start.year == -999) return Center();
+
+    if (Provider.of<PlanInProgressProvider>(context, listen: false).end.year !=
+        -999) return Center();
+
+    Provider.of<PlanInProgressProvider>(context, listen: false).end =
+        DateTime.now();
+
+    Duration diff = Provider.of<PlanInProgressProvider>(context, listen: false)
+        .end
+        .difference(start);
+
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Last Training Session\'s total length',
+            style: TextStyle(fontSize: 22, color: Colors.redAccent),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            format(diff),
+            style: TextStyle(
+                fontSize: 20, color: Color.fromARGB(255, 216, 21, 21)),
+          )
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,16 +113,17 @@ class _HomeScreenState extends State<HomeScreen> {
         drawer: myDrawer(),
         body: _isInit
             ? Center(child: CircularProgressIndicator())
-            : Center(
-                // child: ElevatedButton(
-                //   child: Text('add'),
-                //   onPressed: () {
-                //     Provider.of<ExerciseProvider>(context, listen: false)
-                //         .addNewExercise(
-                //             name, level, category, active_muscles, image_url);
-                //   },
-                // ),
-                ));
+            : trainingDurationWidget());
+    // : Center(
+    //     child: ElevatedButton(
+    //       child: Text('add'),
+    //       onPressed: () {
+    //         Provider.of<ExerciseProvider>(context, listen: false)
+    //             .addNewExercise(
+    //                 name, level, category, active_muscles, image_url);
+    //       },
+    //     ),
+    //   ));
   }
 
   Image imageFromExercise(Exercise exercise) {

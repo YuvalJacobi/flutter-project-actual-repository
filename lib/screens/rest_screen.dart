@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
@@ -195,14 +194,18 @@ class _CountdownScreenState extends State<CountdownScreen> {
             alignment: Alignment.center,
             child: Center(child: countdown_to_text())),
         Container(
-          width: 150,
-          height: 150,
+          width: 350,
+          height: 100,
           alignment: Alignment.bottomCenter,
           child: IconButton(
-            icon: Icon(Icons.next_plan),
+            icon: Icon(
+              Icons.next_plan,
+              size: 40,
+            ),
             onPressed: () => skipCountdown(),
           ),
         ),
+        SizedBox(height: 110),
 
         /// show next exercise to be done.
         Container(

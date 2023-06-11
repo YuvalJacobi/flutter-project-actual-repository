@@ -150,7 +150,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         current_edited_plan =
                             Provider.of<PlanProvider>(context, listen: false)
                                 .getCurrentEditedPlan(context),
-                        setState(() => {isInit = true})
+                        setState(() => isInit = true)
                       }),
             });
   }
