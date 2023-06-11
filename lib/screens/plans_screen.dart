@@ -31,11 +31,13 @@ class PlanScreen extends StatefulWidget {
 }
 
 class _PlanScreenState extends State<PlanScreen> {
+  /// variable which stores the plans of the user.
   List<Plan> plans = [];
 
   void startPlan(int index) {
     debugPrint('Starting plan: ${plans[index].name}');
 
+    /// get current plan which the user started.
     Plan p = plans[index];
 
     if (p.exercises_in_plan.isEmpty) {
@@ -43,12 +45,19 @@ class _PlanScreenState extends State<PlanScreen> {
       return;
     }
 
-    Provider.of<PlanInProgressProvider>(context, listen: false).plan = p;
-    Provider.of<PlanInProgressProvider>(context, listen: false).index =
-        -1; // since it adds 1 prematurely and I don't want to meddle with it.
-    Provider.of<PlanInProgressProvider>(context, listen: false).set_index =
-        -1; // since it adds 1 prematurely and I don't want to meddle with it.
+    Provider.of<PlanInProgressProvider>(context, listen: false).start =
+        DateTime.now();
 
+    /// set current played plan
+    Provider.of<PlanInProgressProvider>(context, listen: false).plan = p;
+
+    /// set index to -1 since it increments anyway when entering the starting screen.
+    Provider.of<PlanInProgressProvider>(context, listen: false).index = -1;
+
+    /// set set_index to -1 since it increments anyway when entering the starting screen.
+    Provider.of<PlanInProgressProvider>(context, listen: false).set_index = -1;
+
+    /// go to plan in progress screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -59,11 +68,14 @@ class _PlanScreenState extends State<PlanScreen> {
 
   void editPlan(int index) {
     debugPrint("Should navigate to edit screen");
+
     plans = Provider.of<UserProvider>(context, listen: false).myUser.plans;
 
+    /// set the current edited plan
     Provider.of<PlanProvider>(context, listen: false)
         .setCurrentEditedPlanId(plans[index].id);
 
+    /// go to plan editing screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -73,9 +85,11 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   void addPlan() {
+    /// delete reference to current edited plan
     Provider.of<PlanProvider>(context, listen: false)
         .setCurrentEditedPlanId('');
 
+    /// go to plan adding screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -85,6 +99,7 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   void deletePlan(int index) {
+    /// show dialog for confirmation of deletion
     showDialog(
         context: context,
         builder: ((ctx) => AlertDialog(
@@ -140,6 +155,7 @@ class _PlanScreenState extends State<PlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// return UI elements which represent the screen
     return Scaffold(
       appBar: AppBar(
         title: Text('Plans'),
@@ -157,19 +173,24 @@ class _PlanScreenState extends State<PlanScreen> {
                 ),
                 SizedBox(
                   height: 200,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: plans.length,
-                    itemBuilder: (context, index) {
-                      final _plan = plans[index];
-                      return PlanItem(
-                        name: _plan.name,
-                        onEditPressed: () => editPlan(index),
-                        onDeletePressed: () => deletePlan(index),
-                        onStartPressed: () => startPlan(index),
-                      );
-                    },
-                  ),
+                  child: plans.length == 0
+                      ? Container(
+                          alignment: Alignment.center,
+                          child: Text('You have no plans :(',
+                              style: TextStyle(fontSize: 20)))
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: plans.length,
+                          itemBuilder: (context, index) {
+                            final _plan = plans[index];
+                            return PlanItem(
+                              name: _plan.name,
+                              onEditPressed: () => editPlan(index),
+                              onDeletePressed: () => deletePlan(index),
+                              onStartPressed: () => startPlan(index),
+                            );
+                          },
+                        ),
                 ),
                 SizedBox(height: 150),
                 ElevatedButton(

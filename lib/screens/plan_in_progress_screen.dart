@@ -37,8 +37,13 @@ class _PlanInProgressScreen extends State<PlanInProgressScreen> {
   }
 
   void navigateToExerciseInProgressScreen() {
+    /// sets set_index to 0
     Provider.of<PlanInProgressProvider>(context, listen: false).set_index = 0;
+
+    /// increments index of exercise by 1
     Provider.of<PlanInProgressProvider>(context, listen: false).index += 1;
+
+    /// navigate to exercise in progress screen.
     Future.delayed(
       Duration.zero,
       () {

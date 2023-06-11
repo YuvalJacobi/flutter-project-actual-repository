@@ -13,6 +13,7 @@ class ExerciseInPlan {
 
   String exercise_in_plan_id;
 
+  /// constructor
   ExerciseInPlan(
       {required this.sets,
       required this.reps,

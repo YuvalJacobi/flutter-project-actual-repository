@@ -9,12 +9,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // variables that will contain the user's personal data.
   String firstName = '';
   String lastName = '';
   int age = -1;
   double height = -1;
   double weight = -1;
 
+  /// text editing controllers corresponding to each personal data field
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
@@ -24,8 +26,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+
+    // fetch user and present current values.
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
+
     firstNameController.text = userProvider.myUser.first_name;
     lastNameController.text = userProvider.myUser.last_name;
 
@@ -70,15 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     Provider.of<UserProvider>(context, listen: false).setData();
 
-    String uid =
-        Provider.of<UserProvider>(context, listen: false).myUser.user_id;
-    print('User ID: $uid');
-    print('First Name: $firstName');
-    print('Last Name: $lastName');
-    print('Age: $age');
-    print('Height: $height');
-    print('Weight: $weight');
-
+    /// navigate to home screen
     Future.delayed(
       Duration.zero,
       () {
@@ -91,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// get personal data of user from database.
     Provider.of<UserProvider>(context, listen: false)
         .fetchUserData(context)
         .then((value) => {
@@ -109,6 +107,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   .myUser
                   .weight,
             });
+
+    /// return UI elements which build the screen
 
     return Scaffold(
       appBar: AppBar(

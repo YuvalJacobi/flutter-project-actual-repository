@@ -19,6 +19,7 @@ class UserProfile {
 
   String user_id;
 
+  /// constructor
   UserProfile(
       {this.first_name = '',
       this.last_name = '',

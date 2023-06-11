@@ -8,7 +8,7 @@ import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
-import 'package:flutter_complete_guide/provider/timer_elapsing.dart';
+import 'package:flutter_complete_guide/widgets/timer_elapsing.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -20,9 +20,9 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // return multi provider fed with all providers and screen.
     return MultiProvider(
       providers: [
-        // ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProvider(create: (_) => TimerElapsing()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => PlanInProgressProvider()),
@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  // return home screen if user is connected, if not then refer to auth screen.
   Widget formToOpen() {
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),

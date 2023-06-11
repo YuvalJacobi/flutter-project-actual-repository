@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/model/exercise.dart';
 import 'package:flutter_complete_guide/provider/exercise_in_plan_provider.dart';
 import 'package:flutter_complete_guide/provider/exercise_provider.dart';
+import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
+import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:flutter_complete_guide/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -28,10 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInit) {
-      // setState() {
-      //   _isLoading = true;
-      // });
-
       try {
         Provider.of<PlanProvider>(context, listen: false)
             .fetchPlans(context)
@@ -49,23 +47,94 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // String name = 'Wide Grip Pullups';
+  // String level = 'Intermediate';
+  // String category = 'Compound';
+  // List<String> active_muscles = [
+  //   'Lats',
+  //   'Biceps',
+  //   'Abs',
+  //   'Shoulders',
+  //   'Upper Back'
+  // ];
+  // String image_url =
+  //     'https://cdn.muscleandstrength.com/sites/default/files/wide-grip-pull-up-1.jpg';
+
+  format(Duration d) => d.toString().split('.').first.padLeft(8, "0");
+
+  Widget trainingDurationWidget() {
+    DateTime start =
+        Provider.of<PlanInProgressProvider>(context, listen: false).start;
+
+    if (start.year == -999) return Center();
+
+    if (Provider.of<PlanInProgressProvider>(context, listen: false).end.year !=
+        -999) return Center();
+
+    Provider.of<PlanInProgressProvider>(context, listen: false).end =
+        DateTime.now();
+
+    Duration diff = Provider.of<PlanInProgressProvider>(context, listen: false)
+        .end
+        .difference(start);
+
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Last Training Session\'s total length',
+            style: TextStyle(fontSize: 22, color: Colors.redAccent),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            format(diff),
+            style: TextStyle(
+                fontSize: 20, color: Color.fromARGB(255, 216, 21, 21)),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    /// return visual representation of screen
     return Scaffold(
         appBar: new AppBar(
           title: new Text("Our Fitness"),
           backgroundColor: Colors.redAccent,
         ),
         drawer: myDrawer(),
-        body: _isInit ? Center(child: CircularProgressIndicator()) : Center());
+        body: _isInit
+            ? Center(child: CircularProgressIndicator())
+            : trainingDurationWidget());
+    // : Center(
+    //     child: ElevatedButton(
+    //       child: Text('add'),
+    //       onPressed: () {
+    //         Provider.of<ExerciseProvider>(context, listen: false)
+    //             .addNewExercise(
+    //                 name, level, category, active_muscles, image_url);
+    //       },
+    //     ),
+    //   ));
   }
 
   Image imageFromExercise(Exercise exercise) {
+    /// returns image of exercise if the image_url is non-null.
     if (exercise.image_url.isEmpty) {
       // return white square
       return Image.network(
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
     }
+
+    /// return image of exercise from the network.
     return Image.network(
       exercise.image_url,
       width: 100,
@@ -75,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget myExerciseWidget(Exercise exercise) {
+    /// return a Container which represents the visualization of a single exercise.
     return Container(
       width: 200,
       height: 200,
@@ -117,11 +187,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   NetworkImage randomBackground() {
+    /// return random background
     int rnd = Random.secure().nextInt(backgrounds.length);
     return new NetworkImage(backgrounds[rnd]);
   }
 
   Widget myDrawer() {
+    /// return drawer widget
     return new Drawer(
       child: Column(
         children: [

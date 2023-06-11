@@ -38,12 +38,14 @@ class PlanAdderScreen extends StatefulWidget {
 }
 
 class _PlanAdderScreen extends State<PlanAdderScreen> {
+  /// text controller of new plan's name.
   final TextEditingController nameController = TextEditingController();
 
   bool isInit = false;
 
   @override
   Widget build(BuildContext context) {
+    // fetch all plans.
     Provider.of<PlanProvider>(context, listen: false)
         .fetchPlans(context)
         .then((value) => {
@@ -52,6 +54,7 @@ class _PlanAdderScreen extends State<PlanAdderScreen> {
               })
             });
 
+    /// return visual representation of screen.
     return Scaffold(
       appBar: AppBar(
         title: Text('Plan Adder'),
@@ -70,12 +73,13 @@ class _PlanAdderScreen extends State<PlanAdderScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // move to provider
+                      // get all plans of user.
                       List<Plan> _my_plans =
                           Provider.of<UserProvider>(context, listen: false)
                               .myUser
                               .plans;
 
+                      /// check if the new plan's name already exists.
                       if (_my_plans
                           .map((e) => e.name)
                           .contains(nameController.text)) {
@@ -94,6 +98,7 @@ class _PlanAdderScreen extends State<PlanAdderScreen> {
                           user_id: _uid,
                           id: "");
 
+                      // create new plan and go to editing screen.
                       Provider.of<PlanProvider>(context, listen: false)
                           .addData(p, context)
                           .then((_) => {
@@ -116,25 +121,6 @@ class _PlanAdderScreen extends State<PlanAdderScreen> {
                                   ),
                                 )
                               });
-
-                      // adding manual delay since await doesn't wait for some reason
-                      //manualDelay();
-
-                      // try {
-                      //   p = Provider.of<PlanProvider>(context, listen: false)
-                      //       .plans
-                      //       .last;
-
-                      //   if (p.name != nameController.text) {
-                      //     // wrong plan was used (last one)
-
-                      //     Provider.of<PlanProvider>(context, listen: false)
-                      //         .deletePlanByName(nameController.text);
-                      //     return;
-                      //   }
-                      // } on Error catch (_) {
-                      //   return;
-                      // }
                     },
                     child: Text('Confirm'),
                   ),

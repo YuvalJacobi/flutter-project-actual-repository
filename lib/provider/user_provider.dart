@@ -18,6 +18,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Plan getPlanById(String id) {
+    /// get plan of user by the plan's id, if it doesnt exist then return an empty plan.
     if (my_plans.map((e) => e.id).contains(id)) {
       return my_plans.firstWhere((element) => element.id == id);
     }
@@ -25,26 +26,17 @@ class UserProvider extends ChangeNotifier {
   }
 
   String getUserId() {
+    // return the user's id.
     return myUser.user_id;
   }
 
   void addPlan(Plan p) {
+    /// add plan to the list of plan's of user
     myUser.plans.add(p);
   }
 
-  // void debugUser(UserProfile user) {
-  //   int ind = 1;
-  //   for (Plan p in user.plans) {
-  //     debugPrint(ind.toString() +
-  //         '#: ' +
-  //         p.name +
-  //         ' ' +
-  //         p.exercises.length.toString());
-  //     ind++;
-  //   }
-  // }
-
   Map<String, dynamic> exerciseInPlanToMap(ExerciseInPlan exerciseInPlan) {
+    /// convert ExerciseInPlan object to map representation.
     return {
       'exercise_id': exerciseInPlan.exercise_id,
       'plan_id': exerciseInPlan.plan_id,
@@ -56,8 +48,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> setData() async {
-    debugPrint(myUser.toString());
-
+    /// set data of user to database.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(myUser.user_id)
@@ -78,6 +69,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void updatePlanOfUser(Plan plan) {
+    /// update data of plan of user
     if (myUser.plans.map((e) => e.id).contains(plan.id)) {
       int ind = myUser.plans.map((e) => e.id).toList().indexOf(plan.id);
       myUser.plans[ind] = plan;
@@ -89,6 +81,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   List<Plan> dynamicOfPlansToPlansList(dynamic d, BuildContext context) {
+    /// dynamic value retrieved from Firebase to list of plans.
     List<Plan> plans = [];
     for (String item in d) {
       String plan_id = item;
@@ -100,21 +93,10 @@ class UserProvider extends ChangeNotifier {
       plans.add(p);
     }
     return plans;
-
-    // List<Plan> plans = [];
-    // for (Map<String, dynamic> item in d) {
-    //   plans.add(Plan(
-    //       exercises: dynamicOfExercisesInPlanToExercisesInPlan(
-    //           item['exercises_in_plan'] ?? ''),
-    //       name: item['name'] ?? '',
-    //       user_id: item['user_id'] ?? '',
-    //       id: item['plan_id'] ?? ''));
-    // }
-    // return plans;
   }
 
   Future<void> fetchUserData(BuildContext context) async {
-    //debugPrint(getUserId());
+    /// fetch user data from database
     await FirebaseFirestore.instance
         .collection('users')
         .doc(myUser.user_id)
@@ -145,6 +127,7 @@ class UserProvider extends ChangeNotifier {
     bool isLogin,
     BuildContext ctx,
   ) async {
+    /// perform sign up / register operation with parameters.
     UserCredential authResult;
     debugPrint('is login: $isLogin');
     if (isLogin) {
@@ -163,77 +146,5 @@ class UserProvider extends ChangeNotifier {
       myUser.username = username;
       setData();
     }
-
-    //notifyListeners();
   }
-
-  // Future<void> addData(User user) async {
-  //   FirebaseFirestore.instance.collection('users').add({
-  //     'first_name': user.first_name,
-  //     'last_name': user.last_name,
-  //     'email': user.email,
-  //     'age': user.age,
-  //     'height': user.height,
-  //     'weight': user.weight,
-  //     'username': user.username,
-  //   }).then((DocumentReference docref) {
-  //     user.user_id = docref.id;
-  //   });
-  // }
-
-  // Future<void> fetchData() async {
-  //   FirebaseFirestore.instance
-  //       .collection('users')
-  //       .get()
-  //       .then((QuerySnapshot querySnapshot) {
-  //     querySnapshot.docs.forEach((doc) {
-  //       _users.add(User(doc['first_name'], doc['last_name'], doc['email'],
-  //           doc['age'], doc['height'], doc['weight'], doc['username'], doc.id));
-  //     });
-  //   });
-  // }
-
-  // bool isValidEmail(String email_address) {
-  //   return RegExp(
-  //           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-  //       .hasMatch(email_address);
-  // }
-
-  // bool isValidUser(User user) {
-  //   if (user.first_name.isEmpty || user.first_name == "") return false;
-
-  //   if (user.last_name.isEmpty || user.last_name == "") return false;
-
-  //   if (user.username.isEmpty || user.username == "") return false;
-
-  //   if (user.age <= 0) return false;
-
-  //   if (user.height <= 0) return false;
-
-  //   if (user.weight <= 0) return false;
-
-  //   if (isValidEmail(user.email) == false) return false;
-
-  //   return true;
-  // }
-
-  // String stringify(User user) {
-  //   if (isValidUser(user) == false) return '';
-
-  //   String t = '';
-
-  //   t += 'First name: ${user.first_name}\n';
-
-  //   t += 'Last name: ${user.last_name}\n';
-
-  //   t += 'Username: ${user.username}';
-
-  //   t += 'Age: ${user.age}\n';
-
-  //   t += 'Height: ${user.height}\n';
-
-  //   t += 'Weight: ${user.weight}\n';
-
-  //   return t;
-  // }
 }

@@ -8,7 +8,6 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthScreen> {
-  // final _auth = FirebaseAuth.instance;
   var _isLoading = false;
   final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
@@ -17,9 +16,13 @@ class _AuthFormState extends State<AuthScreen> {
   var _userPassword = "";
 
   void trySubmit() {
+    // validate input.
     final isValid = _formKey.currentState!.validate();
+
+    // remove focus
     FocusScope.of(context).unfocus();
 
+    // if inpit is valid then try logging in or signing up (depending on which mode the user is currently in)
     if (isValid) {
       _formKey.currentState!.save();
       Provider.of<UserProvider>(context, listen: false).submitAuthForm(
@@ -33,10 +36,12 @@ class _AuthFormState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // return authForm visual representation
     return authForm();
   }
 
   Widget authForm() {
+    // return visual representation of screen.
     return Scaffold(
       appBar: AppBar(
         title: Text('Authentication screen'),

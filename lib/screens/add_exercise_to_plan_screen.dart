@@ -32,25 +32,32 @@ class PlanEditorScreen extends StatefulWidget {
   _PlanEditorScreen createState() => _PlanEditorScreen();
 }
 
+/// text controllers of all properties of an exercise.
 final TextEditingController exerciseController = TextEditingController();
 final TextEditingController setsController = TextEditingController();
 final TextEditingController repsController = TextEditingController();
 final TextEditingController weightController = TextEditingController();
 final TextEditingController restController = TextEditingController();
+
+/// local variables
 Exercise? selectedExercise = null;
 Plan? current_edited_plan = null;
 
 class _PlanEditorScreen extends State<PlanEditorScreen> {
   List<Exercise> exerciseOptions = [];
+  String nameFilter = '';
 
   bool isInit = false;
 
   Image imageFromExercise(Exercise exercise) {
+    /// get image of exercise fron network if image-url is non-null.
     if (exercise.image_url.isEmpty) {
       // return white square
       return Image.network(
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
     }
+
+    /// return image from network.
     return Image.network(
       exercise.image_url,
       width: 100,
@@ -61,6 +68,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
 
   ExerciseInPlan getExerciseInPlanFromControllers(
       String exercise_id, String plan_id) {
+    /// return exercise in plan from exercise id and plan id with a validity check.
     try {
       if (isExerciseValid(ExerciseInPlan(
               sets: int.parse(setsController.text),
@@ -101,6 +109,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
   }
 
   bool isExerciseValid(ExerciseInPlan exerciseInPlan) {
+    /// check if an exercise is valid.
     if (exerciseInPlan.reps < 0 ||
         exerciseInPlan.sets <= 0 ||
         exerciseInPlan.rest < 0 ||
@@ -109,6 +118,8 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
   }
 
   void clearSelections() {
+    // clear all text controller's values.
+
     exerciseController.text = "";
     setsController.text = "";
     repsController.text = "";
@@ -123,6 +134,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
 
+    // fetch data
     Provider.of<ExerciseProvider>(context, listen: false)
         .fetchExercises()
         .then((_) => {
@@ -145,6 +157,7 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// return visual representation of screen.
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Exercise'),
@@ -157,6 +170,40 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    ElevatedButton(
+                        onPressed: () => {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      PlanScreen(),
+                                ),
+                              )
+                            },
+                        child: Text(
+                          'Close',
+                          style: TextStyle(fontSize: 20),
+                        )),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Exercise Name',
+                        ),
+                        controller: exerciseController,
+                        onChanged: (value) {
+                          setState(() {
+                            exerciseOptions = Provider.of<ExerciseProvider>(
+                                    context,
+                                    listen: false)
+                                .getExercisesWithSorting(
+                                    name: value, active_muscles: []);
+                          });
+                        },
+                      ),
+                    ),
                     SizedBox(height: 8.0),
                     Container(
                       height: 600.0,
@@ -176,20 +223,6 @@ class _PlanEditorScreen extends State<PlanEditorScreen> {
                         },
                       ),
                     ),
-                    SizedBox(height: 32.0),
-                    ElevatedButton(
-                        onPressed: () => {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      PlanScreen(),
-                                ),
-                              )
-                            },
-                        child: Text(
-                          'Close',
-                          style: TextStyle(fontSize: 20),
-                        ))
                   ],
                 ),
               ),
@@ -213,11 +246,14 @@ class CardWidget extends StatefulWidget {
 class _CardWidgetState extends State<CardWidget> {
   Image imageFromExercise(
       Exercise exercise, double width, double height, BoxFit fit) {
+    /// return image of exercise from network if image url is not empty
     if (exercise.image_url.isEmpty) {
       // return white square
       return Image.network(
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHFAD6nG4GX5NHYwDsmB8a_vwVY4DOxMqwPOiMVro&s');
     }
+
+    // return the image from network.
     return Image.network(
       exercise.image_url,
       width: width,
@@ -228,6 +264,8 @@ class _CardWidgetState extends State<CardWidget> {
 
   ExerciseInPlan getExerciseInPlanFromControllersWithValidityCheck(
       String exercise_id, String plan_id) {
+    /// return exercise in plan from exercise id and plan id with a validity check.
+
     try {
       if (isExerciseValid(ExerciseInPlan(
               sets: int.parse(setsController.text),
@@ -268,6 +306,7 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   bool isExerciseValid(ExerciseInPlan exerciseInPlan) {
+    // check if an exercise is valid
     if (exerciseInPlan.sets <= 0 ||
         exerciseInPlan.reps < 0 || // 0 reps is until failure.
         exerciseInPlan.rest < 0 ||
@@ -276,6 +315,8 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   void clearSelections() {
+    // clear all text controller's values.
+
     exerciseController.text = "";
     setsController.text = "";
     repsController.text = "";
@@ -287,6 +328,7 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   String activeMusclesRepresentation() {
+    /// return text as a list format of all active muscles in an exercise
     String result = '';
     for (String s in widget.exercise.active_muscles) {
       result += s + '\n';
@@ -296,6 +338,7 @@ class _CardWidgetState extends State<CardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // return visual representation of a single exercise.
     return Card(
       margin: EdgeInsets.all(8.0),
       child: Row(
@@ -319,7 +362,7 @@ class _CardWidgetState extends State<CardWidget> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  SizedBox(height: 5.0),
                   Text(
                     'Active Muscles',
                     style: TextStyle(
@@ -337,11 +380,11 @@ class _CardWidgetState extends State<CardWidget> {
                   ),
                   SizedBox(height: 8.0),
                   Align(
-                      alignment: Alignment.bottomLeft,
+                      alignment: Alignment.center,
                       child: Container(
                         constraints: BoxConstraints(
                             minWidth: 200,
-                            maxWidth: 250,
+                            maxWidth: 260,
                             minHeight: 50,
                             maxHeight: 75),
                         alignment: Alignment.bottomLeft,

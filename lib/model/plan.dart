@@ -7,6 +7,7 @@ class Plan {
 
   String id;
 
+  /// constructor
   Plan(
       {required this.exercises_in_plan,
       required this.name,
