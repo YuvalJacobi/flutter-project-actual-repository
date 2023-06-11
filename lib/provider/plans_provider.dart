@@ -167,6 +167,8 @@ class PlanProvider extends ChangeNotifier {
     /// delete plan in local list.
     _plans.removeWhere((element) => element.id == plan.id);
 
+    Provider.of<UserProvider>(context, listen: false).my_plans.remove(plan);
+
     // Remove plan from user's plans.
     await FirebaseFirestore.instance
         .collection('users')

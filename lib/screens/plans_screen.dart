@@ -122,14 +122,15 @@ class _PlanScreenState extends State<PlanScreen> {
                   ),
                   onPressed: () {
                     Provider.of<PlanProvider>(context, listen: false)
-                        .deletePlanInUser(plans[index], context);
-
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlanScreen(),
-                      ),
-                    );
+                        .deletePlanInUser(plans[index], context)
+                        .then((value) => {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlanScreen(),
+                                ),
+                              )
+                            });
                   },
                 )
               ],
