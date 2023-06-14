@@ -9,7 +9,6 @@ import 'package:flutter_complete_guide/provider/plan_in_progress_provider.dart';
 import 'package:flutter_complete_guide/provider/plans_provider.dart';
 import 'package:flutter_complete_guide/provider/user_provider.dart';
 import 'package:flutter_complete_guide/screens/auth_screen.dart';
-import 'package:flutter_complete_guide/screens/plan_in_progress_screen.dart';
 import 'package:flutter_complete_guide/screens/plans_screen.dart';
 import 'package:flutter_complete_guide/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -47,18 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // String name = 'Wide Grip Pullups';
+  // String name = 'Standing Hammer Curl';
   // String level = 'Intermediate';
-  // String category = 'Compound';
-  // List<String> active_muscles = [
-  //   'Lats',
-  //   'Biceps',
-  //   'Abs',
-  //   'Shoulders',
-  //   'Upper Back'
-  // ];
+  // String category = 'Isolation';
+  // List<String> active_muscles = ['Biceps', 'Forearms'];
   // String image_url =
-  //     'https://cdn.muscleandstrength.com/sites/default/files/wide-grip-pull-up-1.jpg';
+  //     'https://cdn.muscleandstrength.com/sites/default/files/styles/400x250/public/field/image/exercise/standinghammercurl1.jpg?itok=V-lj55ls';
 
   format(Duration d) => d.toString().split('.').first.padLeft(8, "0");
 
@@ -114,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: _isInit
             ? Center(child: CircularProgressIndicator())
             : trainingDurationWidget());
+    // : trainingDurationWidget());
     // : Center(
     //     child: ElevatedButton(
     //       child: Text('add'),
