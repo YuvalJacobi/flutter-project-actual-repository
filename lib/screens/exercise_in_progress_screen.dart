@@ -165,9 +165,15 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              textToShow,
-              style: TextStyle(fontSize: 24),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Container(
+                alignment: Alignment.center,
+                child: Text(
+                  textToShow,
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
             ),
             SizedBox(height: 30),
             exerciseInfoFromExerciseInPlan(exerciseInPlan),
@@ -211,7 +217,7 @@ class _ExerciseInProgressScreen extends State<ExerciseInProgressScreen> {
                   ),
                 ),
               ),
-            SizedBox(height: 100),
+            SizedBox(height: 25),
             Padding(
               padding: const EdgeInsets.only(right: 15.0),
               child: Container(
